@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Knowledge Amp Start</title>
+<style>
+:root{--bg:#07080c;--ink:#e9e6df;--dim:#8d8a84;--line:#24262e;--built:#5fe0b8;--partial:#f2b84b;--seed:#b48cff;--unbuilt:#5b5e68;--core:#fff;}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+header{display:flex;align-items:baseline;gap:18px;padding:14px 22px 8px;border-bottom:1px solid var(--line)}
+h1{font-size:19px;font-weight:600;margin:0;letter-spacing:.02em}
+h1 small{font-weight:400;color:var(--dim);font-size:13px;margin-left:8px}
+nav{margin-left:auto;display:flex;gap:4px}
+nav button,.ctl button{font:12px/1 ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;background:none;color:var(--dim);border:1px solid var(--line);padding:7px 11px;border-radius:999px;cursor:pointer}
+nav button.on,.ctl button.on{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+main{position:relative;height:calc(100% - 54px)}
+.view{position:absolute;inset:0;display:none}
+.view.on{display:block}
+#mapsvg{width:100%;height:100%;cursor:grab}
+.lab{font:11px ui-monospace,Menlo,monospace;fill:var(--dim);pointer-events:none}
+.lab.big{font:600 13px "Iowan Old Style",Georgia,serif;fill:var(--ink)}
+.hemi{font:11px ui-monospace,Menlo,monospace;letter-spacing:.2em;fill:#4a4c55;text-transform:uppercase}
+.node{cursor:pointer}
+.edge{fill:none;stroke-width:1.1;opacity:.28}
+.edge.hi{opacity:.95;stroke-width:1.8}
+.faded{opacity:.12}
+#panel{position:absolute;right:16px;top:16px;width:330px;max-height:calc(100% - 32px);overflow:auto;background:rgba(14,15,20,.94);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:none}
+#panel h2{margin:0 0 4px;font-size:17px}
+#panel .k{font:11px ui-monospace,Menlo,monospace;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+#panel blockquote{margin:10px 0;padding-left:10px;border-left:2px solid var(--line);color:#c9c4b8;font-style:italic}
+#panel ul{padding-left:16px;margin:6px 0}
+#panel .x{position:absolute;right:12px;top:10px;cursor:pointer;color:var(--dim)}
+.legend{position:absolute;left:18px;bottom:14px;font:11px ui-monospace,Menlo,monospace;color:var(--dim);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.ctl{position:absolute;left:18px;top:14px;display:flex;gap:6px}
+.stat{position:absolute;left:18px;top:52px;font:11px ui-monospace,Menlo,monospace;color:var(--dim)}
+/* lineage */
+#lineage{overflow:auto;padding:30px 40px 60px}
+.tl{position:relative;max-width:860px;margin:0 auto}
+.tl:before{content:"";position:absolute;left:130px;top:0;bottom:0;width:1px;background:linear-gradient(var(--seed),var(--partial),var(--built))}
+.ev{display:grid;grid-template-columns:120px 1fr;gap:28px;margin:0 0 22px;position:relative}
+.ev .w{font:12px ui-monospace,Menlo,monospace;color:var(--dim);text-align:right;padding-top:2px}
+.ev .b:before{content:"";position:absolute;left:126px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--ink)}
+.ev h3{margin:0;font-size:16px}
+.ev p{margin:2px 0 0;color:#bdb8ad}
+.ev.here h3{color:var(--built)}
+/* examples */
+#examples{overflow:auto;padding:22px}
+.ex{max-width:1000px;margin:0 auto 34px}
+.ex h2{font-size:18px;margin:0 0 2px}
+.ex p.c{color:#bdb8ad;margin:0 0 10px;max-width:760px}
+.ex canvas,.ex svg{width:100%;background:#0b0c12;border:1px solid var(--line);border-radius:12px;display:block}
+.tag{font:11px ui-monospace,Menlo,monospace;color:var(--bg);background:var(--unbuilt);padding:2px 7px;border-radius:999px;margin-left:8px;vertical-align:2px}
+</style>
+</head>
+<body>
+<header>
+ <h1>Knowledge Amp<small>start · prototype map · 2026-11-17</small></h1>
+ <nav><button data-v="map" class="on">Map</button><button data-v="lineage">Lineage</button><button data-v="examples">Examples</button></nav>
+</header>
+<main>
+ <section id="map" class="view on">
+  <svg id="mapsvg"></svg>
+  <div class="ctl"><button id="tChats">Chats</button><button id="tReset">Reset view</button></div>
+  <div class="stat" id="stat"></div>
+  <div class="legend">
+   <span><i class="dot" style="background:var(--built)"></i>built</span>
+   <span><i class="dot" style="background:var(--partial)"></i>partly built</span>
+   <span><i class="dot" style="background:var(--seed)"></i>seed (planned)</span>
+   <span><i class="dot" style="border:1.5px solid var(--unbuilt)"></i>idea only</span>
+   <span>left: the writings, 2002–2026 · right: what exists now · lines: what carries what (proposed)</span>
+  </div>
+  <div id="panel"></div>
+ </section>
+ <section id="lineage" class="view"><div class="tl" id="tl"></div></section>
+ <section id="examples" class="view">
+  <div class="ex">
+   <h2>Pods, scouts and trance<span class="tag">idea only · not built yet</span></h2>
+   <p class="c">The social organs (Pods, Trance, superGroups) as a moving picture. Five small groups, each a ring. A trance wave runs round each ring and only holds while every member is lit. Scouts orbit outside and carry finds between pods; when one lands, that pod re-resolves it in waves. Click a pod to send it a scout.</p>
+   <canvas id="pods" width="2000" height="760"></canvas>
+  </div>
+  <div class="ex">
+   <h2>The Vetting Sentinel on a newscast<span class="tag" style="background:var(--partial)">partly built, as the Seashell</span></h2>
+   <p class="c">The 2025 newscast scene from KA 1.docx, sketched over a made-up broadcast. The claim's lineage runs back to its first appearance; rhetoric gets marked in place; the verdict comes on the Seashell's two wings, more or less factual and more or less figurative, never just true or false. Press <b>Trace</b>.</p>
+   <svg id="sent" viewBox="0 0 1000 470"></svg>
+  </div>
+ </section>
+</main>
+<script>
+const D = __DATA__;
+const C = {built:'#5fe0b8',partial:'#f2b84b',seed:'#b48cff',unbuilt:'#5b5e68',core:'#ffffff',idea:'#5b5e68'};
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+ document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id===b.dataset.v));
+ if(b.dataset.v==='examples') startEx();
+});
+const NS='http://www.w3.org/2000/svg';
+const el=(t,a,p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+
+/* ---------- MAP ---------- */
+const svg=document.getElementById('mapsvg');
+const W=1600,H=1000,cx=W/2,cy=H/2;
+svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+const root=el('g',{},svg);
+const byId={};D.nodes.forEach(n=>byId[n.id]=n);
+const order=['principle','organ','flow','word'];
+const ideas=D.nodes.filter(n=>order.includes(n.kind)).sort((a,b)=>order.indexOf(a.kind)-order.indexOf(b.kind));
+const nows=D.nodes.filter(n=>n.kind==='now');
+// left arc for ideas, right arc for present pieces
+const R1=430,R2=380;
+let gi=0,prev=null;const slots=ideas.length+3*2;ideas.forEach((n,i)=>{if(prev&&prev!==n.kind)gi+=2;prev=n.kind;const f=(i+gi)/(slots-1);n.y=200+f*700;const u=(n.y-cy)/430;n.x=cx-330-150*Math.sqrt(Math.max(0,1-u*u));n.a=Math.PI-Math.asin(Math.max(-1,Math.min(1,u)))});
+const groupLab={};ideas.forEach(n=>{if(!groupLab[n.kind])groupLab[n.kind]=n});
+nows.forEach((n,i)=>{const a=-Math.PI*0.36+(Math.PI*0.72)*(i/(nows.length-1));n.x=cx+R2*Math.cos(a);n.y=cy+R2*1.05*Math.sin(a);n.a=a});
+const ka=byId.ka;ka.x=cx;ka.y=cy;
+// chats orbit their node
+D.chats.forEach((c,i)=>{const t=byId[c.node];const sib=D.chats.filter(x=>x.node===c.node);const j=sib.indexOf(c);
+ if(t.kind==='now'){const a=t.a+(j-(sib.length-1)/2)*0.05;const r=R2+60+(j%2)*16;c.x=cx+r*Math.cos(a);c.y=cy+r*1.05*Math.sin(a)}else{c.x=t.x+40+j*14;c.y=t.y-12-j*6}byId[c.id]=Object.assign(c,{kind:'chat',label:c.title,status:'chat'})});
+el('text',{x:60,y:118,class:'hemi','text-anchor':'start'},root).textContent='The writings: principles · organs · flows · words';
+el('text',{x:W-60,y:118,class:'hemi','text-anchor':'end'},root).textContent='What exists now: toys · skills · seeds';
+const gE=el('g',{},root),gC=el('g',{},root),gN=el('g',{},root);
+const edges=[];
+D.links.forEach(l=>{const s=byId[l.s],t=byId[l.t];if(!s||!t)return;
+ let d,col;
+ if(l.k==='has'){d=`M${s.x},${s.y} Q${(s.x+t.x)/2},${(s.y+t.y)/2} ${t.x},${t.y}`;col='#3a3c46'}
+ else if(l.k==='embodied'){d=`M${s.x},${s.y} C${cx-90},${s.y} ${cx+90},${t.y} ${t.x},${t.y}`;col=C[t.status]}
+ else {d=`M${s.x},${s.y} L${t.x},${t.y}`;col='#6d6f7a'}
+ const p=el('path',{d,class:'edge',stroke:col},l.k==='chat'?gC:gE);p.dataset.s=l.s;p.dataset.t=l.t;if(l.k==='has')p.style.opacity=.12;edges.push(p)});
+const nodeEls={};
+function drawNode(n){
+ const g=el('g',{class:'node',transform:`translate(${n.x},${n.y})`},n.kind==='chat'?gC:gN);
+ const col=C[n.status]||'#888';
+ if(n.kind==='root'){
+  for(let k=0;k<6;k++)el('polygon',{points:hex(26-k*4),fill:'none',stroke:'#fff',opacity:.15+k*.13,transform:`rotate(${k*10})`},g);
+  el('text',{class:'lab big','text-anchor':'middle',y:48},g).textContent='Knowledge Amp';
+ } else if(n.kind==='chat'){
+  el('circle',{r:3,fill:'#9c9aa6'},g);
+ } else {
+  const r=n.kind==='now'?8:5.5;
+  if(n.kind==='now'){el('polygon',{points:hex(r+2),fill:col,opacity:.95},g)}
+  else if(n.status==='unbuilt'){el('circle',{r,fill:'none',stroke:col,'stroke-width':1.6},g)}
+  else el('circle',{r,fill:col},g);
+  const left=n.kind!=='now';
+  const t=el('text',{class:'lab'+(n.kind==='now'?' big':''),x:left?-12:13,y:4,'text-anchor':left?'end':'start'},g);
+  t.textContent=n.label.length>34?n.label.slice(0,32)+'…':n.label;
+  if(n.kind==='organ')t.style.fill='#d8d3c8';
+ }
+ g.onmouseenter=()=>hi(n.id);g.onmouseleave=()=>hi(null);g.onclick=e=>{e.stopPropagation();show(n)};
+ nodeEls[n.id]=g;
+}
+function hex(r){let s='';for(let k=0;k<6;k++){const a=Math.PI/3*k+Math.PI/6;s+=`${(r*Math.cos(a)).toFixed(1)},${(r*Math.sin(a)).toFixed(1)} `}return s}
+D.nodes.forEach(drawNode);D.chats.forEach(drawNode);
+Object.values(groupLab).forEach(n=>{el('text',{x:n.x+14,y:n.y-14,class:'hemi'},gN).textContent=n.kind+'s'});
+let chatsOn=false;gC.style.display='none';
+document.getElementById('tChats').onclick=e=>{chatsOn=!chatsOn;gC.style.display=chatsOn?'':'none';e.target.classList.toggle('on',chatsOn)};
+function neighbors(id){const s=new Set([id]);D.links.forEach(l=>{if(l.k==='has')return;if(l.s===id)s.add(l.t);if(l.t===id)s.add(l.s)});return s}
+function hi(id){
+ if(!id){edges.forEach(p=>{p.classList.remove('hi','faded')});Object.values(nodeEls).forEach(g=>g.classList.remove('faded'));return}
+ const nb=neighbors(id);
+ edges.forEach(p=>{const on=(p.dataset.s===id||p.dataset.t===id)&&!(p.dataset.s==='ka'&&id!=='ka');p.classList.toggle('hi',on);p.classList.toggle('faded',!on)});
+ Object.entries(nodeEls).forEach(([k,g])=>g.classList.toggle('faded',!nb.has(k)&&k!=='ka'));
+}
+const panel=document.getElementById('panel');
+function show(n){
+ const nb=[...neighbors(n.id)].filter(k=>k!==n.id&&k!=='ka').map(k=>byId[k]).filter(Boolean);
+ const kind=n.kind==='now'?n.sub:n.kind;
+ const st={built:'built',partial:'partly built',seed:'seed, planned',unbuilt:'idea only, nothing built yet',core:'the root',chat:'a chat'}[n.status]||n.status;
+ let h=`<span class="x" onclick="panel.style.display='none'">close</span><div class="k">${kind} · ${st}</div><h2>${n.label}</h2><div>${n.gist||''}</div>`;
+ if(n.quote)h+=`<blockquote>${n.quote.slice(0,420)}${n.quote.length>420?'…':''}</blockquote>`;
+ if(n.src)h+=`<div class="k">from ${n.src}</div>`;
+ if(n.date)h+=`<div class="k">${n.date}</div>`;
+ const emb=nb.filter(x=>x.kind!=='chat'),ch=nb.filter(x=>x.kind==='chat');
+ if(emb.length)h+=`<p class="k" style="margin-top:12px">${n.kind==='now'?'Carries these ideas':'Carried today by'}</p><ul>${emb.map(x=>`<li>${x.label}</li>`).join('')}</ul>`;
+ if(ch.length)h+=`<p class="k">Chats that fed it</p><ul>${ch.map(x=>`<li>${x.date} · ${x.title}<br><span style="color:#9c978c">${x.gist}</span></li>`).join('')}</ul>`;
+ panel.innerHTML=h;panel.style.display='block';
+}
+svg.onclick=()=>{panel.style.display='none'};
+// pan / zoom
+let vb={x:0,y:0,w:W,h:H},drag=null;
+const setVB=()=>svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+svg.addEventListener('wheel',e=>{e.preventDefault();const r=svg.getBoundingClientRect();const mx=vb.x+(e.clientX-r.left)/r.width*vb.w,my=vb.y+(e.clientY-r.top)/r.height*vb.h;const f=e.deltaY>0?1.12:1/1.12;vb.w*=f;vb.h*=f;vb.x=mx-(mx-vb.x)*f;vb.y=my-(my-vb.y)*f;setVB()},{passive:false});
+svg.onmousedown=e=>{drag={x:e.clientX,y:e.clientY,vx:vb.x,vy:vb.y}};
+window.onmouseup=()=>drag=null;
+window.onmousemove=e=>{if(!drag)return;const r=svg.getBoundingClientRect();vb.x=drag.vx-(e.clientX-drag.x)/r.width*vb.w;vb.y=drag.vy-(e.clientY-drag.y)/r.height*vb.h;setVB()};
+document.getElementById('tReset').onclick=()=>{vb={x:0,y:0,w:W,h:H};setVB()};
+const cnt={};ideas.forEach(n=>cnt[n.status]=(cnt[n.status]||0)+1);
+document.getElementById('stat').textContent=`${ideas.length} ideas from the writings: ${cnt.built||0} built · ${cnt.partial||0} partly · ${cnt.seed||0} seeded · ${cnt.unbuilt||0} idea only · ${nows.length} present pieces · ${D.chats.length} chats`;
+
+/* ---------- LINEAGE ---------- */
+document.getElementById('tl').innerHTML=D.lineage.map((e,i)=>`<div class="ev${i===D.lineage.length-1?' here':''}"><div class="w">${e.when}</div><div class="b"><h3>${e.title}</h3><p>${e.gist}</p></div></div>`).join('');
+
+/* ---------- EXAMPLE A: pods ---------- */
+let exStarted=false;
+function startEx(){if(exStarted)return;exStarted=true;pods();sentinel()}
+function pods(){
+ const cv=document.getElementById('pods'),x=cv.getContext('2d'),w=cv.width,h=cv.height;
+ const hues=[168,38,268,320,200];
+ const P=hues.map((hu,i)=>({x:w*(.13+.185*i),y:h*(i%2?.62:.4),r:92,hu,ph:Math.random()*6,lit:[1,1,1,1,1].map(()=>Math.random()<.7),wave:0,resolve:0}));
+ const scouts=[...Array(7)].map((_,i)=>({a:Math.random()*6,s:.0025+Math.random()*.003,carry:null,t:0,from:null,to:null}));
+ const sparks=[];
+ cv.onclick=e=>{const r=cv.getBoundingClientRect();const mx=(e.clientX-r.left)/r.width*w,my=(e.clientY-r.top)/r.height*h;
+  P.forEach(p=>{if(Math.hypot(mx-p.x,my-p.y)<p.r*1.3){const s=scouts.find(s=>!s.to)||scouts[0];s.to=p;s.from={x:w/2,y:h*.08};s.t=0;s.carry=Math.floor(Math.random()*360)}})};
+ let T=0;
+ function f(){T+=1;x.fillStyle='rgba(11,12,18,.28)';x.fillRect(0,0,w,h);
+  // orbit path
+  x.strokeStyle='rgba(255,255,255,.05)';x.lineWidth=2;x.beginPath();x.ellipse(w/2,h/2,w*.47,h*.44,0,0,7);x.stroke();
+  P.forEach((p,i)=>{
+   p.ph+=.02;const allLit=p.lit.every(Boolean);if(Math.random()<.004)p.lit[Math.floor(Math.random()*5)]^=1;
+   if(!allLit&&Math.random()<.02)p.lit[p.lit.indexOf(false)]=true;
+   for(let k=0;k<5;k++){const a=p.ph*.2+k*1.2566,mx=p.x+p.r*Math.cos(a),my=p.y+p.r*Math.sin(a);
+    const near=(((p.ph*1.6)%6.283)-((a-p.ph*.2)%6.283)+6.283)%6.283<.9&&allLit;
+    x.beginPath();x.arc(mx,my,near?17:12,0,7);x.fillStyle=p.lit[k]?`hsla(${p.hu},80%,${near?75:58}%,1)`:'#2a2c35';x.fill();
+    const b=p.ph*.2+((k+1)%5)*1.2566;x.strokeStyle=`hsla(${p.hu},60%,60%,${allLit?.5:.15})`;x.lineWidth=2;x.beginPath();x.moveTo(mx,my);x.lineTo(p.x+p.r*Math.cos(b),p.y+p.r*Math.sin(b));x.stroke()}
+   if(allLit){x.strokeStyle=`hsla(${p.hu},90%,70%,.35)`;x.lineWidth=3;x.beginPath();x.arc(p.x,p.y,p.r+26+8*Math.sin(p.ph*1.6),0,7);x.stroke()}
+   if(p.resolve>0){for(let q=0;q<3;q++){const rr=(p.r*1.9)*((1-p.resolve)+q*.22)%1.6;x.strokeStyle=`hsla(${p.carryHue},90%,72%,${p.resolve*.6})`;x.lineWidth=2;x.beginPath();x.arc(p.x,p.y,rr,0,7);x.stroke()}p.resolve-=.006}
+   x.fillStyle='rgba(233,230,223,.55)';x.font='22px ui-monospace,Menlo,monospace';x.textAlign='center';x.fillText(['pod a','pod b','pod c','pod d','pod e'][i],p.x,p.y+8)});
+  scouts.forEach(s=>{
+   if(s.to){s.t+=.012;const tx=s.to.x,ty=s.to.y,fx=s.from.x,fy=s.from.y,e=s.t<1?s.t:1;const px=fx+(tx-fx)*e,py=fy+(ty-fy)*e-Math.sin(e*3.14)*120;
+    x.beginPath();x.arc(px,py,9,0,7);x.fillStyle=`hsl(${s.carry},95%,70%)`;x.fill();
+    if(s.t>=1){s.to.resolve=1;s.to.carryHue=s.carry;s.to.lit=s.to.lit.map(()=>true);s.a=Math.atan2(ty-h/2,tx-w/2);s.to=null}}
+   else{s.a+=s.s;const px=w/2+w*.47*Math.cos(s.a),py=h/2+h*.44*Math.sin(s.a);x.beginPath();x.arc(px,py,6,0,7);x.fillStyle='#e9e6df';x.fill();
+    if(Math.random()<.0015){let best=P[0],bd=1e9;P.forEach(p=>{const d=Math.hypot(p.x-px,p.y-py);if(d<bd){bd=d;best=p}});s.to=best;s.from={x:px,y:py};s.t=0;s.carry=Math.floor(Math.random()*360)}}});
+  x.fillStyle='rgba(141,138,132,.9)';x.font='20px ui-monospace,Menlo,monospace';x.textAlign='left';
+  x.fillText('white dots: scouts on the outer orbit · halo: a pod in trance (every member lit) · rings: a find being re-resolved in waves',30,h-24);
+  requestAnimationFrame(f)}
+ f();
+}
+
+/* ---------- EXAMPLE B: sentinel ---------- */
+function sentinel(){
+ const s=document.getElementById('sent');
+ s.innerHTML=`
+ <defs><linearGradient id="tv" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1b2133"/><stop offset="1" stop-color="#0d1019"/></linearGradient></defs>
+ <rect x="20" y="20" width="600" height="338" rx="8" fill="url(#tv)" stroke="#2a2d38"/>
+ <rect x="20" y="300" width="600" height="58" fill="#7a1f2b"/>
+ <text x="36" y="335" fill="#fff" font-family="Helvetica,Arial" font-weight="700" font-size="19">CHANNEL 0 · "Experts agree: the bridge was never safe"</text>
+ <circle cx="320" cy="170" r="52" fill="#2b3245"/><rect x="250" y="222" width="140" height="90" rx="40" fill="#2b3245"/>
+ <rect x="120" y="270" width="400" height="30" fill="#141824"/>
+ <text x="30" y="44" fill="#ffffff88" font-family="ui-monospace,Menlo" font-size="12">● LIVE  (a made-up broadcast)</text>
+ <g id="rh" opacity="0">
+  <rect x="34" y="232" width="170" height="26" rx="13" fill="#f2b84b"/><text x="46" y="250" font-family="ui-monospace,Menlo" font-size="12" fill="#07080c">appeal to unnamed experts</text>
+  <rect x="420" y="70" width="180" height="26" rx="13" fill="#f2b84b"/><text x="432" y="88" font-family="ui-monospace,Menlo" font-size="12" fill="#07080c">"never": absolute claim</text>
+  <path d="M120 245 L36 300" stroke="#f2b84b" stroke-dasharray="3 3"/><path d="M510 96 L560 300" stroke="#f2b84b" stroke-dasharray="3 3"/>
+ </g>
+ <text x="650" y="40" fill="#8d8a84" font-family="ui-monospace,Menlo" font-size="12" letter-spacing="1.5">LINEAGE OF THE CLAIM</text>
+ <g id="lin"></g>
+ <text x="20" y="400" fill="#8d8a84" font-family="ui-monospace,Menlo" font-size="12" letter-spacing="1.5">THE TWO WINGS</text>
+ <text x="20" y="428" fill="#e9e6df" font-size="14">factual</text><rect x="90" y="417" width="300" height="12" rx="6" fill="#1d1f27"/><rect id="wf" x="90" y="417" width="0" height="12" rx="6" fill="#5fe0b8"/>
+ <text x="20" y="456" fill="#e9e6df" font-size="14">figurative</text><rect x="90" y="445" width="300" height="12" rx="6" fill="#1d1f27"/><rect id="wg" x="90" y="445" width="0" height="12" rx="6" fill="#b48cff"/>
+ <text id="verdict" x="420" y="440" fill="#bdb8ad" font-size="15"></text>
+ <g id="btn" style="cursor:pointer"><rect x="860" y="400" width="120" height="44" rx="22" fill="#e9e6df"/><text x="920" y="428" text-anchor="middle" font-family="ui-monospace,Menlo" font-size="14" fill="#07080c">TRACE</text></g>`;
+ const steps=[["2019","Inspection report","'Deck joints need repair within five years.'",'#5fe0b8'],["2021","Local paper","Report quoted accurately, with a link.",'#5fe0b8'],["2023","Blog repost","'Repair' becomes 'danger'. Link dropped.",'#f2b84b'],["2024","Viral video","'Never safe'. No source. 40 copies.",'#e0656f'],["today","Channel 0","'Experts agree.' Copies the video's wording.",'#e0656f']];
+ const lin=s.querySelector('#lin');
+ steps.forEach((st,i)=>{const y=70+i*62;const g=el('g',{opacity:0,id:'st'+i},lin);
+  el('circle',{cx:660,cy:y,r:7,fill:st[3]},g);if(i<steps.length-1)el('line',{x1:660,y1:y+8,x2:660,y2:y+54,stroke:'#3a3c46','stroke-width':2},g);
+  const t1=el('text',{x:678,y:y-2,fill:'#e9e6df','font-size':15},g);t1.textContent=st[0]+' · '+st[1];
+  const t2=el('text',{x:678,y:y+17,fill:'#9c978c','font-size':13},g);t2.textContent=st[2]});
+ s.querySelector('#btn').onclick=()=>{
+  [...lin.children].forEach(g=>g.setAttribute('opacity',0));s.querySelector('#rh').setAttribute('opacity',0);s.querySelector('#wf').setAttribute('width',0);s.querySelector('#wg').setAttribute('width',0);s.querySelector('#verdict').textContent='';
+  steps.forEach((_,i)=>setTimeout(()=>s.querySelector('#st'+i).setAttribute('opacity',1),300+i*420));
+  setTimeout(()=>s.querySelector('#rh').setAttribute('opacity',1),2500);
+  setTimeout(()=>{s.querySelector('#wf').setAttribute('width',96);s.querySelector('#wg').setAttribute('width',231);s.querySelector('#verdict').textContent='Root is real (2019 report); the claim drifted into figure by 2024.'},3000)};
+}
+</script>
+</body>
+</html>
