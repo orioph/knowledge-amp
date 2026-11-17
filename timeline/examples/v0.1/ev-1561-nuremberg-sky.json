@@ -1,0 +1,19 @@
+{
+  "id": "ev-1561-nuremberg-sky",
+  "title": "Nuremberg sky phenomenon",
+  "summary": "A broadsheet by Hans Glaser describes objects of many shapes appearing over Nuremberg at dawn. Often cited as an early UFO account; also read as an atmospheric halo display described through religious imagery.",
+  "when": {"start": "1561-04-14", "end": null, "precision": "day", "uncertainty_years": 0, "calendar_note": "Julian"},
+  "where": {"name": "Nuremberg, Germany", "lat": 49.4521, "lon": 11.0767, "precision": "city"},
+  "people": [{"id": "pp-hans-glaser", "role": "broadsheet printer"}],
+  "lane": "seashell",
+  "category": "Famous Cases",
+  "tags": ["broadsheet", "celestial", "early-modern"],
+  "sources": [
+    {"title": "UFO Timeline year archive 1561", "url": "https://ufotimeline.com/", "kind": "lead", "accessed": "2026-11-17", "found_via": "ufotimeline.com"}
+  ],
+  "rating": {"factual": 0.6, "figurative": 0.6, "confidence": "unverified", "rated_by": "draft example", "reason": "Example only: the broadsheet is real; what was seen is open. Needs a primary source before rating."},
+  "line": "seed",
+  "links": [],
+  "media": [],
+  "history": [{"at": "2026-11-17", "by": "Claude (draft)", "line": "seed", "change": "created as format example"}]
+}
