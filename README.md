@@ -19,7 +19,7 @@ other skills are toys and organs of it.
 | `atlas/atlas.json` | 52 ideas from the writings (principles, organs, flows, words), 17 present pieces, 30 chats, 12 lineage moments, with links. |
 | `atlas/build_data.py` | Rebuilds `atlas.json` from `records/ka/dict-ka.json` in orioph/jinglia. The organ-to-present links and the chat abstracts are written in it. |
 | `atlas/template.html` | The toy's page; `atlas/index.html` = template + atlas. |
-| `timeline/` | **Timeline layer v0.2 (draft)**: one event format for every feature, built on the Seashell genome (`EVENT-FORMAT.md`; v0.1 kept). `gaps.py` reports a lane's missing sources, fingerprints and places; first report: `gaps-seashell-2026-11-17.md`. |
+| `timeline/` | **Timeline layer v0.2 (draft)**: one event format for every feature, built on the Seashell genome (`EVENT-FORMAT.md`; v0.1 kept). `gaps.py` reports a lane's missing sources, fingerprints and places; first report: `gaps-seashell-2026-11-17.md`. Sourcing pass proposed on jinglia `seashell` branch (`toys/seashell/proposals/2026-11-17-1437.json`): 78 sources, 12 flags; if approved, 90/182 sourced (`gaps-seashell-2026-11-17-if-approved.md`). |
 | `barrier/index.html` | **One-Way Barrier 0.01**, the first organ prototype (the server's barrier, layers, seven chambers). Toy: https://claude.ai/artifact/N3gpDgZetcDJ1RckLffNDT. Each version is also kept as `barrier/vX.html`; `barrier/frames/` holds the checked screenshots. |
 
 ## Sources used (nothing re-digested)
