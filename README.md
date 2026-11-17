@@ -19,6 +19,7 @@ other skills are toys and organs of it.
 | `atlas/atlas.json` | 52 ideas from the writings (principles, organs, flows, words), 17 present pieces, 30 chats, 12 lineage moments, with links. |
 | `atlas/build_data.py` | Rebuilds `atlas.json` from `records/ka/dict-ka.json` in orioph/jinglia. The organ-to-present links and the chat abstracts are written in it. |
 | `atlas/template.html` | The toy's page; `atlas/index.html` = template + atlas. |
+| `barrier/index.html` | **One-Way Barrier 0.01**, the first organ prototype (the server's barrier, layers, seven chambers). Toy: https://claude.ai/artifact/N3gpDgZetcDJ1RckLffNDT. Each version is also kept as `barrier/vX.html`; `barrier/frames/` holds the checked screenshots. |
 
 ## Sources used (nothing re-digested)
 
@@ -32,6 +33,10 @@ other skills are toys and organs of it.
 Of 52 ideas: 8 built, 15 partly built, 11 seeded, 18 idea only.
 Unbuilt organs include the Server / One-Way Barrier. Social organs (Pods, Trance,
 superGroups, Passforge, Data dividends) are seeds at most.
+
+## Requests
+
+Requests, open questions and builds live in **GitHub Issues** on this repo (labels: `request`, `organ`, `for D`), not in a REQUESTS.md file.
 
 ## Open questions for D
 
@@ -49,3 +54,8 @@ Start with:
 3. Pick the first unbuilt organ to prototype: the Server / One-Way Barrier, or the social side (Pods, Trance, Passforge, superGroups).
 
 Don't redo: ~/Desktop/KA and organelle.org are already digested (orioph/jinglia `records/ka/`, `records/reforge/digests/`). The KA Display Center toy already covers the browser organ (orioph/jinglia `toys/ka-display-center/`).
+
+## Done, KA first day (2026-11-17, second chat)
+
+- The request log is GitHub Issues: #1 One-Way Barrier, #2 check the map's links (for D), #3 social organs.
+- First organ prototype: One-Way Barrier 0.01 in `barrier/`, built from IA.docx paras 43-59 and 110-116.

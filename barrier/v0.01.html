@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One-Way Barrier 0.01</title>
+<style>
+:root{--bg:#07080c;--ink:#e9e6df;--dim:#8d8a84;--line:#24262e;--built:#5fe0b8;--partial:#f2b84b;--seed:#b48cff;--unbuilt:#5b5e68;--fp:#e0645f;--wall:#5fe0b8}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+.mono{font-family:ui-monospace,Menlo,monospace}
+header{display:flex;align-items:baseline;gap:16px;padding:14px 22px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+h1{font-size:19px;font-weight:600;margin:0;letter-spacing:.02em}
+h1 small{font-weight:400;color:var(--dim);font-size:13px;margin-left:8px}
+nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+button{font:12px/1 ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;background:none;color:var(--dim);border:1px solid var(--line);padding:7px 11px;border-radius:999px;cursor:pointer}
+button:hover{color:var(--ink);border-color:#3a3d48}
+button.on{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+button.go{color:var(--bg);background:var(--wall);border-color:var(--wall)}
+.view{display:none;padding:18px 22px 40px}
+.view.on{display:block}
+.k{font:11px ui-monospace,Menlo,monospace;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+/* barrier view */
+#stage{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;max-width:1240px;margin:0 auto}
+@media(max-width:860px){#stage{grid-template-columns:minmax(0,1fr)}}
+#stack{width:100%;height:auto;display:block;background:radial-gradient(ellipse at 50% 30%,#10121a,#07080c 70%);border:1px solid var(--line);border-radius:14px}
+.ctlrow{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 8px}
+#q{width:100%;background:#0e0f14;border:1px solid var(--line);color:var(--ink);font:15px "Iowan Old Style",Georgia,serif;padding:10px 12px;border-radius:10px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#0c0d12;min-height:170px}
+.card h3{margin:0 0 8px;font-size:15px}
+.card.you{border-color:#2d4a40}
+.card.net{border-color:#4a2d2d}
+.row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed #1c1e25;padding:4px 0;font:12px ui-monospace,Menlo,monospace}
+.row span:first-child{color:var(--dim)}
+.row .gone{color:#4a4c55}
+.row .kept{color:var(--built)}
+.row .seen{color:var(--fp)}
+.meter{display:flex;gap:12px;margin-top:12px}
+.meter div{flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.meter b{font:600 24px ui-monospace,Menlo,monospace;display:block}
+/* layers */
+#layers{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:26px}
+@media(max-width:860px){#layers{grid-template-columns:1fr}}
+#rings{width:100%;height:auto}
+.lay{display:grid;grid-template-columns:150px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.lay .nm{font-size:15px}
+.shade{display:flex;gap:3px}
+.shade button{padding:5px 8px;font-size:10px}
+.sell{font-size:10px;padding:5px 8px}
+.sell.on{background:var(--partial);border-color:var(--partial)}
+#ledger{margin-top:16px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font:12px ui-monospace,Menlo,monospace}
+/* chambers */
+#chambers{max-width:980px;margin:0 auto}
+.ch{display:grid;grid-template-columns:44px 1fr 120px;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);align-items:start}
+.ch .n{font:600 22px ui-monospace,Menlo,monospace;color:#4a4c55}
+.ch h3{margin:0 0 3px;font-size:16px}
+.ch blockquote{margin:6px 0 4px;padding-left:10px;border-left:2px solid var(--line);color:#c9c4b8;font-style:italic;font-size:13px}
+.ch .now{font-size:13px;color:var(--dim)}
+.pill{display:inline-block;font:10px ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:999px;border:1px solid}
+.st-built{color:var(--built);border-color:var(--built)}
+.st-partial{color:var(--partial);border-color:var(--partial)}
+.st-seed{color:var(--seed);border-color:var(--seed)}
+.st-unbuilt{color:var(--unbuilt);border-color:var(--unbuilt)}
+.st-toy{color:var(--bg);background:var(--wall);border-color:var(--wall)}
+.world{max-width:980px;margin:26px auto 0;border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+.world li{margin:4px 0}
+.src{max-width:980px;margin:18px auto 0;color:var(--dim);font-size:12px}
+@media(max-width:560px){.cards,.meter{grid-template-columns:1fr;flex-direction:column}.row{flex-wrap:wrap}}
+.pkt{transition:transform .9s cubic-bezier(.5,0,.3,1),opacity .4s}
+</style>
+</head>
+<body>
+<header>
+  <h1>One-Way Barrier <small>Knowledge Amp organ · prototype 0.01 · 2026-11-17</small></h1>
+  <nav>
+    <button data-v="barrier" class="on">Barrier</button>
+    <button data-v="layers">Layers</button>
+    <button data-v="chambers">Seven chambers</button>
+  </nav>
+</header>
+
+<!-- ============ BARRIER ============ -->
+<section id="v-barrier" class="view on">
+ <div id="stage">
+  <div>
+   <svg id="stack" viewBox="0 0 520 560" aria-label="The stack: internet, server, barrier, you"></svg>
+  </div>
+  <div>
+   <div class="k">Send something through the barrier</div>
+   <div class="ctlrow" id="acts"></div>
+   <input id="q" value="old analog synthesizers that sound like voices">
+   <div class="ctlrow">
+     <button class="go" id="send">Send ↑</button>
+     <button id="nobar">Without the barrier</button>
+     <button id="reset">Reset</button>
+   </div>
+   <div class="cards">
+     <div class="card you"><h3>What you sent, and keep</h3><div id="youRows" class="k" style="text-transform:none">Nothing sent yet.</div></div>
+     <div class="card net"><h3>What the internet saw</h3><div id="netRows" class="k" style="text-transform:none">Nothing yet.</div></div>
+   </div>
+   <div class="meter">
+     <div><span class="k">The internet knows about you</span><b id="mNet" style="color:var(--fp)">0</b><span class="k" style="text-transform:none">linkable facts</span></div>
+     <div><span class="k">Your artifact holds</span><b id="mYou" style="color:var(--built)">0</b><span class="k" style="text-transform:none">entries, kept on your side</span></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ LAYERS ============ -->
+<section id="v-layers" class="view">
+ <div id="layers">
+  <div>
+    <svg id="rings" viewBox="0 0 440 440"></svg>
+    <p class="k" style="text-transform:none;text-align:center">Center: only you. Outward: wider circles. Ring color = how anonymous that layer is when shared.</p>
+    <p class="mono" style="font-size:11px;text-align:center;margin:4px 0"><span style="color:#5fe0b8">━ anon</span> &nbsp; <span style="color:#f2b84b">┅ semi (one detail shows)</span> &nbsp; <span style="color:#e0645f">━ open</span> &nbsp; thick = for sale</p>
+  </div>
+  <div>
+    <div class="k">Your Intelligence Artifact, layer by layer</div>
+    <p style="margin:6px 0 10px;color:#c9c4b8">Every layer has a shade of anonymity. Anonymity is the base; you step out of it only where you choose, and you can sell a layer (disanonymization, chamber 5).</p>
+    <div id="layRows"></div>
+    <div id="ledger"></div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ CHAMBERS ============ -->
+<section id="v-chambers" class="view">
+ <div id="chambers"></div>
+ <div class="world">
+   <div class="k">Already in the world (pieces of chamber 1 you can use today)</div>
+   <ul>
+     <li><b>iCloud Private Relay</b> (iCloud+): Safari traffic goes through two relays, so no single company sees both who you are and where you go. The closest real "no one" face.</li>
+     <li><b>Hide My Email</b> (iCloud+): a different random address for each site.</li>
+     <li><b>Tor</b>: three-hop onion routing. Stronger anonymity, but slower.</li>
+     <li><b>Oblivious HTTP</b> (an IETF standard): a relay that strips who sent a request before it reaches the server.</li>
+   </ul>
+   <p style="color:var(--dim);margin:6px 0 0">These hide <i>where you are</i>. None of them does what KA's barrier adds: keep everything learned <i>for you</i>, in your own artifact, and let you sell layers of it on your terms.</p>
+ </div>
+ <p class="src">Source: D's IA.docx (2025), paragraphs 43-59 and 110-116, from the KA pool in orioph/jinglia records/ka. Quotes are D's own words, shortened. Statuses are proposed; D to judge.</p>
+</section>
+
+<script>
+const $=s=>document.querySelector(s), NS='http://www.w3.org/2000/svg';
+const el=(t,a={},p)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e};
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+b.dataset.v));
+});
+
+/* ---------- the stack ---------- */
+const S=$('#stack');
+function stack(){
+  S.innerHTML='';
+  const t=(x,y,s,c,sz=12,anc='middle',fam='ui-monospace,Menlo,monospace')=>{const e=el('text',{x,y,'text-anchor':anc,fill:c,'font-size':sz,'font-family':fam},S);e.textContent=s;return e};
+  t(260,30,'THE INTERNET','#4a4c55',11);
+  ['search','social','video','shop'].forEach((n,i)=>{
+    const x=70+i*127;
+    el('rect',{x:x-50,y:44,width:100,height:44,rx:10,fill:'#140c0c',stroke:'#4a2d2d'},S);
+    t(x,64,'fp · '+n,'#e0645f',12);
+    t(x,79,'fleecing platform','#6b4a48',9);
+  });
+  el('rect',{x:40,y:150,width:440,height:96,rx:16,fill:'#0d1016',stroke:'#2a2e3a'},S);
+  t(260,176,'Intelligence Amp server','#e9e6df',15,'middle','Iowan Old Style,Georgia,serif');
+  const ch=['1 barrier','2 composite','3 identities','4 search','5 disanon','6 sentinel','7 social hub'];
+  ch.forEach((c,i)=>{const x=72+i*63; el('circle',{cx:x,cy:212,r:13,fill:'none',stroke:i===0||i===4?'#5fe0b8':'#3a3d48'},S); t(x,216,String(i+1),i===0||i===4?'#5fe0b8':'#6c6f78',11); t(x,238,c.split(' ').slice(1).join(' '),'#5b5e68',8);});
+  // the wall
+  el('rect',{x:20,y:272,width:480,height:12,rx:6,fill:'#5fe0b8',opacity:.85,id:'wall'},S);
+  t(260,302,'ONE-WAY BARRIER · the internet sees "no one"','#5fe0b8',11);
+  // input platform
+  el('rect',{x:40,y:326,width:440,height:70,rx:16,fill:'#0c0d12',stroke:'#2a2e3a'},S);
+  t(260,348,'you · the input platform','#e9e6df',14,'middle','Iowan Old Style,Georgia,serif');
+  ['imaging cloud','constellator','linguistic cloud','conceptual cloud'].forEach((n,i)=>t(95+i*110,376,n,'#8d8a84',10));
+  // assets
+  t(260,428,'YOUR ASSETS (stay on your side)','#4a4c55',10);
+  const as=[['Vetting Sentinel','#f2b84b'],['Intelligence Artifact','#5fe0b8'],['Social Agent','#b48cff'],['Identity Agent','#b48cff']];
+  as.forEach(([n,c],i)=>{const x=80+i*120; el('rect',{x:x-54,y:440,width:108,height:52,rx:10,fill:'#0c0d12',stroke:c,'stroke-opacity':.6,id:i===1?'iar':''},S); const w=n.split(' '); t(x,463,w[0],c,10); t(x,478,w.slice(1).join(' '),c,10);});
+  el('text',{x:260,y:530,'text-anchor':'middle',fill:'#4a4c55','font-size':10,'font-family':'ui-monospace,Menlo,monospace',id:'iarCount'},S).textContent='artifact: 0 entries';
+  const g=el('g',{id:'pk',opacity:0},S);
+  el('circle',{r:9,fill:'#e9e6df'},g); el('circle',{r:16,fill:'none',stroke:'#e9e6df','stroke-opacity':.35},g);
+  g.setAttribute('transform','translate(260,360)');
+}
+stack();
+
+const ACTS={search:'old analog synthesizers that sound like voices',watch:'a talk on how children learn language',buy:'a used Moog Minimoog Model D',post:'a photo of the synth room at night'};
+const VERB={search:'search',watch:'watch',buy:'buy',post:'post'};
+let act='search', nNet=0, nYou=0, busy=false;
+Object.keys(ACTS).forEach(a=>{const b=document.createElement('button');b.textContent=a;b.className=a===act?'on':'';b.onclick=()=>{act=a;$('#q').value=ACTS[a];document.querySelectorAll('#acts button').forEach(x=>x.classList.toggle('on',x===b))};$('#acts').appendChild(b)});
+
+const face=()=>{const a=new Uint8Array(3);crypto.getRandomValues(a);return 'no-one·'+[...a].map(x=>x.toString(16).padStart(2,'0')).join('')};
+function you(){const d=new Date();return [
+ ['who','D (you)'],['device','Myrios · home'],['place','San Francisco, home'],['time',d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})],
+ ['history','everything before this'],['mood/biometrics','opt-in, off'],['what',VERB[act]+': '+$('#q').value]]}
+
+function rows(list){return list.map(([k,v,c])=>`<div class="row"><span>${k}</span><span class="${c||''}">${v}</span></div>`).join('')}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function move(y){const p=$('#pk');p.setAttribute('opacity',1);p.style.transition='transform .9s cubic-bezier(.5,0,.3,1)';p.setAttribute('transform',`translate(260,${y})`);await sleep(950)}
+
+async function send(barrier){
+  if(busy)return; busy=true;
+  const u=you(), p=$('#pk');
+  p.setAttribute('transform','translate(260,360)');
+  $('#youRows').innerHTML=rows(u.map(([k,v])=>[k,v,'kept']));
+  $('#netRows').innerHTML='<span class="k" style="text-transform:none">…in transit</span>';
+  await move(278);
+  const wall=$('#wall');
+  let seen;
+  if(barrier){
+    wall.setAttribute('opacity',1); p.querySelector('circle').setAttribute('fill','#5fe0b8');
+    const f=face();
+    seen=[['who',f,'seen'],['device','—','gone'],['place','—','gone'],['time','this hour, roughly','seen'],['history','—','gone'],['mood/biometrics','—','gone'],['what',(act==='buy'?'buy (payment still links: see note)':VERB[act]+': '+$('#q').value),'seen']];
+  } else {
+    wall.setAttribute('opacity',.12); p.querySelector('circle').setAttribute('fill','#e0645f');
+    seen=u.map(([k,v])=>[k,v,'seen']);
+  }
+  await move(200); await move(66);
+  $('#netRows').innerHTML=rows(seen.map(([k,v,c])=>[k,c==='gone'?'<span class="gone">hidden</span>':v,c]))+
+    (barrier&&act==='buy'?'<p class="k" style="text-transform:none;margin:8px 0 0">D\'s own note: purchases can\'t be fully anonymised yet, but a later system could hide even this.</p>':'');
+  const linkable=barrier?(act==='buy'?1:0):u.length;
+  nNet+=linkable; $('#mNet').textContent=nNet;
+  // reply comes back down, composited into the artifact
+  p.querySelector('circle').setAttribute('fill','#e9e6df');
+  await move(200); await move(466);
+  nYou+=1; $('#mYou').textContent=nYou; $('#iarCount').textContent='artifact: '+nYou+' entr'+(nYou===1?'y':'ies');
+  $('#iar').setAttribute('stroke-opacity',1); await sleep(300); $('#iar').setAttribute('stroke-opacity',.6);
+  p.setAttribute('opacity',0); wall.setAttribute('opacity',.85); busy=false;
+}
+$('#send').onclick=()=>send(true);
+$('#nobar').onclick=()=>send(false);
+$('#reset').onclick=()=>{nNet=nYou=0;$('#mNet').textContent=0;$('#mYou').textContent=0;$('#iarCount').textContent='artifact: 0 entries';$('#youRows').textContent='Nothing sent yet.';$('#netRows').textContent='Nothing yet.'};
+
+/* ---------- layers ---------- */
+const LAY=[['Only me','absolutely private'],['Lovers, best friends',''],['Family',''],['Close friends',''],['Groups & pods',''],['Cooperators',''],['Acquaintances',''],['Everyone','totally public: open']];
+const SH=['anon','semi','open'], SHC={anon:'#5fe0b8',semi:'#f2b84b',open:'#e0645f'};
+const state=LAY.map((_,i)=>({shade:i===0?'anon':(i===LAY.length-1?'open':(i<4?'semi':'anon')),sell:false}));
+function rings(){
+  const R=$('#rings'); R.innerHTML='';
+  for(let i=LAY.length-1;i>=0;i--){
+    const r=28+i*26, s=state[i];
+    el('circle',{cx:220,cy:220,r,fill:i===0?'#0f1a16':'none',stroke:SHC[s.shade],'stroke-width':s.sell?6:2,'stroke-opacity':s.sell?.95:.6,'stroke-dasharray':s.shade==='semi'?'5 4':''},R);
+  }
+  const t=el('text',{x:220,y:224,'text-anchor':'middle',fill:'#e9e6df','font-size':12,'font-family':'ui-monospace,Menlo,monospace'},R);t.textContent='you';
+}
+function layRows(){
+  $('#layRows').innerHTML='';
+  LAY.forEach(([n,sub],i)=>{
+    const d=document.createElement('div'); d.className='lay';
+    d.innerHTML=`<div><div class="nm">${n}</div>${sub?`<div class="k" style="text-transform:none">${sub}</div>`:''}</div>`;
+    const sh=document.createElement('div'); sh.className='shade';
+    SH.forEach(x=>{const b=document.createElement('button');b.textContent=x;b.className=state[i].shade===x?'on':'';b.disabled=i===0&&x!=='anon';if(b.disabled)b.style.opacity=.3;b.onclick=()=>{state[i].shade=x;draw()};sh.appendChild(b)});
+    d.appendChild(sh);
+    const s=document.createElement('button'); s.className='sell'+(state[i].sell?' on':''); s.textContent=state[i].sell?'selling':'sell'; if(i===0){s.disabled=true;s.style.opacity=.3}
+    s.onclick=()=>{state[i].sell=!state[i].sell;draw()}; d.appendChild(s);
+    $('#layRows').appendChild(d);
+  });
+}
+function ledger(){
+  const sold=state.map((s,i)=>[LAY[i][0],s]).filter(([,s])=>s.sell);
+  if(!sold.length){$('#ledger').innerHTML='<span class="k">Ledger</span><br>Nothing for sale. The world gets nothing from you, and you lose nothing.';return}
+  const rate={anon:1,semi:3,open:8};
+  $('#ledger').innerHTML='<span class="k">Ledger (toy numbers)</span>'+sold.map(([n,s])=>
+    `<div class="row"><span>${n} · ${s.shade}</span><span>buyer sees: ${s.shade==='anon'?'patterns, no name':s.shade==='semi'?'patterns + one detail (time or place)':'patterns + your name'} · ${rate[s.shade]} dividend/use</span></div>`).join('')+
+    '<p style="margin:8px 0 0;color:var(--dim)">The more you open a layer, the more it pays and the more it costs you. You can close it again at any time.</p>';
+}
+function draw(){rings();layRows();ledger()}
+draw();
+
+/* ---------- chambers ---------- */
+const CH=[
+ ['One-way barrier','Acting as an analytics barrier between users and the extended internet … the return of electronic privacy.','This toy (Barrier view). Real-world pieces exist (below).','toy'],
+ ['Compositing the Intelligence Artifact','Composing the IA artifact for individual users … pre-anonymized prior to submission.','Visit + fingerprint (self-inspection kept in your memory); Ka skill (one verified archive).','partial'],
+ ['Identity profiles','Composing, on-the-fly, unique ‘possible identities’ … blended into a specific user or group-constellation.','Searching as someone else (built). Para-users are still an idea.','partial'],
+ ['Search by your own protocols','Processing search requests according to the protocols chosen by the user … resemble dreaming.','KA Display Center 0.02 (petals, bridges, etymology).','partial'],
+ ['Disanonymization','Anonymity will be the basis from which users may sometimes depart to varying degrees.','This toy (Layers view). Income Agents is the money side, still a seed.','toy'],
+ ['Vetting Sentinel','Detailed analytic data related to verity/pedigree/origin … as an available layer.','Strange Temporal Seashell, chosen as its model.','partial'],
+ ['Social networking hub','The central repository and negotiation matrix from social networking.','Nothing yet. The social organs are next in the queue (issue #3).','unbuilt'],
+];
+$('#chambers').innerHTML='<div class="k" style="margin-bottom:6px">What the server does, in D\'s own words (IA.docx), and what exists now</div>'+
+ CH.map(([h,q,now,st],i)=>`<div class="ch"><div class="n">${i+1}</div><div><h3>${h}</h3><blockquote>${q}</blockquote><div class="now">Now: ${now}</div></div><div><span class="pill st-${st}">${st==='toy'?'this toy':st}</span></div></div>`).join('');
+</script>
+</body>
+</html>
