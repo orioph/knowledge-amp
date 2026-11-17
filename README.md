@@ -38,3 +38,14 @@ superGroups, Passforge, Data dividends) are seeds at most.
 1. toyMaker date: settled, 2003 (D, 2026-11-17).
 2. Are the organ-to-present links right? (e.g. Seashell = Vetting Sentinel, bseek = nature-cost lens)
 3. Done 2026-11-17: this repo and the claude.ai Project "Knowledge Amp" (account memory on).
+
+## Next (handoff, 2026-11-17)
+
+Where things stand: repo, Project (account memory on), atlas toy and the e2 backup copy are all in place. The origin chat is long; start new work in a fresh chat in the Project.
+
+Start with:
+1. D checks the map's organ-to-present links (Map view in the toy) and says which are wrong.
+2. "Make req's": D to say which was meant: a REQUESTS.md log like Jinglia's, or the requirements for the next build.
+3. Pick the first unbuilt organ to prototype: the Server / One-Way Barrier, or the social side (Pods, Trance, Passforge, superGroups).
+
+Don't redo: ~/Desktop/KA and organelle.org are already digested (orioph/jinglia `records/ka/`, `records/reforge/digests/`). The KA Display Center toy already covers the browser organ (orioph/jinglia `toys/ka-display-center/`).
