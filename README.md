@@ -21,6 +21,7 @@ other skills are toys and organs of it.
 | `atlas/template.html` | The toy's page; `atlas/index.html` = template + atlas. |
 | `timeline/` | **Timeline layer v0.2 (draft)**: one event format for every feature, built on the Seashell genome (`EVENT-FORMAT.md`; v0.1 kept). `gaps.py` reports a lane's missing sources, fingerprints and places; first report: `gaps-seashell-2026-11-17.md`. Sourcing pass proposed on jinglia `seashell` branch (`toys/seashell/proposals/2026-11-17-1437.json`): 78 sources, 12 flags; if approved, 90/182 sourced (`gaps-seashell-2026-11-17-if-approved.md`). |
 | `barrier/index.html` | **One-Way Barrier 0.01**, the first organ prototype (the server's barrier, layers, seven chambers). Toy: https://claude.ai/artifact/N3gpDgZetcDJ1RckLffNDT. Each version is also kept as `barrier/vX.html`; `barrier/frames/` holds the checked screenshots. |
+| `analogia/` | **Analogia 0.1**: the analogy gesture (A : B \| C : ?, and chains) with its process clarify, represent, question, await, then evolve. Master copy is `rhetoric/analogia_dict.json` in orioph/jinglia; toys `cocoon/` (https://claude.ai/artifact/DWckGQbynR78uCCjGQtqZ2) and `bees-and-x/` (https://claude.ai/artifact/24Za4AjBAhEUZUpF2Zi6ek). |
 
 ## Sources used (nothing re-digested)
 

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Analogia: bees and x</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#f1e7cf;--dim:#a39577;--honey:#e8a93a;--deep:#0d0a06;--violet:#a98bd8}
+html,body{margin:0;height:100%;background:radial-gradient(ellipse at 50% 40%,#1c1409,#0d0a06 70%);color:var(--ink);font-family:'Cormorant Garamond',Georgia,serif;overflow:hidden}
+#top{position:fixed;top:14px;left:0;right:0;text-align:center;pointer-events:none}
+#top .k{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--dim)}
+#top .t{font-size:clamp(17px,2vw,24px);font-style:italic;margin-top:4px}
+svg{position:fixed;inset:0;width:100%;height:100%}
+.cell{cursor:pointer}
+.cell polygon{transition:fill .3s,stroke .3s}
+.lbl{font-style:italic;fill:var(--ink);text-anchor:middle;pointer-events:none}
+.rel{font-family:'IBM Plex Mono',monospace;font-size:10px;fill:var(--dim);letter-spacing:.08em;text-anchor:middle;pointer-events:none}
+#card{position:fixed;right:20px;top:110px;bottom:84px;width:min(360px,32vw);overflow:auto;padding:18px 20px;background:rgba(13,10,6,.82);border-left:1px solid rgba(232,169,58,.35)}
+#card h2{margin:0 0 2px;font-weight:400;font-style:italic;font-size:30px}
+#card .sub{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;color:var(--honey);text-transform:uppercase;margin-bottom:12px}
+#card h3{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;font-weight:500;margin:14px 0 4px;color:var(--dim);text-transform:uppercase}
+#card p{margin:0 0 6px;font-size:17px;line-height:1.36}
+#card .w{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--dim)}
+#card ol{padding-left:20px;margin:6px 0;font-size:17px;line-height:1.36}
+#card li{margin-bottom:8px}
+#stages{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:6px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em}
+#stages div{padding:8px 14px;border:1px solid rgba(241,231,207,.2);color:var(--dim);cursor:pointer;transition:all .3s}
+#stages div.on{border-color:var(--honey);color:var(--honey)}
+#stages div.await.on{border-color:var(--violet);color:var(--violet);animation:br 2.4s infinite}
+@keyframes br{50%{box-shadow:0 0 18px rgba(169,139,216,.5)}}
+#roles{font-family:'IBM Plex Mono',monospace;font-size:10px}
+@media(max-width:820px){#card{left:12px;right:12px;width:auto;top:auto;height:38vh}}
+</style>
+</head>
+<body>
+<div id="top"><div class="k">ANALOGIA · SEED an-0002 · A CHAIN OF SIX</div><div class="t">bees : flowers : nectar/pollens : beehive : queen : honey &nbsp;|&nbsp; x : … : <span style="color:var(--violet)">[ σ X q .</span></div></div>
+<svg id="s"></svg>
+<div id="card"></div>
+<div id="stages"><div data-s="clarify">CLARIFY</div><div data-s="represent">REPRESENT</div><div data-s="question">QUESTION</div><div data-s="await" class="await">AWAIT</div></div>
+<script>
+const COLS=[
+ {a:"bees",b:"x",rel:"the gatherer",
+  hive:"Foragers fly out and come back loaded. A worker spends her last weeks foraging; together a colony visits flowers in the millions to make a season's honey.",
+  uni:"x is the gatherer of the second world: whatever goes out into timespace and comes back carrying something.",w:"factual / open",
+  cands:["minds, or attention","life itself","light","messengers (angelos = messenger)","us: people, Jinglians, KA users","time gathering itself"]},
+ {a:"flowers",b:"timespace phenomena",rel:"gathers from",
+  hive:"Flowers are where the gathering happens. They give, and they are changed by it: pollination is the flower's side of the bargain.",
+  uni:"Events, places, moments: the fields x visits. If the match holds, x's visits also pollinate: phenomena are changed by being gathered.",w:"factual / figurative"},
+ {a:"nectar / pollens",b:"water / medicine / ingredients / contaminants",rel:"what is carried",
+  hive:"Nectar is mostly water and sugar; pollen is protein. Bees also carry back what they don't choose: pesticide residues and other contaminants turn up in pollen, wax and honey.",
+  uni:"Your list already has this: water and medicine and ingredients, and contaminants too. The gathering is never pure.",w:"factual / figurative"},
+ {a:"beehive",b:"universe",rel:"where it is worked",
+  hive:"The hive is where raw carry becomes stores: comb built of wax the bees make from their own bodies, cell by cell.",
+  uni:"The universe as the hive: the made home where everything gathered gets worked. The comb is built from the gatherers themselves.",w:"figurative"},
+ {a:"queen",b:"God's: mother / sister / lover / daughter / girlfriend / secretary / nurse / maid / accountant / grandmother",rel:"the one it serves",
+  hive:"The queen is less a ruler than the colony's mother. Most of the rest of your list matches real roles in a hive. Every worker is female; only the drones are male.",
+  uni:"One being with many faces, or many beings? In the hive it is both: one mother, and her daughters taking every other role.",w:"factual / figurative",roles:true},
+ {a:"honey",b:"[ σ X q .",rel:"what it all yields",
+  hive:"Honey is nectar transformed: bees fan off most of the water and add enzymes, then cap it in wax. Kept that way it lasts a very long time. It feeds the whole colony, not only the queen.",
+  uni:"Your glyph sits where honey sits: the yield. It is left open, as you wrote it.",w:"open",open:true}
+];
+const ROLES=[["mother","the queen: mother of every bee in the hive"],["sister","the workers are all sisters"],["daughter","every worker is the queen's daughter"],["lover","the drones: the queen mates in flight with several, once in her life"],["nurse","nurse bees feed the young"],["maid","house bees clean the cells"],["secretary","the queen's retinue grooms her and carries her scent-messages through the hive"],["accountant","foragers report a flower patch's distance, direction and worth in the waggle dance"],["grandmother","when a colony swarms, the old queen leaves; the new queen is her daughter"],["girlfriend","no clear hive match; yours to say"]];
+const NS="http://www.w3.org/2000/svg",s=document.getElementById('s'),card=document.getElementById('card');
+let W,H,sel=-1,stage='clarify';
+function hex(cx,cy,r){let p=[];for(let i=0;i<6;i++){const a=Math.PI/3*i+Math.PI/6;p.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1))}return p.join(' ')}
+function el(t,a,parent){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);(parent||s).appendChild(e);return e}
+function wrap(txt,max){const w=txt.split(' ');let L=[],c='';w.forEach(x=>{if((c+' '+x).trim().length>max){L.push(c.trim());c=x}else c+=' '+x});L.push(c.trim());return L}
+function draw(){s.innerHTML='';W=innerWidth;H=innerHeight;const right=W>820?Math.min(400,W*0.34):0;const span=W-right-60;const n=COLS.length,step=span/n,r=Math.min(step*0.46,H*0.11);
+ const y1=H*0.36,y2=H*0.64;
+ const defs=el('defs',{});const g=el('radialGradient',{id:'gl'},defs);el('stop',{offset:'0',['stop-color']:'#a98bd8',['stop-opacity']:'.55'},g);el('stop',{offset:'1',['stop-color']:'#a98bd8',['stop-opacity']:'0'},g);
+ COLS.forEach((c,i)=>{const x=40+step*(i+.5);const on=sel===i;
+  if(i<n-1){el('line',{x1:x+r*0.9,y1:y1,x2:x+step-r*0.9,y2:y1,stroke:'rgba(232,169,58,.35)','stroke-dasharray':'2 5'});el('line',{x1:x+r*0.9,y1:y2,x2:x+step-r*0.9,y2:y2,stroke:'rgba(241,231,207,.25)','stroke-dasharray':'2 5'})}
+  el('line',{x1:x,y1:y1+r*0.86,x2:x,y2:y2-r*0.86,stroke:on?'#e8a93a':'rgba(241,231,207,.22)','stroke-width':on?1.4:1});
+  wrap(c.rel.toUpperCase(),Math.max(8,Math.floor(step/8))).forEach((ln,k,A)=>{const rt=el('text',{x:x,y:(y1+y2)/2+3+(k-(A.length-1)/2)*13,class:'rel'});rt.textContent=ln});
+  [[y1,c.a,'#e8a93a',false],[y2,c.b,'#f1e7cf',!!c.open]].forEach(([yy,lab,col,open])=>{
+   const gg=el('g',{class:'cell'});gg.onclick=()=>{sel=i;if(c.open)setStage('await');else setStage('represent');draw()};
+   if(open){el('circle',{cx:x,cy:yy,r:r*1.5,fill:'url(#gl)'},gg);const a=el('animate',{attributeName:'r',values:`${r*1.2};${r*1.7};${r*1.2}`,dur:'4s',repeatCount:'indefinite'},gg.lastChild)}
+   el('polygon',{points:hex(x,yy,r),fill:on?(yy===y1?'rgba(232,169,58,.22)':'rgba(241,231,207,.12)'):(yy===y1?'rgba(232,169,58,.08)':'rgba(241,231,207,.04)'),stroke:open?'#a98bd8':col,'stroke-opacity':on?.95:.5,'stroke-dasharray':open?'4 4':'none'},gg);
+   const fs=lab.length>40?12:lab.length>18?15:19;const L=wrap(lab.replace(/ \/ /g,' / '),lab.length>40?20:16);
+   L.forEach((ln,k)=>{const t=el('text',{x:x,y:yy+(k-(L.length-1)/2)*fs*1.1+fs*0.35,class:'lbl','font-size':fs,fill:open?'#c9b3ef':null},gg);t.textContent=ln});
+  });
+ });
+}
+function setStage(st){stage=st;[...document.querySelectorAll('#stages div')].forEach(d=>d.classList.toggle('on',d.dataset.s===st));render()}
+function render(){let h='';
+ if(stage==='clarify'){h=`<div class="sub">clarify</div><h2>How I read it</h2>
+ <p>Six terms, six relations. Bees gather from flowers; what they carry is nectar and pollen; the hive is where it is worked; the queen is the one it all serves; honey is the yield.</p>
+ <p>Your second row keeps every relation and changes the scale: <i>x</i> gathers from timespace phenomena; what x carries is water, medicine, ingredients and contaminants; the universe is the hive; God's many-roled one stands where the queen stands; and <i>[ σ X q .</i> stands where honey stands.</p>
+ <p>Two terms are open: <i>x</i> at the head and your glyph at the end. I won't fill either. Click any cell to see both rows of that column.</p>`}
+ else if(stage==='represent'){const c=COLS[sel<0?0:sel];h=`<div class="sub">represent · column ${(sel<0?0:sel)+1} · ${c.rel}</div><h2>${c.a} ↔ ${c.b.split(':')[0]}</h2>
+ <h3>In the hive</h3><p>${c.hive}</p><h3>In the universe</h3><p>${c.uni}</p><div class="w">wing: ${c.w}</div>`+
+ (c.cands?`<h3>Candidates for x (not answers)</h3><p>${c.cands.join(' · ')}</p>`:'')+
+ (c.roles?`<h3>The roles in a hive</h3><div id="roles">${ROLES.map(r=>`<p style="font-size:15px"><b style="color:var(--honey);font-weight:500">${r[0]}</b> · ${r[1]}</p>`).join('')}</div>`:'')}
+ else if(stage==='question'){h=`<div class="sub">question</div><h2>What only you can settle</h2><ol>
+ <li><b>Who is x?</b> One gatherer or many? Candidates: minds, life, light, messengers, us, time.</li>
+ <li><b>Your glyph [ σ X q .</b> Is σ a sum (Σ, everything gathered added up) or a spread (σ, how varied it is)? Is <i>X</i> the same as <i>x</i>, the gatherers summing themselves? What is <i>q</i>: queen, quantum, quality, question?</li>
+ <li><b>The open bracket and the dot.</b> Is "[" an interval left open on purpose, and the dot a full stop or a point?</li>
+ <li><b>Filtered or whole?</b> Honey keeps some of what bees didn't choose. Does the sum keep the contaminants, or does the universe-hive refine them out?</li>
+ <li><b>One face or many?</b> Is God's mother-sister-…-grandmother one being in ten roles, like the queen, or the many daughters doing the work?</li>
+ <li><b>Who eats the honey?</b> In the hive the whole colony does. Does the yield go back to the x's, to God's one, or out of the universe?</li></ol>`}
+ else{h=`<div class="sub" style="color:var(--violet)">await</div><h2 style="color:#c9b3ef">[ σ X q .</h2><p>Left open, as you wrote it. Answer in the chat in your own words, any or all of the questions.</p><p>Your answer becomes seed an-0002's answer in Analogia, and the relations you choose grow the list the next riddle starts from.</p>`}
+ card.innerHTML=h}
+document.querySelectorAll('#stages div').forEach(d=>d.onclick=()=>{if(d.dataset.s==='represent'&&sel<0)sel=0;setStage(d.dataset.s);draw()});
+addEventListener('resize',draw);draw();setStage('clarify');
+</script>
+</body>
+</html>

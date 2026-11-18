@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cocoon: a word's lineage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#efe6d2;--dim:#9c927f;--silk:#e9dcc0;--gold:#d9b25f;--bg:#0b0a09}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);overflow:hidden;font-family:'Cormorant Garamond',Georgia,serif}
+  canvas{display:block;cursor:crosshair}
+  #riddle{position:fixed;top:18px;left:50%;transform:translateX(-50%);font-size:clamp(18px,2.4vw,28px);letter-spacing:.04em;white-space:nowrap;pointer-events:none;text-align:center}
+  #riddle b{color:var(--gold);font-weight:600}
+  #riddle small{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.08em;margin-top:4px}
+  #card{position:fixed;right:22px;top:50%;transform:translateY(-50%);width:min(340px,34vw);padding:20px 22px;border-left:1px solid rgba(233,220,192,.25);background:linear-gradient(90deg,rgba(11,10,9,.0),rgba(11,10,9,.78) 18%);transition:opacity .5s}
+  #card .era{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--gold);text-transform:uppercase}
+  #card .form{font-size:40px;line-height:1.05;margin:6px 0 2px;font-style:italic}
+  #card .gloss{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--dim);margin-bottom:12px}
+  #card .story{font-size:18px;line-height:1.38}
+  #card .sure{margin-top:12px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--dim);letter-spacing:.06em}
+  #gauge{position:fixed;left:18px;top:50%;transform:translateY(-50%);font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em}
+  #gauge div{padding:4px 0 4px 12px;border-left:1px solid rgba(233,220,192,.15);color:var(--dim);cursor:pointer;transition:color .3s,border-color .3s}
+  #gauge div:hover{color:var(--ink)}
+  #gauge div.on{color:var(--gold);border-left-color:var(--gold)}
+  #tip{position:fixed;pointer-events:none;max-width:260px;padding:10px 12px;background:rgba(14,12,10,.92);border:1px solid rgba(217,178,95,.4);font-size:15.5px;line-height:1.3;opacity:0;transition:opacity .2s}
+  #tip i{color:var(--gold);font-size:19px}
+  #hint{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);letter-spacing:.1em;pointer-events:none;transition:opacity 1s}
+  #src{position:fixed;bottom:14px;right:22px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--dim);cursor:pointer}
+  #srcbox{position:fixed;bottom:36px;right:22px;width:340px;padding:14px;background:rgba(14,12,10,.95);border:1px solid rgba(233,220,192,.2);font-family:'IBM Plex Mono',monospace;font-size:10.5px;line-height:1.6;display:none}
+  #srcbox a{color:var(--silk)}
+  @media (max-width:760px){#gauge{display:none}#card{width:auto;left:14px;right:14px;top:auto;bottom:40px;transform:none;border-left:none;border-top:1px solid rgba(233,220,192,.25);background:rgba(11,10,9,.85)}#card .form{font-size:30px}#card .story{font-size:16px}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="riddle">butterfly : chrysalis &nbsp;|&nbsp; moth : <b>cocoon</b><small>THE WORD IS A COCOON TOO. TRAVEL IN.</small></div>
+<div id="gauge"></div>
+<div id="card"><div class="era"></div><div class="form"></div><div class="gloss"></div><div class="story"></div><div class="sure"></div></div>
+<div id="tip"></div>
+<div id="hint">SCROLL OR DRAG UP TO TRAVEL INWARD · HOVER THE BEADS · CLICK TO FLY</div>
+<div id="src">sources</div>
+<div id="srcbox">
+<a href="https://www.etymonline.com/word/cocoon">Etymonline: cocoon (n., v.)</a><br>
+<a href="https://www.dictionary.com/browse/cocoon">Dictionary.com: cocoon</a><br>
+<a href="https://en.wikipedia.org/wiki/Cocooning_(behaviour)">Wikipedia: Cocooning (behaviour)</a><br>
+<a href="https://vitrinelinguistique.oqlf.gouv.qc.ca/fiche-gdt/fiche/8358004/coconner">OQLF: coconner, coucouner</a><br>
+<a href="https://dictionary.obspm.fr/terms/cocoon-nebula-ic-5146/">Obs. de Paris: Cocoon Nebula, Persian pilé</a><br>
+<a href="https://fr.wiktionary.org/wiki/cocon">Wiktionnaire: cocon</a><br>
+<span style="color:#9c927f">Dates marked "likely" or "hypothesis" are less certain.</span>
+</div>
+<script>
+const S=[ // outer (now) -> inner (root)
+ {era:"Now",y:2026,form:"cocoon",gloss:"noun · verb · a shelter you make of yourself",
+  story:"The silk case a moth larva spins around itself, and any snug wrapping that resembles it. To cocoon is to wrap tight, or to stay in. There is even a Cocoon Nebula, a star nursery about 3,000 light-years away in Cygnus.",sure:"well attested",
+  kin:[["Cocoon Nebula","IC 5146, a region of star formation in Cygnus. In Persian it is miq-e pilé, and pilé is the silkworm's cocoon."],["cocooned","the patient cocooned in blankets: wrapped as if spun in"]]},
+ {era:"1980s",y:1981,form:"cocooning",gloss:"the turn inward",
+  story:"In 1981 trend forecaster Faith Popcorn named a social shift: people staying home, safe and insulated from a world that felt too tough outside. By 1986 'cocoon' also meant one's inner comfort place, and to cocoon meant to stay in and be still.",sure:"1981 coinage well attested; 1986 senses per Etymonline",
+  kin:[["armored cocoon","one of Popcorn's three sub-trends, with the wandering and the socialized cocoon"],["coconnage","Quebec's French answer to the English loan 'cocooning'"],["carcooning","the car outfitted as a home cocoon"]]},
+ {era:"20th c.",y:1946,form:"cocooning",gloss:"a sprayed plastic skin for machines",
+  story:"Machinery and big naval guns put into long storage were sealed in an airtight sprayed coat of polyvinyl chloride to keep out rust. The word went industrial: a shell to sleep through time in.",sure:"sense well attested; exact first date not checked (likely mid-century)",
+  kin:[["mothballing","the same idea: keep the thing, pause its life"]]},
+ {era:"1850 – 1873",y:1860,form:"to cocoon",gloss:"the noun becomes a verb",
+  story:"About 1850 the verb appears for an insect forming its cocoon. By 1873 people could cocoon themselves, wrapped in anything, figuratively.",sure:"dates per Etymonline",
+  kin:[["cocooned","past participle, still the commonest form"]]},
+ {era:"1690s",y:1695,form:"cocoon",gloss:"English borrows it",
+  story:"English takes the French word in the 1690s, giving it the long -oon ending English often gave French -on words. The silk trade carried the word as surely as it carried the thread.",sure:"well attested",
+  kin:[["-oon","the same English habit as in balloon and saloon"]]},
+ {era:"16th c.",y:1550,form:"coucon › cocon",gloss:"French",
+  story:"French has coucon in the 1500s, later cocon. Silk farming was growing in the south of France, and the southern word for the silkworm's house moved north with it.",sure:"form per Etymonline; silk-trade route is the likely carrier",
+  kin:[["cocon","modern French; lent on to Dutch cocon, then Indonesian kokon, and to Romanian cocon"]]},
+ {era:"Occitan",y:1300,form:"coucoun",gloss:"Provençal · 'little shell'",
+  story:"In the language of Provence, coco is a shell, an eggshell, and coucoun is its diminutive: a little shell. The same root gives coucouner, to pamper, to keep someone snug, still used in French today.",sure:"well attested; exact century not fixed",
+  kin:[["coucouner","to pamper; more used in French than coconner"],["coco","shell, eggshell"]]},
+ {era:"Old French",y:1200,form:"coque",gloss:"shell of an egg or a nut",
+  story:"Old French coque: the shell of an egg, of a nut, of a clam. A hard skin around a living inside. Every later sense keeps this picture.",sure:"well attested",
+  kin:[["coque","still French for a shell, and for a ship's hull"]]},
+ {era:"Latin",y:50,form:"coccum",gloss:"berry · kermes grain · scarlet",
+  story:"Latin coccum meant a berry, and especially the kermes 'berry' that dyers crushed for scarlet. The same Latin word is behind cochineal, the red dye.",sure:"well attested; the link coque < coccum is the standard account",
+  kin:[["cochineal","the red dye; same Latin root"],["kermes","the 'berry' that is really an insect"]]},
+ {era:"Greek",y:-400,form:"κόκκος  kókkos",gloss:"grain · seed · kermes berry",
+  story:"Greek kókkos: a grain, a seed, the kermes berry. Its own origin is unknown; it may come from a language older than Greek. It also gives the coccus of science: round bacteria, round things.",sure:"origin of kókkos unknown",
+  kin:[["cocco-","round, berry-shaped: coccus, streptococcus"],["pre-Greek?","a possible older, non-Greek source; hypothesis"]]},
+ {era:"The seed",y:null,form:"co · co",gloss:"the hidden center",
+  story:"At the bottom of the word sits a lovely mistake. The kermes 'berry' was never a berry: it is a scale insect, a living thing in a hard shell that people took for a seed. The word for a moth's shelter grew from the name of an insect hiding in a shell. A second line of thought hears 'co-co' as a nursery sound for egg and shell, the kind children make in many languages.",sure:"the kermes fact is sound; the nursery-word line is a hypothesis",
+  kin:[["nursery co-co","egg and shell said the way small children say them; hypothesis"],["chrysalis","the butterfly's word: Greek khrysallís, from khrysós, gold, for the gilt sheen of some pupae. Strictly, the chrysalis is the pupa itself; a cocoon is silk spun around a moth's pupa."]]}
+];
+const N=S.length,K=0.56;
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let W,H,M,dpr;
+function rs(){dpr=Math.min(2,devicePixelRatio||1);W=innerWidth;H=innerHeight;M=Math.min(W,H);cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';cx.setTransform(dpr,0,0,dpr,0,0)}
+addEventListener('resize',rs);rs();
+let Z=1,Zt=1,mx=W/2,my=H/2,t=0,hov=null,focus=-1,idle=0;
+const ZMAX=Math.pow(1/K,N-1)*1.05;
+function ringR(i){return M*0.40*Math.pow(K,i)*Z}
+// beads: era bead + kin beads
+const beads=[];
+S.forEach((s,i)=>{const a0=-Math.PI/2+i*2.399;beads.push({i,a:a0,main:1,name:s.form,txt:s.gloss});s.kin.forEach((k,j)=>beads.push({i,a:a0+(j+1)*(Math.PI*2/(s.kin.length+1))+0.4,main:0,name:k[0],txt:k[1]}))});
+// silk strands
+const strands=S.map((s,i)=>Array.from({length:22},()=>({rx:0.93+Math.random()*0.14,ry:0.62+Math.random()*0.12,rot:(Math.random()-.5)*0.5,ph:Math.random()*6.28,sp:(Math.random()-.5)*0.12,al:0.05+Math.random()*0.12})));
+const gauge=document.getElementById('gauge');
+S.forEach((s,i)=>{const d=document.createElement('div');d.textContent=s.era;d.onclick=()=>fly(i);gauge.appendChild(d)});
+function fly(i){Zt=Math.pow(1/K,i);idle=0}
+function setCard(i){if(i===focus)return;focus=i;const s=S[i],c=document.getElementById('card');c.style.opacity=0;
+ setTimeout(()=>{c.querySelector('.era').textContent=s.era+(s.y==null?'':s.y<0?' · c. '+(-s.y)+' BCE':s.y<1000?' · c. '+s.y+' CE':'');c.querySelector('.form').textContent=s.form;c.querySelector('.gloss').textContent=s.gloss;c.querySelector('.story').textContent=s.story;c.querySelector('.sure').textContent='certainty: '+s.sure;c.style.opacity=1},250);
+ [...gauge.children].forEach((d,j)=>d.classList.toggle('on',j===i))}
+addEventListener('wheel',e=>{e.preventDefault();Zt*=Math.exp(-e.deltaY*0.0016);Zt=Math.max(1,Math.min(ZMAX,Zt));idle=0;hideHint()},{passive:false});
+let drag=null;
+cv.addEventListener('pointerdown',e=>{drag={y:e.clientY,z:Zt,moved:0}});
+addEventListener('pointerup',e=>{if(drag&&drag.moved<4&&hov)fly(hov.i);drag=null});
+addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;idle=0;if(drag){const dy=drag.y-e.clientY;drag.moved=Math.max(drag.moved,Math.abs(dy));Zt=Math.max(1,Math.min(ZMAX,drag.z*Math.exp(dy*0.006)));if(drag.moved>4)hideHint()}});
+addEventListener('keydown',e=>{if(e.key==='ArrowUp'||e.key==='+')fly(Math.min(N-1,focus+1));if(e.key==='ArrowDown'||e.key==='-')fly(Math.max(0,focus-1))});
+function hideHint(){document.getElementById('hint').style.opacity=0}
+document.getElementById('src').onclick=()=>{const b=document.getElementById('srcbox');b.style.display=b.style.display==='block'?'none':'block'};
+const tip=document.getElementById('tip');
+function frame(){
+ t+=1/60;idle+=1/60;Z+=(Zt-Z)*0.08;
+ const ox=W/2+(mx-W/2)*-0.03,oy=H/2+(my-H/2)*-0.03;
+ cx.fillStyle='rgba(11,10,9,0.35)';cx.fillRect(0,0,W,H);
+ // glow at center
+ const g=cx.createRadialGradient(ox,oy,0,ox,oy,ringR(N-1)*1.6+20);g.addColorStop(0,'rgba(217,178,95,0.20)');g.addColorStop(1,'rgba(217,178,95,0)');cx.fillStyle=g;cx.beginPath();cx.arc(ox,oy,ringR(N-1)*1.6+20,0,7);cx.fill();
+ // focus shell: the one nearest 0.34M
+ let best=0,bd=1e9;for(let i=0;i<N;i++){const d=Math.abs(Math.log(ringR(i)/(M*0.34)));if(d<bd){bd=d;best=i}}setCard(best);
+ for(let i=0;i<N;i++){const R=ringR(i);if(R>M*3.2||R<2)continue;
+  const near=Math.exp(-Math.pow(Math.log(R/(M*0.34)),2)*3);
+  const md=Math.hypot((mx-ox)/R,(my-oy)/(R*0.7));const touch=Math.exp(-Math.pow((md-1)*6,2));
+  strands[i].forEach(st=>{cx.strokeStyle=`rgba(233,220,192,${Math.min(0.7,st.al*(0.4+near*1.6+touch*1.5))})`;cx.lineWidth=0.6+touch*0.6;cx.beginPath();
+   const w=1+0.015*Math.sin(t*0.7+st.ph);cx.ellipse(ox,oy,R*st.rx*w,R*st.ry*w,st.rot+st.sp*Math.sin(t*0.2+st.ph),0,Math.PI*2);cx.stroke()});
+  // era label on the ring
+  if(R>40&&R<M*1.4){cx.fillStyle=`rgba(217,178,95,${0.25+near*0.6})`;cx.font=`${11}px "IBM Plex Mono"`;cx.textAlign='center';cx.fillText(S[i].era.toUpperCase(),ox,oy-R*0.70-8)}
+ }
+ // filament spiral through all shells
+ cx.strokeStyle='rgba(217,178,95,0.35)';cx.lineWidth=0.8;cx.beginPath();
+ for(let k=0;k<=N*60;k++){const u=k/60;const R=M*0.40*Math.pow(K,u)*Z;if(R>M*3)continue;const a=u*6.283*1.0+t*0.15;const x=ox+Math.cos(a)*R,y=oy+Math.sin(a)*R*0.68;k?cx.lineTo(x,y):cx.moveTo(x,y)}cx.stroke();
+ // beads
+ hov=null;let hd=1e9;
+ beads.forEach(b=>{const R=ringR(b.i);if(R<14||R>M*2.5)return;const a=b.a+t*0.02*(b.i%2?1:-1);
+  const x=ox+Math.cos(a)*R,y=oy+Math.sin(a)*R*0.68;b.x=x;b.y=y;
+  const r=(b.main?5:3.2)*Math.min(1.6,Math.max(0.6,R/(M*0.3)));
+  const d=Math.hypot(mx-x,my-y);if(d<Math.max(14,r*3)&&d<hd){hd=d;hov=b}
+  cx.fillStyle=b.main?'#d9b25f':'rgba(233,220,192,0.85)';cx.beginPath();cx.arc(x,y,r,0,7);cx.fill();
+  if(R>M*0.18&&R<M*1.6){cx.fillStyle=`rgba(239,230,210,${b.main?0.9:0.6})`;cx.font=`${b.main?'italic 17px':'italic 14px'} "Cormorant Garamond"`;cx.textAlign='left';cx.fillText(b.name,x+r+6,y+4)}
+ });
+ if(hov){cx.strokeStyle='#d9b25f';cx.lineWidth=1;cx.beginPath();cx.arc(hov.x,hov.y,12,0,7);cx.stroke();
+  tip.innerHTML=`<i>${hov.name}</i><br>${hov.txt}`;tip.style.opacity=1;tip.style.left=Math.min(W-280,mx+16)+'px';tip.style.top=Math.min(H-120,my+16)+'px';cv.style.cursor='pointer'}
+ else{tip.style.opacity=0;cv.style.cursor='crosshair'}
+ // seed at center
+ const sr=Math.min(22,Math.max(2,ringR(N-1)*0.25));cx.fillStyle='rgba(217,178,95,0.9)';cx.beginPath();cx.ellipse(ox,oy,sr,sr*0.8,0,0,7);cx.fill();for(let q=0;q<3;q++){const ph=((t*0.25+q/3)%1);cx.strokeStyle=`rgba(217,178,95,${0.5*(1-ph)})`;cx.lineWidth=1;cx.beginPath();cx.ellipse(ox,oy,sr*(1+ph*4),sr*0.8*(1+ph*4),0,0,7);cx.stroke()}
+ // gentle invitation when idle at the outside
+ if(idle>6&&Zt<1.2&&!drag)Zt=1.15+0.1*Math.sin(t);
+ requestAnimationFrame(frame)}
+cx.fillStyle='#0b0a09';cx.fillRect(0,0,W,H);frame();
+</script>
+</body>
+</html>

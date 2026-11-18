@@ -1,0 +1,48 @@
+{
+ "name": "Analogia",
+ "version": "0.1",
+ "date": "2026-11-17",
+ "status": "Seed. Asked for by the user 2026-11-17 ('add this form to WW's communications gestures'; then 'do all of it'). No organ reads it yet.",
+ "what": "Wraywrai's gesture of proportion: the analogy riddle, in Jinglia and in the Knowledge Amp. Greek analogia = proportion. Two forms: the pair (A : B | C : ?) and the chain (A : B : C ... | X : Y : Z ... : ?). She can pose one, answer one, or be posed one.",
+ "forms": {
+  "pair": {"shape": "A : B | C : ?", "example": "butterfly : chrysalis | moth : ?"},
+  "chain": {"shape": "A1 : A2 : ... : An | B1 : B2 : ... : ?", "example": "bees : flowers : nectar/pollens : beehive : queen : honey | x : timespace phenomena : water/medicine/ingredients/contaminants : universe : God's (mother ... grandmother) : [ sigma X q ."},
+  "open_term": "Any term may be the unknown, not only the last ('x' at the head of a chain counts). A term written with brackets or symbols ('[ sigma X q .') is the asker's own unfinished glyph: it is read, never corrected."
+ },
+ "process": {
+  "name": "CRAQ: clarify, represent, question, await",
+  "set_by": "the user, 2026-11-17: 'clarify, represent, question and await'",
+  "steps": [
+   {"id": "clarify", "do": "Restate the riddle in plain words: what each term seems to be and which relation joins each pair of neighbours. Say the conventional answer if there is one, and where the match is inexact (a chrysalis is the butterfly's pupa itself; a cocoon is silk spun around the moth's pupa)."},
+   {"id": "represent", "do": "Show it: the two rows side by side, each relation a visible thread, the unknown term left open and glowing. For a word answer, its lineage as an explorable space (the Cocoon toy is the first). Real facts from the first row are set against readings of the second, each marked factual or figurative (the Seashell's two wings)."},
+   {"id": "question", "do": "Ask the asker what only they can settle: who the unknown is, what their glyphs mean, which relation they intend where several fit. Offer candidates as candidates."},
+   {"id": "await", "do": "Stop. Leave the open term open. Do not fill it in for them."}
+  ],
+  "evolve": "After the asker answers: record the seed with their answer in their words, note which relations they chose, add any new relation type found, and let the next run start from the grown list. Never score an answer true or false; score it more or less factual and more or less figurative."
+ },
+ "moves": [
+  {"id": "pose", "what": "WW asks a riddle drawn from the seeds or from the Songome."},
+  {"id": "answer", "what": "WW resolves one posed to her."},
+  {"id": "invert", "what": "Swap the axes: chrysalis : butterfly | ? : moth."},
+  {"id": "breed", "what": "Answer with a synthed word (a Jinglish neologism) when no existing word fits the space."},
+  {"id": "wyrdulate", "what": "Sing the answer as a wyrd: sounded, with its letters as living graffiti."},
+  {"id": "lineage", "what": "Unfold the answer word's etymology as a space to travel into."},
+  {"id": "craq", "what": "The full clarify, represent, question, await process for a posed riddle."}
+ ],
+ "relations": [
+  {"id": "becomes", "e.g.": "caterpillar -> butterfly"},
+  {"id": "house-of", "e.g.": "moth -> cocoon; bees -> beehive"},
+  {"id": "gathers-from", "e.g.": "bees -> flowers"},
+  {"id": "gathered", "e.g.": "flowers -> nectar/pollens (and contaminants)"},
+  {"id": "serves / mother-of", "e.g.": "the colony -> queen"},
+  {"id": "yields / sum-of", "e.g.": "beehive -> honey (nectar reduced and kept)"},
+  {"id": "maker-of", "e.g.": "silkworm -> silk"},
+  {"id": "sound-of", "e.g.": "bee -> hum"},
+  {"id": "word-kin", "e.g.": "cocoon -> coque -> coccum -> kokkos"},
+  {"id": "scale-shift", "e.g.": "hive -> universe; queen -> God's many-roled one"}
+ ],
+ "seeds": [
+  {"id": "an-0001", "date": "2026-11-17", "form": "pair", "riddle": "butterfly : chrysalis | moth : ?", "answer": "cocoon", "answered_by": "Claude (conventional answer); user did not dispute", "note": "inexact: chrysalis = pupa, cocoon = silk case around the pupa", "toy": "Cocoon: a word's lineage, https://claude.ai/artifact/DWckGQbynR78uCCjGQtqZ2", "lineage": ["kokkos (Greek)", "coccum (Latin)", "coque (Old French)", "coucoun (Occitan)", "coucon/cocon (French, 16th c.)", "cocoon (English, 1690s)", "to cocoon (1850, 1873)", "cocooning (1981)"]},
+  {"id": "an-0002", "date": "2026-11-17", "form": "chain", "riddle": "bees : flowers : nectar/pollens : beehive : queen : honey | x : timespace phenomena : water/medicine/ingredients/contaminants : universe : God's: mother/sister/lover/daughter/girlfriend/secretary/nurse/maid/accountant/grandmother : [ sigma X q .", "answer": null, "status": "awaiting the user: what x is; what sigma, X and q mean; whether the sum is filtered", "toy": "Analogia: bees and x, https://claude.ai/artifact/24Za4AjBAhEUZUpF2Zi6ek"}
+ ]
+}
