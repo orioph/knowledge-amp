@@ -19,7 +19,7 @@ other skills are toys and organs of it.
 | `atlas/atlas.json` | 52 ideas from the writings (principles, organs, flows, words), 17 present pieces, 30 chats, 12 lineage moments, with links. |
 | `atlas/build_data.py` | Rebuilds `atlas.json` from `records/ka/dict-ka.json` in orioph/jinglia. The organ-to-present links and the chat abstracts are written in it. |
 | `atlas/template.html` | The toy's page; `atlas/index.html` = template + atlas. |
-| `timeline/` | **Timeline layer v0.2 (draft)**: one event format for every feature, built on the Seashell genome (`EVENT-FORMAT.md`; v0.1 kept). `gaps.py` reports a lane's missing sources, fingerprints and places; first report: `gaps-seashell-2026-11-17.md`. Sourcing pass proposed on jinglia `seashell` branch (`toys/seashell/proposals/2026-11-17-1437.json`): 78 sources, 12 flags; if approved, 90/182 sourced (`gaps-seashell-2026-11-17-if-approved.md`). |
+| `timeline/` | **Timeline layer v0.3 (draft)**: one event format for every feature, built on the Seashell genome (`EVENT-FORMAT.md`; v0.1 and v0.2 kept). v0.3 adds `source_kind`, `precision_basis`, `where.basis` and the `telling` block. `gaps.py` reports a lane's gaps and next entries; latest report `gaps-seashell-2026-11-19.md`: 232 entries, all sourced (120 primary, 112 secondary), 109 researched fingerprints, 115 places, 182 tellings. Earlier reports kept. |
 | `barrier/index.html` | **One-Way Barrier 0.01**, the first organ prototype (the server's barrier, layers, seven chambers). Toy: https://claude.ai/artifact/N3gpDgZetcDJ1RckLffNDT. Each version is also kept as `barrier/vX.html`; `barrier/frames/` holds the checked screenshots. |
 | `analogia/` | **Analogia 0.1**: the analogy gesture (A : B \| C : ?, and chains) with its process clarify, represent, question, await, then evolve. Master copy is `rhetoric/analogia_dict.json` in orioph/jinglia; toys `cocoon/` (https://claude.ai/artifact/DWckGQbynR78uCCjGQtqZ2) and `bees-and-x/` (https://claude.ai/artifact/24Za4AjBAhEUZUpF2Zi6ek). |
 
@@ -45,6 +45,11 @@ Requests, open questions and builds live in **GitHub Issues** on this repo (labe
 1. toyMaker date: settled, 2003 (D, 2026-11-17).
 2. Are the organ-to-present links right? (e.g. Seashell = Vetting Sentinel, bseek = nature-cost lens)
 3. Done 2026-11-17: this repo and the claude.ai Project "Knowledge Amp" (account memory on).
+
+## Done, timeline dev (2026-11-19)
+
+- Seashell lane (jinglia `seashell` branch) brought to genome v5: the 12 flags, runs 1631/0038 (17 Nov) and 0841/1629/0028/0829 (19 Nov) applied; Voyager 1 one light-day added; six sourcing mutations written; every "from general knowledge" line in the run logs checked against search results (two corrections). Two passes ran in parallel that morning; the second (telling block, checks) sits on top of the first. Logs: `toys/seashell/runs/2026-11-19-apply.md` and `2026-11-19-0356-apply.md` on that branch.
+- Event format v0.3 with the `telling` block; `gaps.py` extended. (The first pass's `for-knowledge-amp/event-format-v0.3.patch` on the jinglia branch is superseded by this.)
 
 ## Next (handoff, 2026-11-17)
 
