@@ -16,6 +16,7 @@
   #hint{position:fixed;left:50%;top:52px;transform:translateX(-50%);font-size:13px;color:#cfc6ef;opacity:0;transition:opacity .4s;pointer-events:none;z-index:5;text-align:center;max-width:80vw}
   #wingtoggle{position:fixed;top:40px;left:16px;font-size:12px;color:#b9b0d6;z-index:5;display:flex;gap:8px;align-items:center}
   #wingtoggle button,#speed button,.card button,#ticketbox button{background:#1a1430;color:#e9e4f7;border:1px solid #3d3363;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer}
+  #wingtoggle button.on{border-color:#a596ff;color:#fff;background:#2a2050}
   #wingtoggle button:hover,.card button:hover,#ticketbox button:hover{border-color:#8f7fe0}
   #speed{position:fixed;left:16px;top:70px;font-size:12px;color:#b9b0d6;z-index:5;display:none;gap:6px;align-items:center}
   #bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);width:min(680px,92vw);z-index:6}
@@ -49,9 +50,9 @@
 <body>
 <canvas id="c"></canvas>
 <div id="crumbs"></div>
-<div id="wingtoggle">figurative wing <button id="figbtn">on</button></div>
+<div id="wingtoggle">figurative wing <button id="figbtn">on</button> · form <button data-form="foam" class="on">foam</button><button data-form="dandelion">dandelion</button> · <button id="lensbtn">eye in the glass</button></div>
 <div id="speed">time <button data-s="0">pause</button><button data-s="today">today</button><button data-s=".25">slow</button><button data-s="1">1 yr / 20 s</button><button data-s="8">fast</button> <span id="date"></span></div>
-<div id="title"><em>Macroscope 0.01</em> · Foam Cosmos + Sentence Bubble<br>bubble → stick → glyph → echo → mirror → one</div>
+<div id="title"><em>Macroscope 0.02</em> · Foam Cosmos + Sentence Bubble<br>bubble → stick → glyph → echo → mirror → one</div>
 <div id="hint"></div>
 <div class="card" id="card"></div>
 <div id="ticketbox"><canvas id="tk" width="900" height="420" style="display:none"></canvas><img id="tkimg" alt="your Macroscope ticket" style="max-width:92vw;box-shadow:0 10px 50px rgba(0,0,0,.6)"><div style="font-size:12px;color:#b9b0d6">right-click or long-press the ticket to keep it</div><div><button id="tkclose">close</button></div></div>
@@ -69,7 +70,7 @@
 'use strict';
 const cv=document.getElementById('c'),ctx=cv.getContext('2d');
 let W=0,H=0,DPR=1;
-function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);scenes.forEach(s=>s.layout&&s.layout());}
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);scenes.forEach(s=>s.layout&&s.layout());if(typeof Dand!=='undefined')Dand.layout();}
 const TAU=Math.PI*2, rnd=(a,b)=>a+Math.random()*(b-a), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let seed=7;function srnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646;}
 function gauss(){return Math.sqrt(-2*Math.log(srnd()+1e-9))*Math.cos(TAU*srnd());}
@@ -119,6 +120,10 @@ const PLANETS=[
 const SUN={id:'sun',name:'The Sun',fact:.99,fig:.5,sub:'our star · the dot at the centre of this sphere',
   news:[N('12 Aug 2026','A solar eclipse crossed the sky on 12 August 2026.','Astronomy Now','https://astronomynow.com/tag/europa-clipper/','eclipse watchers everywhere')]};
 const LEVELINFO={
+ dandelion:{name:'Dandelion clock',sub:'explore · collapse to one · expand again',fact:.45,fig:.92,
+   body:'Each seed is a world. Breathe and they go out to explore, then fall back into one dot (it looks like sleep, and it is not), then grow again along new paths. The seeds sit on the golden angle, the sunflower rule (phyllotaxis). Your own threads ride some of the seeds.'},
+ lens:{name:'The eye in the glass',sub:'the macroscope looking back',fact:.3,fig:.95,
+   body:'A lens that magnifies whatever level you are on. In its glass is an eye: the one doing the seeing. Its rim turns like an astrolabe over the sky.'},
  meta:{name:'Meta bubble',sub:'everything · creation · the cosmos as one',fact:.12,fig:.97,
    body:'The one bubble. The froth in its corner is the physical part. They reflect and feed each other: the dot, the inside of the sphere and its outside, mirrored without interval.'},
  web:{name:'Cosmic web',sub:'filaments of galaxies, the largest structure known',fact:.95,fig:.35,
@@ -162,10 +167,14 @@ const Meta={key:'meta',label:'meta',foam:[],stars:[],
    seed=11;this.foam=[];
    for(let i=0;i<42;i++){const a=srnd()*TAU,d=Math.sqrt(srnd())*this.R*.17;this.foam.push({x:fx+Math.cos(a)*d,y:fy+Math.sin(a)*d,r:2+Math.pow(srnd(),2)*this.R*.045,ph:srnd()*TAU});}
    for(let k=0;k<60;k++)for(let i=0;i<this.foam.length;i++)for(let j=i+1;j<this.foam.length;j++){const A=this.foam[i],B=this.foam[j];const dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy)||1,m=A.r+B.r+1;if(d<m){const p=(m-d)/2/d;A.x-=dx*p;A.y-=dy*p;B.x+=dx*p;B.y+=dy*p;}}
+   const kc=store.get('keys',{});Object.keys(kc).slice(-30).forEach(k=>this.addBubble(k,true));this.relax(60);
    this.stars=[];for(let i=0;i<220;i++)this.stars.push({x:srnd()*W,y:srnd()*H,a:srnd()*.6,s:srnd()*1.2});
    this.dust=[];for(let i=0;i<180;i++){const a=srnd()*TAU,d=Math.sqrt(srnd())*this.R*.92;this.dust.push({a,d,s:.2+srnd()*.8,h:200+srnd()*120});}
  },
- draw(t){
+ addBubble(k,quiet){if(this.foam.some(b=>b.k===k))return;const a=Math.random()*TAU,d=this.R*.2;this.foam.push({x:this.fx+Math.cos(a)*d,y:this.fy+Math.sin(a)*d,r:4+Math.random()*5,ph:Math.random()*TAU,k,born:quiet?0:1});if(!quiet)this.relax(40);},
+ relax(n){const F=this.foam;for(let k=0;k<n;k++)for(let i=0;i<F.length;i++){const A=F[i];A.x+=(this.fx-A.x)*.004;A.y+=(this.fy-A.y)*.004;for(let j=i+1;j<F.length;j++){const B=F[j];const dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy)||1,m=A.r+B.r+1;if(d<m){const p=(m-d)/2/d;A.x-=dx*p;A.y-=dy*p;B.x+=dx*p;B.y+=dy*p;}}}},
+ draw(t,dt){
+   if(FORM==='dandelion')return Dand.draw(t,dt);
    for(const s of this.stars){ctx.fillStyle=`rgba(220,210,255,${s.a*(.6+.4*Math.sin(t*.7+s.x))})`;ctx.fillRect(s.x,s.y,s.s,s.s);}
    const {cx,cy,R}=this;
    for(const p of this.dust){const a=p.a+t*.012*p.s;const x=cx+Math.cos(a)*p.d,y=cy+Math.sin(a)*p.d*.92;ctx.fillStyle=`hsla(${p.h+t*4},70%,75%,.18)`;ctx.fillRect(x,y,1.3,1.3);}
@@ -180,14 +189,89 @@ const Meta={key:'meta',label:'meta',foam:[],stars:[],
    for(const b of F){const wob=Math.sin(t*1.3+b.ph)*.6;bubble(b.x+wob,b.y-wob,b.r,t,1,b.ph*60);
      // each small bubble holds a tiny image of the big one
      if(b.r>4){ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=.5;ctx.beginPath();ctx.arc(b.x+b.r*.25,b.y+b.r*.2,b.r*.28,0,TAU);ctx.stroke();ctx.fillStyle='rgba(180,255,235,.8)';ctx.fillRect(b.x+b.r*.38,b.y+b.r*.33,1.2,1.2);}
-     if(fog>.05){ctx.fillStyle=`rgba(255,255,255,${.35*fog})`;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,TAU);ctx.fill();}}
+     if(fog>.05){ctx.fillStyle=`rgba(255,255,255,${.35*fog})`;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,TAU);ctx.fill();}
+     if(b.born>0){ctx.strokeStyle=`rgba(255,255,255,${b.born})`;ctx.beginPath();ctx.arc(b.x,b.y,b.r+12*(1-b.born),0,TAU);ctx.stroke();b.born=Math.max(0,b.born-.01);}}
+   const lab=F.filter(b=>b.k).slice(-8);ctx.font='10px system-ui,sans-serif';ctx.fillStyle='rgba(180,255,235,.75)';for(const b of lab)ctx.fillText(b.k,b.x+b.r+2,b.y+3);
    if(fog>.05){ctx.strokeStyle=`rgba(255,255,255,${.5*fog})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.stroke();}
    if(this.hoverFoam){ctx.strokeStyle='rgba(180,255,235,.6)';ctx.setLineDash([3,4]);ctx.beginPath();ctx.arc(this.fx,this.fy,this.R*.22,0,TAU);ctx.stroke();ctx.setLineDash([]);}
  },
- hit(x,y){if(Math.hypot(x-this.fx,y-this.fy)<this.R*.23)return 'foam';if(Math.hypot(x-this.cx,y-this.cy)<this.R)return 'meta';return null;},
- hover(x,y){const h=this.hit(x,y);this.hoverFoam=h==='foam';return h==='foam'?'the physical part · click to travel in':h==='meta'?'the meta bubble · everything · click to read it':''},
- click(x,y){const h=this.hit(x,y);if(h==='foam')go('web',x,y);else if(h==='meta')showInfo('meta');}
+ hit(x,y){if(Math.hypot(x-this.fx,y-this.fy)<this.R*.25)return 'foam';if(Math.hypot(x-this.cx,y-this.cy)<this.R)return 'meta';return null;},
+ hover(x,y){if(FORM==='dandelion')return Dand.hover(x,y);const h=this.hit(x,y);this.hoverFoam=h==='foam';return h==='foam'?'the physical part · click to travel in':h==='meta'?'the meta bubble · everything · click to read it':''},
+ click(x,y){if(FORM==='dandelion')return Dand.click(x,y);const h=this.hit(x,y);if(h==='foam')go('web',x,y);else if(h==='meta')showInfo('meta');}
 };
+let FORM='foam', LENS=false, mx=-1, my=-1, lastMove=-99;
+const GOLD=Math.PI*(3-Math.sqrt(5));
+const Dand={st:'rest',T:0,
+ layout(){this.cx=W*.47;this.cy=H*.44;this.R=Math.min(W,H)*.27;this.seeds=[];const n=144;
+   for(let i=0;i<n;i++){const a=i*GOLD,rr=Math.sqrt((i+.5)/n);this.seeds.push({a,rr,len:.78+.22*rr+Math.random()*.06,ph:Math.random()*TAU,vx:0,vy:0,ox:0,oy:0});}
+   this.stars=[];for(let i=0;i<200;i++)this.stars.push({x:Math.random()*W,y:Math.random()*H,a:Math.random()*.5});},
+ blow(x,y){if(this.st!=='rest')return;this.st='blow';this.T=0;const wx=x==null?1:Math.sign(this.cx-x)||1;
+   for(const s of this.seeds){const sp=.4+Math.random()*1.2;s.vx=Math.cos(s.a)*sp*40+wx*rnd(20,70);s.vy=Math.sin(s.a)*sp*40-rnd(10,40);s.ox=0;s.oy=0;}addFog(this.cx,this.cy);},
+ tipOf(s,grow){const L=this.R*s.len*grow;return [this.cx+Math.cos(s.a)*L,this.cy+Math.sin(s.a)*L];},
+ draw(t,dt){
+   this.T+=dt;
+   for(const s of this.stars){ctx.fillStyle=`rgba(220,215,255,${s.a})`;ctx.fillRect(s.x,s.y,1,1);}
+   const {cx,cy,R}=this;
+   bubble(cx,cy,R*1.32,t,.55); // the sphere around the dot
+   let grow=1,coll=0;
+   if(this.st==='rest'&&this.T>11){this.blow();}
+   if(this.st==='blow'&&this.T>6.5){this.st='collapse';this.T=0;}
+   if(this.st==='collapse'){coll=Math.min(1,this.T/2.6);if(this.T>2.8){this.st='grow';this.T=0;}}
+   if(this.st==='grow'){grow=Math.min(1,this.T/3.2);grow=grow*grow*(3-2*grow);if(this.T>3.4){this.st='rest';this.T=0;}}
+   const keys=Object.keys(store.get('keys',{})).slice(-12);
+   ctx.lineWidth=.6;
+   this.seeds.forEach((s,i)=>{
+     let [tx,ty]=this.tipOf(s,grow);const sway=Math.sin(t*.9+s.ph)*2;tx+=sway;
+     if(this.st==='blow'||this.st==='collapse'){
+       if(this.st==='blow'){s.ox+=s.vx*dt;s.oy+=s.vy*dt;s.vy-=6*dt;s.vx*=.995;}
+       const [bx,by]=this.tipOf(s,1);let px=bx+s.ox,py=by+s.oy;px+=(cx-px)*coll;py+=(cy-py)*coll;
+       const al=1-coll*.9;ctx.strokeStyle=`rgba(235,230,255,${.55*al})`;
+       const d=Math.atan2(s.oy+Math.sin(s.a)*R,s.ox+Math.cos(s.a)*R);
+       ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px-Math.cos(d)*9,py-Math.sin(d)*9);ctx.stroke();
+       for(let k=-4;k<=4;k++){const aa=d+k*.22;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+Math.cos(aa)*R*.06*al,py+Math.sin(aa)*R*.06*al);ctx.stroke();}
+       s.px=px;s.py=py;
+       if(keys.length&&i%12===0){const k=keys[(i/12)%keys.length|0];ctx.fillStyle=`rgba(180,255,235,${.8*al})`;ctx.font='10px system-ui,sans-serif';ctx.fillText(k,px+6,py-4);}
+     } else {
+       const [bx,by]=[cx+Math.cos(s.a)*R*.16*s.rr,cy+Math.sin(s.a)*R*.16*s.rr];
+       ctx.strokeStyle='rgba(225,220,250,.28)';ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(tx,ty);ctx.stroke();
+       ctx.strokeStyle=`hsla(${(t*20+i*2.5)%360},70%,85%,.55)`;
+       for(let k=-4;k<=4;k++){const aa=s.a+k*.2;ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx+Math.cos(aa)*R*.07*grow,ty+Math.sin(aa)*R*.07*grow);ctx.stroke();}
+       if(keys.length&&i%12===0&&grow>.9){const k=keys[(i/12)%keys.length|0];ctx.fillStyle='rgba(180,255,235,.7)';ctx.font='10px system-ui,sans-serif';ctx.fillText(k,tx+Math.cos(s.a)*R*.09,ty+Math.sin(s.a)*R*.09);}
+     }
+   });
+   // receptacle: the dot, seeds on the golden angle
+   const glow=this.st==='collapse'?coll:0;
+   const g=ctx.createRadialGradient(cx,cy,0,cx,cy,R*(.18+.25*glow));g.addColorStop(0,`rgba(255,250,230,${.5+.5*glow})`);g.addColorStop(1,'rgba(255,240,200,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R*(.18+.25*glow),0,TAU);ctx.fill();
+   for(const s of this.seeds){const x=cx+Math.cos(s.a)*R*.15*s.rr,y=cy+Math.sin(s.a)*R*.15*s.rr;ctx.fillStyle='rgba(190,170,120,.85)';ctx.fillRect(x-.8,y-.8,1.6,1.6);}
+   if(fog>.05){ctx.fillStyle=`rgba(255,255,255,${.3*fog})`;ctx.beginPath();ctx.arc(cx,cy,R*1.32,0,TAU);ctx.fill();}
+   const lab={rest:'rest · breathe or click to blow',blow:'explore',collapse:'collapse to one',grow:'expand again'}[this.st];
+   ctx.fillStyle='rgba(230,225,255,.7)';ctx.font='12px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(lab,cx,cy+R*1.32+22);ctx.textAlign='left';
+ },
+ hover(x,y){if(Math.hypot(x-this.cx,y-this.cy)<this.R*.2)return 'the dot · click to read the clock';if(this.st==='blow')return 'a seed is a world · click one to travel into the physical';return 'the dandelion clock · click to blow';},
+ click(x,y){if(Math.hypot(x-this.cx,y-this.cy)<this.R*.2)return showInfo('dandelion');
+   if(this.st==='blow'){for(const s of this.seeds)if(s.px&&Math.hypot(x-s.px,y-s.py)<18)return go('web',x,y);}
+   if(this.st==='rest')this.blow(x,y);}
+};
+function drawLens(t){
+  const r=Math.min(W,H)*.14;const live=performance.now()/1000-lastMove<4&&mx>=0;
+  const lx=live?mx:W/2+Math.cos(t*.21)*W*.28,ly=live?my:H*.45+Math.sin(t*.29)*H*.22;
+  ctx.save();ctx.beginPath();ctx.arc(lx,ly,r,0,TAU);ctx.clip();ctx.fillStyle='#07050d';ctx.fillRect(lx-r,ly-r,2*r,2*r);
+  ctx.translate(lx,ly);ctx.scale(2.4,2.4);ctx.translate(-lx,-ly);const sc=BY[cur];sc.draw(t,0);ctx.restore();
+  // the eye in the glass (vesica almond), faint, blinking
+  const bl=(t%7)<.18?.15:1,ew=r*.95,eh=r*.36*bl;
+  ctx.save();ctx.globalAlpha=.32;ctx.strokeStyle='rgba(235,230,255,.9)';ctx.lineWidth=1.2;ctx.beginPath();
+  ctx.moveTo(lx-ew/2,ly);ctx.quadraticCurveTo(lx,ly-eh*1.6,lx+ew/2,ly);ctx.quadraticCurveTo(lx,ly+eh*1.6,lx-ew/2,ly);ctx.stroke();
+  if(bl>.5){for(let i=0;i<4;i++){ctx.strokeStyle=`hsla(${(t*30+i*70)%360},80%,70%,.9)`;ctx.beginPath();ctx.arc(lx,ly,eh*(.85-i*.15),0,TAU);ctx.stroke();}
+    ctx.fillStyle='rgba(5,3,10,.9)';ctx.beginPath();ctx.arc(lx,ly,eh*.3,0,TAU);ctx.fill();ctx.fillStyle='rgba(255,255,255,.9)';ctx.beginPath();ctx.arc(lx-eh*.12,ly-eh*.14,eh*.09,0,TAU);ctx.fill();}
+  ctx.restore();
+  // astrolabe rim
+  ctx.save();ctx.translate(lx,ly);
+  ctx.strokeStyle='rgba(200,185,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,r,0,TAU);ctx.stroke();
+  ctx.lineWidth=1;ctx.strokeStyle='rgba(200,185,255,.35)';ctx.beginPath();ctx.arc(0,0,r+7,0,TAU);ctx.stroke();
+  for(let i=0;i<72;i++){const a=i/72*TAU+t*.05;const l=i%6===0?7:3;ctx.strokeStyle=`hsla(${(i*5+t*20)%360},80%,75%,.7)`;ctx.beginPath();ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);ctx.lineTo(Math.cos(a)*(r+l),Math.sin(a)*(r+l));ctx.stroke();}
+  ctx.strokeStyle='#4a3d7a';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(Math.cos(.8)*(r+8),Math.sin(.8)*(r+8));ctx.lineTo(Math.cos(.8)*(r*1.75),Math.sin(.8)*(r*1.75));ctx.stroke();
+  ctx.restore();
+}
 const Web={key:'web',label:'cosmic web',
  layout(){seed=23;this.nodes=[];const C=[];for(let i=0;i<20;i++)C.push({x:W*(.08+.84*srnd()),y:H*(.12+.72*srnd())});
    for(const c of C)for(let k=0;k<9;k++)this.nodes.push({x:c.x+gauss()*14,y:c.y+gauss()*14,b:1});
@@ -347,7 +431,10 @@ function bloom(s){
   const k=keyOf(words(s));const ox=W/2,oy=H-80;
   foamS=variants(s,k).map(([ax,tx],i)=>{const a=-Math.PI*(.12+.76*(i/8))+rnd(-.05,.05);const d=Math.min(W,H)*rnd(.26,.42);
     return {ax,tx,x:ox,y:oy,tx0:ox+Math.cos(a)*d*1.35,ty0:oy+Math.sin(a)*d*1.3,r:rnd(50,68),ph:rnd(0,TAU)};});
+  const isNew=!(k in store.get('keys',{}));
   phase={s,k,t:0,ox,oy,glyph:s,reply:reply(s,k)};
+  if(isNew&&Meta.foam.length){Meta.addBubble(k);phase.grew=k;}
+  if(FORM==='dandelion'&&cur==='meta')setTimeout(()=>Dand.blow(W/2,H),4800);
   const dest=words(s).map(w=>POINTERS[w]).find(Boolean);
   phase.dest=dest;
   threads();
@@ -385,7 +472,7 @@ function drawSentence(dt,t){
 function wrap(s,x,y,maxW,lh,a){ctx.save();ctx.globalAlpha*=clamp(a,0,1);const ws=s.split(' ');const lines=[];let L='';for(const w of ws){const tt=L?L+' '+w:w;if(ctx.measureText(tt).width>maxW&&L){lines.push(L);L=w;}else L=tt;}lines.push(L);
   const y0=y-(lines.length-1)*lh/2;lines.slice(0,6).forEach((l,i)=>ctx.fillText(l,x,y0+i*lh));ctx.restore();}
 function threads(){const kc=store.get('keys',{});const top=Object.entries(kc).sort((a,b)=>b[1]-a[1]).slice(0,5);
-  const el=document.getElementById('threads');el.innerHTML=top.length?'threads you keep returning to: '+top.map(([k])=>`<i data-k="${k}">${k}</i>`).join(' · '):'your words stay on this device; the toy learns which threads you return to';
+  const el=document.getElementById('threads');const grown=Object.keys(kc).length;el.innerHTML=top.length?`the froth has grown ${grown} bubble${grown>1?'s':''} from your words · threads you return to: `+top.map(([k])=>`<i data-k="${k}">${k}</i>`).join(' · '):'your words stay on this device; the toy learns which threads you return to';
   el.querySelectorAll('i').forEach(i=>i.onclick=()=>{document.getElementById('q').value=i.dataset.k;document.getElementById('q').focus();});}
 const qi=document.getElementById('q'),err=document.getElementById('err');
 document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();const s=qi.value.trim();if(!s){err.textContent='breathe a word first';return;}if(phase&&phase.t<8){err.textContent='still echoing · one breath at a time';return;}err.textContent='';hideCard();bloom(s);qi.value='';});
@@ -393,7 +480,7 @@ qi.addEventListener('input',()=>{err.textContent='';});
 
 /* ---------- input ---------- */
 const hint=document.getElementById('hint');
-cv.addEventListener('mousemove',e=>{if(trans)return;const s=BY[cur].hover(e.clientX,e.clientY);hint.textContent=s;hint.style.opacity=s?1:0;cv.style.cursor=/click to (travel|go)/.test(s)||/news/.test(s)?'pointer':'default';});
+cv.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;lastMove=performance.now()/1000;if(trans)return;const s=BY[cur].hover(e.clientX,e.clientY);hint.textContent=s;hint.style.opacity=s?1:0;cv.style.cursor=/click to (travel|go)/.test(s)||/news/.test(s)?'pointer':'default';});
 cv.addEventListener('click',e=>{if(trans)return;BY[cur].click(e.clientX,e.clientY);});
 cv.addEventListener('wheel',e=>{if(e.deltaY>40&&!trans){const i=ORDER.indexOf(cur);if(i>0)go(ORDER[i-1]);}},{passive:true});
 addEventListener('keydown',e=>{if(e.key==='Escape'){if(card.style.display==='block')hideCard();else{const i=ORDER.indexOf(cur);if(i>0)go(ORDER[i-1]);}}});
@@ -410,12 +497,15 @@ function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;const t=(now
     ctx.save();ctx.globalAlpha=e;ctx.translate(W/2,H/2);const sb=d>0?.25+.75*e:1+(1-e)*4;ctx.scale(sb,sb);ctx.translate(-W/2,-H/2);B.draw(t,dt);ctx.restore();
     if(u>=1)trans=null;}
   else BY[cur].draw(t,dt);
+  if(LENS&&!trans)drawLens(t);
   drawFog();fog=Math.max(0,fog-dt*.55);
   drawSentence(dt,t);
   requestAnimationFrame(frame);}
-resize();crumbs();threads();visit('meta');
+resize();Dand.layout();crumbs();threads();visit('meta');
+document.querySelectorAll('[data-form]').forEach(b=>b.onclick=()=>{FORM=b.dataset.form;document.querySelectorAll('[data-form]').forEach(x=>x.classList.toggle('on',x===b));if(cur!=='meta')go('meta');toast(FORM==='dandelion'?'dandelion clock: explore, collapse to one, expand again':'foam cosmos: the physical froth in the corner of everything');});
+document.getElementById('lensbtn').onclick=e=>{LENS=!LENS;e.target.classList.toggle('on',LENS);if(LENS)showInfo('lens');};
 requestAnimationFrame(frame);
-window.__macro={go,bloom,showPlanet:id=>showPlanet(PLANETS.find(p=>p.id===id)),ticket,get cur(){return cur}};
+window.__macro={setForm:f=>document.querySelector(`[data-form=${f}]`).click(),lens:()=>document.getElementById('lensbtn').click(),blow:()=>Dand.blow(),go,bloom,showPlanet:id=>showPlanet(PLANETS.find(p=>p.id===id)),ticket,get cur(){return cur}};
 })();
 </script>
 </body>
