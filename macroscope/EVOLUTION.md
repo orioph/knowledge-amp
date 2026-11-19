@@ -43,3 +43,11 @@ Cycle (the Dandelion): explore, collapse to one, express, relay back.
   - (b) A Seashell child-shell opening from any planet card.
   - (c) The LCTG / Diagramatica index as a fourth form: the macroscope pointed at diagrams themselves.
 - **Owed to Diagramatica:** add this run to its `learning_log` once `orioph/diagramatica` exists.
+
+### 2026-11-19 · approved queue (D: "all three and two I forgot to think of. Go.")
+Build these in a fresh chat, one per version, checking frames each time:
+1. v0.03: the KA atlas (`atlas/atlas.json`) fills the froth; every organ becomes a bubble.
+2. v0.04: a Seashell child-shell opens from any planet card (log-time lineage of that world).
+3. v0.05: a Diagramatica form; the macroscope points at `orioph/diagramatica`, with families as bubbles and methods as froth.
+4. v0.06 (the forgotten one, invented): Organelle's Earth mirror becomes the Earth card (Earth from space on this date in past years, plus a living-beings half).
+5. v0.07 (the other forgotten one, invented): the Sentence Bubble speaks. Wraywrai's voice reads each echo aloud, gently, and a mic-in breath blows the dandelion (Jinglia's illoscopia, kin).
