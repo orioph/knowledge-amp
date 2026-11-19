@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Macroscope 0.03 · Foam Cosmos + Sentence Bubble</title>
+<style>
+  html,body{margin:0;height:100%;background:#07050d;color:#e9e4f7;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+  canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:default}
+  #crumbs{position:fixed;top:14px;left:16px;font-size:13px;letter-spacing:.04em;color:#b9b0d6;user-select:none;z-index:5}
+  #crumbs span{cursor:pointer;opacity:.75}
+  #crumbs span:hover{opacity:1;color:#fff}
+  #crumbs b{font-weight:500;color:#fff}
+  #title{position:fixed;top:12px;right:16px;font-size:12px;color:#8e85ad;text-align:right;line-height:1.5;z-index:5;max-width:44vw}
+  #title em{font-style:normal;color:#d7cff5}
+  #hint{position:fixed;left:50%;top:52px;transform:translateX(-50%);font-size:13px;color:#cfc6ef;opacity:0;transition:opacity .4s;pointer-events:none;z-index:5;text-align:center;max-width:80vw}
+  #wingtoggle{position:fixed;top:40px;left:16px;font-size:12px;color:#b9b0d6;z-index:5;display:flex;gap:8px;align-items:center}
+  #wingtoggle button,#speed button,.card button,#ticketbox button{background:#1a1430;color:#e9e4f7;border:1px solid #3d3363;border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer}
+  #wingtoggle button.on{border-color:#a596ff;color:#fff;background:#2a2050}
+  #wingtoggle button:hover,.card button:hover,#ticketbox button:hover{border-color:#8f7fe0}
+  #speed{position:fixed;left:16px;top:70px;font-size:12px;color:#b9b0d6;z-index:5;display:none;gap:6px;align-items:center}
+  #bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);width:min(680px,92vw);z-index:6}
+  #bar form{display:flex;gap:8px}
+  #q{flex:1;background:rgba(18,13,34,.82);border:1px solid #44396e;border-radius:22px;color:#fff;padding:12px 18px;font-size:16px;outline:none}
+  #q:focus{border-color:#a596ff;box-shadow:0 0 0 3px rgba(150,130,255,.15)}
+  #go{background:#2a2050;border:1px solid #5a4b9a;color:#fff;border-radius:22px;padding:0 18px;font-size:14px;cursor:pointer}
+  #threads{margin:7px 6px 0;font-size:12px;color:#9a91bd;min-height:16px;line-height:1.5}
+  #threads i{font-style:normal;color:#cdbfff;cursor:pointer}
+  #err{color:#ff9a8a;font-size:12px;margin:4px 8px 0;min-height:0}
+  .card{position:fixed;right:16px;top:64px;width:min(360px,88vw);max-height:calc(100vh - 190px);overflow:auto;background:rgba(15,11,28,.93);border:1px solid #3a305e;border-radius:14px;padding:16px 18px;z-index:7;font-size:14px;line-height:1.55;display:none}
+  .card h2{margin:0 0 2px;font-size:19px;font-weight:500}
+  .card .sub{color:#a79fc8;font-size:12px;margin-bottom:10px}
+  .wings{display:grid;grid-template-columns:76px 1fr 34px;gap:4px 8px;align-items:center;font-size:12px;color:#bdb4dd;margin:8px 0 12px}
+  .wings .tr{height:6px;background:#241c40;border-radius:3px;overflow:hidden}
+  .wings .f{height:100%;background:#7fd6c2}.wings .g{height:100%;background:#e59ad0}
+  .news{margin:0;padding:0;list-style:none}
+  .news li{border-top:1px solid #2a2346;padding:9px 0}
+  .news .d{color:#8f87b3;font-size:11px}
+  .news a{color:#b9a8ff;font-size:12px;text-decoration:none}
+  .news a:hover{text-decoration:underline}
+  .credit{color:#9fe0cf;font-size:12px}
+  .card .row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+  .x{position:absolute;right:10px;top:8px;cursor:pointer;color:#8f87b3;font-size:18px;background:none!important;border:none!important}
+  #ticketbox{position:fixed;inset:0;background:rgba(5,3,10,.72);z-index:9;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+  #ticketbox canvas{max-width:92vw;height:auto;box-shadow:0 10px 50px rgba(0,0,0,.6)}
+  #toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(20,15,40,.92);border:1px solid #4b3f80;border-radius:12px;padding:8px 14px;font-size:13px;color:#e6dfff;opacity:0;transition:opacity .4s;z-index:8;pointer-events:none;max-width:86vw;text-align:center}
+  @media (max-width:640px){#title{display:none}.card{top:auto;bottom:118px;right:6vw;max-height:46vh}}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="crumbs"></div>
+<div id="wingtoggle">figurative wing <button id="figbtn">on</button> · form <button data-form="foam" class="on">foam</button><button data-form="dandelion">dandelion</button> · <button id="lensbtn">eye in the glass</button></div>
+<div id="speed">time <button data-s="0">pause</button><button data-s="today">today</button><button data-s=".25">slow</button><button data-s="1">1 yr / 20 s</button><button data-s="8">fast</button> <span id="date"></span></div>
+<div id="title"><em>Macroscope 0.03</em> · Foam Cosmos + Sentence Bubble<br>bubble → stick → glyph → echo → mirror → one</div>
+<div id="hint"></div>
+<div class="card" id="card"></div>
+<div id="ticketbox"><canvas id="tk" width="900" height="420" style="display:none"></canvas><img id="tkimg" alt="your Macroscope ticket" style="max-width:92vw;box-shadow:0 10px 50px rgba(0,0,0,.6)"><div style="font-size:12px;color:#b9b0d6">right-click or long-press the ticket to keep it</div><div><button id="tkclose">close</button></div></div>
+<div id="toast"></div>
+<div id="bar">
+  <form id="f" autocomplete="off">
+    <input id="q" placeholder="say anything · watch it bloom, collapse, and echo · try “mars” or “where do I begin?”" aria-label="Sentence bubble">
+    <button id="go" type="submit">breathe</button>
+  </form>
+  <div id="err"></div>
+  <div id="threads"></div>
+</div>
+<script>
+(()=>{
+'use strict';
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+let W=0,H=0,DPR=1;
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);scenes.forEach(s=>s.layout&&s.layout());if(typeof Dand!=='undefined')Dand.layout();}
+const TAU=Math.PI*2, rnd=(a,b)=>a+Math.random()*(b-a), clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+let seed=7;function srnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646;}
+function gauss(){return Math.sqrt(-2*Math.log(srnd()+1e-9))*Math.cos(TAU*srnd());}
+let FIG=true; // figurative wing visible
+let fog=0, fogX=0, fogY=0; // breath on the mirror
+const GATHERED='2026-11-19';
+const ATLAS={"nodes":[{"id":"ka","label":"Knowledge Amp","kind":"root","gist":"D's original design (taught by toyMaker, 2002 onward) for a new human intelligence, training, education and play network that concentrates assets across all users; a model of what toyMaker, and all of nature, use. Written up 2010-2025 as Knowledge Amp, Adaptive Heuristics and Intelligence Amp.","quote":"","src":"","status":"core"},{"id":"p-relation","label":"Intelligence is relation","kind":"principle","gist":"Intelligence is not owned by a person; it is evoked between people, in context, and only instanced locally.","quote":"This is the real birthplace of the stuff we speak about with the word intelligence: it is relation. Specifically. Always.","src":"KA2.scriv/Files/Docs/3.rtf","status":"unbuilt"},{"id":"p-pods","label":"Small, tightly-knit groups","kind":"principle","gist":"We are born, learn, prosper and are fulfilled in small groups where progress is visible and informs every member.","quote":"","src":"KA2.scriv/Files/Docs/3.rtf","status":"unbuilt"},{"id":"p-invitation","label":"Invitation, not declaration","kind":"principle","gist":"Authority demands declaration (control, profit); intelligence grows by invitation. The internet began as invitation and turned to declaration.","quote":"Intelligence » Invitation » Emergence : The Internet.","src":"KA2.scriv/Files/Docs/3.rtf","status":"unbuilt"},{"id":"p-childhood","label":"The internet is a childhood","kind":"principle","gist":"The network is an accelerated developmental domain, like a child gaining language: every loss becomes ten thousand, and so does every gain.","quote":"Internet = childhood.","src":"KA2.scriv/Files/Docs/9.rtf","status":"unbuilt"},{"id":"p-attention","label":"Attention is the money of learning","kind":"principle","gist":"Human attention is a developmental superfuel; children chase it because it amplifies memory and connection.","quote":"","src":"KA2.scriv/Files/Docs/3.rtf","status":"unbuilt"},{"id":"p-connotation","label":"Connotation is the key","kind":"principle","gist":"Minds are associative and connotative; today's tools are denotative indexes. Restore metaphor, ambiguity and association to every search.","quote":"Connotation is the key to prodigy and intelligence.","src":"IA.docx","status":"partial"},{"id":"p-likeminds","label":"Tools shaped like minds","kind":"principle","gist":"Minds take the shape of the tools they use, so put the burden of likeness on the technology, not the mind.","quote":"I want technologies that work more like our minds","src":"IA.docx","status":"unbuilt"},{"id":"p-mindright","label":"Users own what they make","kind":"principle","gist":"Users are the only real technology behind the internet; they should own the benefits of their activity, not be farmed for it.","quote":"","src":"Old/Quotes KA.scriv/Files/Data/E73F20CB-F180-4773-97DA-A176B0F8DA40/content.rtf","status":"seed"},{"id":"p-octopus","label":"Competition backwards","kind":"principle","gist":"Compete to raise everyone else's possible excellence first, and so your own. Promotion by mutual merit only.","quote":"octopuses are intelligent because all of them compete not merely to excel but to increase the possible excellence of all others first","src":"KA2.scriv/Files/Docs/3.rtf","status":"unbuilt"},{"id":"p-verity","label":"Verity over popularity","kind":"principle","gist":"Rank by truth, value and reliability, not by popularity or copying.","quote":"","src":"KA 1.docx","status":"partial"},{"id":"p-burning","label":"Burning forward","kind":"principle","gist":"Learning-forward: drop the shells that only bring popularity; keep what nourishes. Make only what is excellent.","quote":"We make only what is excellent, and things that arent? Die.","src":"Old/P T O KA.scriv/Files/Docs/3.rtf","status":"partial"},{"id":"p-nomasters","label":"No mimics, no masters","kind":"principle","gist":"The primary paradigm is mutual education. Reward mutuality and accomplishment, not individuality and appearance.","quote":"","src":"Old/P T O KA.scriv/Files/Docs/3.rtf","status":"unbuilt"},{"id":"p-ambiguity","label":"Return ambiguity","kind":"principle","gist":"Bring intelligent ambiguity back into learning and browsing: many vectors of extension, metaphor and meaning. Like Hebrew, use what is missing to enrich what is there.","quote":"","src":"KA2.scriv/Files/Docs/9.rtf","status":"unbuilt"},{"id":"p-laughter","label":"Laughter as agreement","kind":"principle","gist":"Laughter is a wave of shared, pleasant agreement; what is its equivalent for social intelligence? Swarms of people raining together over methods and purposes.","quote":"","src":"KA2.scriv/Files/Docs/3.rtf","status":"unbuilt"},{"id":"p-roles","label":"Give roles, not jobs","kind":"principle","gist":"Nature and humans give you better algorithms if you give them roles. We have been given jobs instead of roles since language, print and money.","quote":"","src":"KA2.scriv/Files/Docs/9.rtf","status":"seed"},{"id":"o-server","label":"Server / One-Way Barrier","kind":"organ","gist":"An anonymising wall between users and the internet: shows the internet a \"no one\" face, composes each person's artifact, runs search, sentinel and social hub.","quote":"","src":"IA.docx","status":"unbuilt"},{"id":"o-interface","label":"Interface (Intelligent Input Exploration Platform)","kind":"organ","gist":"Replaces the browser. Floats like two open hands: image rays on the left, text rays on the right, input and reception window between, synthesis controls below.","quote":"","src":"IA.docx","status":"partial"},{"id":"o-ce","label":"Connotation Engine","kind":"organ","gist":"Shows results inside a field of associated topics, images and media built from your artifact, with a dial from literal to associative.","quote":"","src":"IA.docx","status":"partial"},{"id":"o-constellator","label":"Constellator","kind":"organ","gist":"Three wheels (imaging metaphor cloud, linguistic metaphor cloud, conceptual cloud) whose front five items link into a constellation under the input bar; spin a wheel and the constellation changes.","quote":"","src":"KA 1.docx","status":"partial"},{"id":"o-etym","label":"Linguistic Analysis / Etymology AI","kind":"organ","gist":"A window above the input that shows the etymology, synonyms, metaphors and analogies of whatever you type, so every search deepens your language.","quote":"","src":"IA.docx","status":"partial"},{"id":"o-iar","label":"Intelligence Artifact","kind":"organ","gist":"A locally stored, encrypted, ever-growing record of one person's (or group's) electronic life and analytics: their \"secondary mind\". Layered from fully public to fully private; can be linked, blended, sold by layer, and used as identity.","quote":"","src":"IA.docx","status":"built"},{"id":"o-sentinel","label":"Vetting Sentinel","kind":"organ","gist":"A forensic toolbox trained by people that overlays any media with its pedigree, verity, rhetoric, purpose and beneficiaries; makes lying and copying expensive.","quote":"","src":"IA.docx","status":"partial"},{"id":"o-passforge","label":"Passforge (Identity Agent)","kind":"organ","gist":"Identity proven by your own unfakeable activity, stored in your artifact; recognises its author only and can replace passwords.","quote":"","src":"RK.docx","status":"seed"},{"id":"o-sna","label":"Social Networking Agent","kind":"organ","gist":"Forum, adventure system, identity map and learning environment in one, connected to each person's artifact.","quote":"","src":"IA.docx","status":"seed"},{"id":"o-adventure","label":"Social Adventuring System","kind":"organ","gist":"Avatars form teams, take on meaningful roles and compete to solve real-world problems, with badges, levels and classes earned by merit.","quote":"","src":"IA.docx","status":"seed"},{"id":"o-dividends","label":"Data democracy investment system","kind":"organ","gist":"User-owned search and social systems that pay users dividends in cash and intelligence every time they are used.","quote":"","src":"RK.docx","status":"seed"},{"id":"o-pods","label":"Pods, scouts, predators, mimics","kind":"organ","gist":"Linked rings of small groups bound by purpose; scouts or orbitals bring in outside news and gain powers; predators may be neutral, aggressive or mimetic; elders and kids are types.","quote":"","src":"Old/P T O KA.scriv/Files/Docs/3.rtf","status":"seed"},{"id":"f-travel","label":"Travelling into constellations","kind":"flow","gist":"Search fills the front of each ray; pick a few results and press proceed, and they become the next input, so you travel level by level instead of reading a list.","quote":"","src":"IA.docx","status":"partial"},{"id":"f-newscast","label":"The newscast vetting","kind":"flow","gist":"Watch a newscast; the Sentinel transcribes it and builds forensic overlays; you score earlier evaluations, add your own and are credited when it is outed as propaganda. A Sherlock Holmes adventure from one video.","quote":"","src":"KA 1.docx","status":"partial"},{"id":"f-searchas","label":"Searching as someone else","kind":"flow","gist":"Search as yourself, as a friend, as a blend of people, or as a composite of the dead (Einstein, Socrates) built from their records.","quote":"","src":"IA.docx","status":"built"},{"id":"f-swarm","label":"Swarms re-resolving in waves","kind":"flow","gist":"Learning comes in wave-like reintroductions of the same ideas from shifting perspectives: multiple passes, re-recognising.","quote":"","src":"KA2.scriv/Files/Docs/3.rtf","status":"partial"},{"id":"f-trance","label":"Trance","kind":"flow","gist":"A pulsed, wave-like group dance of focused attention that celebrates every member, rewards diversity and keeps honesty without rules; collapsing it onto one person breaks it.","quote":"","src":"Old/Knowledge Amp.scriv/Files/Data/3F69961E-C28A-4515-9164-313669364763/content.rtf","status":"built"},{"id":"f-periphery","label":"The peripheral forest","kind":"flow","gist":"At D's desk, videos sit to the left and books to the right, like a forest walk to the screen, until the flat rectangle strips it away. KA restores that periphery.","quote":"","src":"KA2.scriv/Files/Docs/9.rtf","status":"partial"},{"id":"w-between","label":"Intelligence is Between Us","kind":"word","gist":"Title node of the ASL map: intelligence is the mutual pursuit of trusted insight, recognition and advancement.","quote":"","src":"ASL.scap","status":"unbuilt"},{"id":"w-dreamdata","label":"dream in dataspace","kind":"word","gist":"Explore by constellation and metaphor instead of index and list.","quote":"","src":"RK.docx","status":"built"},{"id":"w-mindright","label":"mindright","kind":"word","gist":"Not copyright: ownership of the intelligence your activity makes.","quote":"","src":"Old/Quotes KA.scriv/Files/Data/E73F20CB-F180-4773-97DA-A176B0F8DA40/content.rtf","status":"seed"},{"id":"w-metaphy","label":"metaphy / metaphication","kind":"word","gist":"Turning data relationships into metaphor: dimensions of knowledge, flow instead of stasis.","quote":"","src":"Old/P T O KA.scriv/Files/Docs/3.rtf","status":"built"},{"id":"w-rhetological","label":"rhetological","kind":"word","gist":"Rhetoric plus logic: analysis of how speech persuades; a planned markup language.","quote":"","src":"Old/P T O KA.scriv/Files/Docs/3.rtf","status":"partial"},{"id":"w-hach","label":"HACH","kind":"word","gist":"Human-Assisted Computational Heuristics: D's name for what is usually called AI or machine learning, with people training it.","quote":"","src":"IA.docx","status":"seed"},{"id":"w-datagiants","label":"dataGiants, infoMonsters, infoserfs","kind":"word","gist":"The giants who farm data and the users who build their pyramids.","quote":"","src":"KA2.scriv/Files/Docs/9.rtf","status":"unbuilt"},{"id":"w-add","label":"accelerated developmental domain","kind":"word","gist":"The internet seen as a sped-up childhood.","quote":"","src":"KA2.scriv/Files/Docs/3.rtf","status":"unbuilt"},{"id":"w-liquid","label":"liquid government","kind":"word","gist":"A context-sensitive superposition of governing intelligences that is trustworthy by the nature of its organs.","quote":"","src":"KA2.scriv/Files/Docs/3.rtf","status":"unbuilt"},{"id":"w-avatars","label":"learning-avatars","kind":"word","gist":"Avatars of intelligence and sensing, not persona; they compete as informational superheroes and fight in digital space instead of physical.","quote":"","src":"KA2.scriv/Files/Docs/4.rtf","status":"seed"},{"id":"w-parauser","label":"para-users","kind":"word","gist":"Theoretical users composited from shared layers of several artifacts.","quote":"","src":"IA.docx","status":"unbuilt"},{"id":"w-ipr","label":"IPR","kind":"word","gist":"Intimate, purposive, relational: what intelligence is, and what computation is not.","quote":"Intelligence is intimate, purposive, and relational. IPR.","src":"There is too much to tell. A.textClipping","status":"unbuilt"},{"id":"w-supergroups","label":"superGroups","kind":"word","gist":"Group intelligence flows down to individuals, who improve it with every move, inside constellated superGroups.","quote":"","src":"Int Amp Cuts/They do the opposite of what.textClipping","status":"seed"},{"id":"f-ecogame","label":"The nature-cost lens","kind":"flow","gist":"An augmented-reality game, like seeing Pokemon through a phone, that shows the cost or benefit to nature and community of any product or business; you win by preserving them through your choices.","quote":"","src":"Just as people are able to p.textClipping","status":"built"},{"id":"f-photo","label":"The burning-building photo","kind":"flow","gist":"Searching for a fire photo, the Sentinel shows where and by whom it was taken and that copies were doctored; you are credited, the fakes and their sites are devalued, and the internet gets smarter.","quote":"","src":"You are looking for an image.textClipping","status":"partial"},{"id":"p-surveillance","label":"Surveillance as an asset","kind":"principle","gist":"Minds are born in loving surveillance: parents, peers and imaginary friends watching, and we imagine what they'd think. KA turns surveillance from a tool for selling and prosecuting into one that builds our own intelligence.","quote":"surveillance is an asset that we can use to build new forms of intelligence","src":"Sketching The Knowledge Amp_ A Mutual Intelligence Synthesis Engine.mp4","status":"built"},{"id":"p-dreaming","label":"Memory is not storage","kind":"principle","gist":"Minds work like dreaming or forests, not dictionaries; if we do not dream we cannot learn, and we die. Search that retrains us to think in flat lists damages intelligence.","quote":"Memory is not storage, it is like constellations of living gardens.","src":"There is too much to tell. A.textClipping","status":"partial"},{"id":"w-superfunction","label":"mutual superfunction","kind":"word","gist":"What a tightly knit team (like a sports team) reaches when its members watch each other closely: perception and action beyond normal function. KA aims that at real problems, not scoreboards.","quote":"","src":"Sketching The Knowledge Amp_ A Mutual Intelligence Synthesis Engine.mp4","status":"unbuilt"},{"id":"w-synth","label":"intelligence synthesizer","kind":"word","gist":"D's 2013 summary of what KA is for: making the music of human intelligence together, mostly just by talking, watching and reading.","quote":"","src":"Sketching The Knowledge Amp_ A Mutual Intelligence Synthesis Engine.mp4","status":"built"},{"id":"n-jinglia","label":"Jinglia","kind":"now","gist":"A metasynth web experience: Wraywrai, wardrobe, songome, linguisynth, plidge recordings. D calls it a toy of KA.","quote":"","src":"","status":"built"},{"id":"n-ww","label":"Wraywrai","kind":"now","gist":"Jinglia's origin character: synths words (wyrdulation), wardrobe looks, illoscopia lips.","quote":"","src":"","status":"built"},{"id":"n-display","label":"KA Display Center 0.02","kind":"now","gist":"Petals of images left, facts right, bridges middle, etymology above the input, the first shell below; sources first.","quote":"","src":"","status":"partial"},{"id":"n-seashell","label":"Strange Temporal Seashell","kind":"now","gist":"Log-time spiral of anomalous history; chosen as the model of the Vetting Sentinel: lineage, origin, 'factual vs figurative'.","quote":"","src":"","status":"partial"},{"id":"n-kaskill","label":"Ka skill","kind":"now","gist":"Gathers all historical data into one verified archive with a catalog of every copy's origin.","quote":"","src":"","status":"partial"},{"id":"n-visit","label":"Visit + fingerprint","kind":"now","gist":"Consented self-inspection of D's machines: assistive self-surveillance, owned by the user.","quote":"","src":"","status":"built"},{"id":"n-digest","label":"digest + dictionaries","kind":"now","gist":"Reads a folder or site into a seed + pool dictionary. KA 66/499, Organelle 108/10,922, Wondercloud, Dreamknots, Ovum.","quote":"","src":"","status":"built"},{"id":"n-bseek","label":"bseek","kind":"now","gist":"Maps the whole possibility space of an item across cost, value, risk, irony; steps people down.","quote":"","src":"","status":"built"},{"id":"n-e3","label":"e3 + JiSp","kind":"now","gist":"Four tenders re-resolve a target and return one contender; JiSp sphere where organs share a warp-proof reading.","quote":"","src":"","status":"partial"},{"id":"n-inherit","label":"inherit","kind":"now","gist":"Everything, the Contender question and the Babelfish: searching through lineages of genres and artists.","quote":"","src":"","status":"built"},{"id":"n-mantic","label":"Mantic Librarian, ia, CoSu","kind":"now","gist":"Record-keeping organs: harvest every chat, keep history, advise next sessions.","quote":"","src":"","status":"built"},{"id":"n-keys","label":"Inception keys / Jinglian key","kind":"now","gist":"Sticker, QR and punch-card keys whose reach is tracked and shown to their owner.","quote":"","src":"","status":"seed"},{"id":"n-network","label":"Jinglia network game","kind":"now","gist":"Tokens to message and notify, groups, everyone's secret mission; cell-groups that invert problems.","quote":"","src":"","status":"seed"},{"id":"n-income","label":"Income Agents + Mac box service","kind":"now","gist":"Agents and the 'customized box' business: the dividends side, paid on Thursday.","quote":"","src":"","status":"seed"},{"id":"n-luci","label":"Luci (voice to illustrated video)","kind":"now","gist":"Turns spoken recordings into RSA-style whiteboard videos: D's hundreds of hours of talk made visible.","quote":"","src":"","status":"seed"},{"id":"n-story","label":"Metafiction story engine","kind":"now","gist":"A self-rewriting story organism with genes, invariants and engine natures.","quote":"","src":"","status":"seed"},{"id":"n-pkd","label":"PKD + VALIS","kind":"now","gist":"A library of sci-fi devices and metamethods, tended from above by VALIS. Not built.","quote":"","src":"","status":"seed"}],"links":[["ka","p-relation","has"],["ka","p-pods","has"],["ka","p-invitation","has"],["ka","p-childhood","has"],["ka","p-attention","has"],["ka","p-connotation","has"],["ka","p-likeminds","has"],["ka","p-mindright","has"],["ka","p-octopus","has"],["ka","p-verity","has"],["ka","p-burning","has"],["ka","p-nomasters","has"],["ka","p-ambiguity","has"],["ka","p-laughter","has"],["ka","p-roles","has"],["ka","o-server","has"],["ka","o-interface","has"],["ka","o-ce","has"],["ka","o-constellator","has"],["ka","o-etym","has"],["ka","o-iar","has"],["ka","o-sentinel","has"],["ka","o-passforge","has"],["ka","o-sna","has"],["ka","o-adventure","has"],["ka","o-dividends","has"],["ka","o-pods","has"],["ka","f-travel","has"],["ka","f-newscast","has"],["ka","f-searchas","has"],["ka","f-swarm","has"],["ka","f-trance","has"],["ka","f-periphery","has"],["ka","w-between","has"],["ka","w-dreamdata","has"],["ka","w-mindright","has"],["ka","w-metaphy","has"],["ka","w-rhetological","has"],["ka","w-hach","has"],["ka","w-datagiants","has"],["ka","w-add","has"],["ka","w-liquid","has"],["ka","w-avatars","has"],["ka","w-parauser","has"],["ka","w-ipr","has"],["ka","w-supergroups","has"],["ka","f-ecogame","has"],["ka","f-photo","has"],["ka","p-surveillance","has"],["ka","p-dreaming","has"],["ka","w-superfunction","has"],["ka","w-synth","has"],["o-interface","n-display","embodied"],["o-constellator","n-display","embodied"],["o-etym","n-display","embodied"],["o-ce","n-display","embodied"],["f-travel","n-display","embodied"],["f-periphery","n-display","embodied"],["o-sentinel","n-seashell","embodied"],["f-newscast","n-seashell","embodied"],["f-photo","n-seashell","embodied"],["w-rhetological","n-seashell","embodied"],["o-iar","n-kaskill","embodied"],["o-iar","n-visit","embodied"],["p-surveillance","n-visit","embodied"],["o-iar","n-mantic","embodied"],["o-passforge","n-keys","embodied"],["o-sna","n-network","embodied"],["o-adventure","n-network","embodied"],["w-avatars","n-network","embodied"],["o-pods","n-network","embodied"],["w-supergroups","n-network","embodied"],["f-trance","n-jinglia","embodied"],["o-dividends","n-income","embodied"],["p-mindright","n-income","embodied"],["w-mindright","n-income","embodied"],["f-searchas","n-inherit","embodied"],["f-swarm","n-e3","embodied"],["w-metaphy","n-jinglia","embodied"],["w-dreamdata","n-jinglia","embodied"],["w-synth","n-jinglia","embodied"],["w-synth","n-ww","embodied"],["f-ecogame","n-bseek","embodied"],["p-dreaming","n-seashell","embodied"],["s-video2013","n-digest","embodied"],["s-video2026","n-digest","embodied"],["s-video2026","n-luci","embodied"],["p-connotation","n-display","embodied"],["p-verity","n-seashell","embodied"],["p-roles","n-network","embodied"],["p-burning","n-e3","embodied"],["w-hach","n-pkd","embodied"],["c0","n-display","chat"],["c1","n-seashell","chat"],["c2","n-luci","chat"],["c3","n-bseek","chat"],["c4","n-visit","chat"],["c5","n-mantic","chat"],["c6","n-kaskill","chat"],["c7","n-e3","chat"],["c8","n-visit","chat"],["c9","n-kaskill","chat"],["c10","n-bseek","chat"],["c11","n-bseek","chat"],["c12","n-mantic","chat"],["c13","n-income","chat"],["c14","n-ww","chat"],["c15","n-e3","chat"],["c16","n-inherit","chat"],["c17","n-ww","chat"],["c18","n-mantic","chat"],["c19","n-jinglia","chat"],["c20","n-story","chat"],["c21","n-luci","chat"],["c22","n-jinglia","chat"],["c23","n-story","chat"],["c24","p-dreaming","chat"],["c25","o-sentinel","chat"],["c26","p-dreaming","chat"],["c27","p-relation","chat"],["c28","o-server","chat"],["c29","o-server","chat"]]};
+const KHUE={root:48,organ:165,principle:265,flow:205,word:320,now:20};const KR={root:13,organ:10,principle:7.5,flow:6.5,word:5,now:5};
+const KWING={root:[.6,.9],organ:[.75,.6],principle:[.8,.55],flow:[.7,.6],word:[.85,.5],now:[.9,.35]};
+
+/* ---------- store (per viewer, best effort) ---------- */
+const store={get(k,d){try{const v=localStorage.getItem('macroscope.'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('macroscope.'+k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- facts: news gathered at build time ---------- */
+const N=(d,t,src,url,credit)=>({d,t,src,url,credit});
+const PLANETS=[
+ {id:'mercury',name:'Mercury',P:87.969,a:0.387,L0:252.25,r:3.2,col:'#b9aea0',fact:.98,fig:.25,
+  sub:'innermost world · no moons',
+  news:[N('21 Nov 2026','ESA/JAXA BepiColombo is due to be captured into a polar orbit around Mercury on 21 November, after an eight-year cruise. Its two orbiters part on 9–10 December; science begins April 2027.','ESA','https://www.esa.int/Science_Exploration/Space_Science/BepiColombo/Latest_updates_BepiColombo_s_arrival_at_Mercury','ESA and JAXA BepiColombo teams')]},
+ {id:'venus',name:'Venus',P:224.701,a:0.723,L0:181.98,r:5,col:'#e8cf98',fact:.97,fig:.35,
+  sub:'the hot veiled twin · no moons',
+  news:[N('Sep 2026','Simulations suggest Venus may once have had a moon, and that the planet’s extremely slow spin could have doomed it.','ScienceDaily','https://sciencedaily.com/news/space_time/uranus/','the simulation researchers'),
+        N('Apr 2026','Cosmic dust has been identified as the source of Venus’s puzzling lower haze layer.','Phys.org','https://phys.org/space-news/planetary-sciences/page4.html','the Venus haze study team')]},
+ {id:'earth',name:'Earth',P:365.256,a:1,L0:100.46,r:5.3,col:'#6fb7ff',fact:.99,fig:.6,
+  sub:'here · one Moon, plus a passing mini-moon',
+  news:[N('29 Oct 2026','Earth has a temporary second moon: 2026 QQ8, a rock a metre or two across, captured in late April and spotted on 20 August by Krisztián Sárneczky. It should slip away around the turn of the year.','EarthSky','https://earthsky.org/?p=563825','Krisztián Sárneczky and the Minor Planet Center'),
+        N('Apr 2026','Artemis II carried Reid Wiseman, Victor Glover, Christina Koch and Jeremy Hansen around the Moon: the first crewed lunar voyage in over 50 years, and the farthest humans have ever travelled.','Torre News','https://torre.news/artemis-ii-splashes-down-on-earth-after-10-day-moon-flight-videos','NASA, CSA and the Artemis II crew')]},
+ {id:'mars',name:'Mars',P:686.98,a:1.524,L0:355.45,r:4.2,col:'#e07a52',fact:.98,fig:.45,
+  sub:'red planet · two moons',
+  news:[N('Nov 2026','Perseverance has confirmed complex organic carbon just beneath the surface of ancient Martian rocks.','ScienceDaily','https://www.sciencedaily.com/terms/mars_exploration_rover.htm','NASA/JPL Perseverance team'),
+        N('Oct 2026','Perseverance’s odometer passed 28.10 miles, beating Opportunity’s record for the longest drive on another world.','RTTNews','https://www.rttnews.com/story.aspx?Id=3698424','NASA/JPL rover drivers'),
+        N('Sep 2026','Curiosity marked 5,000 Martian days with a blended morning-and-afternoon “postcard” of Mars.','ScienceDaily','https://sciencedaily.com/news/space_time/mars/','NASA/JPL Curiosity team')]},
+ {id:'jupiter',name:'Jupiter',P:4332.59,a:5.203,L0:34.40,r:11,col:'#d9b48a',fact:.98,fig:.4,
+  sub:'giant · 101 known moons',
+  news:[N('Jul 2026','Juno’s microwave radiometer took the temperature beneath the surface of Io, the volcanic moon.','NASA','https://www.nasa.gov/?p=323123','NASA/JPL/SwRI Juno team'),
+        N('Mar 2026','New discoveries brought Jupiter’s known moons to 101 and Saturn’s to 285.','The News','https://www.thenews.com.pk/amp/1396397-scientists-find-new-moons-expanding-solar-system-count','Edward Ashton and colleagues'),
+        N('2026','Europa Clipper is cruising toward Jupiter and is due to arrive in 2030 to study Europa’s ocean.','Anantam IAS','https://anantamias.com/major-missions-to-jupiter-and-its-moons/?pdf=1','NASA Europa Clipper team')]},
+ {id:'saturn',name:'Saturn',P:10759.22,a:9.537,L0:49.94,r:9.5,col:'#e6d29a',ring:true,fact:.98,fig:.4,
+  sub:'ringed · 285 known moons',
+  news:[N('Mar 2026','Eleven more small moons found by Edward Ashton’s team bring Saturn to 285, far more than any other planet.','The News','https://www.thenews.com.pk/amp/1396397-scientists-find-new-moons-expanding-solar-system-count','Edward Ashton and colleagues')]},
+ {id:'uranus',name:'Uranus',P:30688.5,a:19.19,L0:313.23,r:7.5,col:'#9fe3e6',fact:.97,fig:.45,
+  sub:'tilted ice giant · 29 known moons',
+  news:[N('Oct 2026','A new concept suggests SpaceX’s Starship could transform a future mission to Uranus.','ScienceDaily','https://sciencedaily.com/news/space_time/uranus/','the mission-concept authors'),
+        N('2025','JWST spotted a small new moon, S/2025 U1, hidden in the glow of the rings.','Yahoo News','https://www.yahoo.com/news/articles/astronomers-found-tiny-moon-orbiting-170720123.html','the JWST observing team')]},
+ {id:'neptune',name:'Neptune',P:60182,a:30.07,L0:304.88,r:7.3,col:'#5a7cff',fact:.97,fig:.45,
+  sub:'windy ice giant · 16 known moons',
+  news:[N('Apr 2026','Simulations suggest ice giants like Neptune may hide a strange superionic state of carbon hydride deep inside.','Sci.News','https://www.sci.news/tag/neptune','the simulation researchers'),
+        N('Aug 2026','Experiments on diamond at pressures beyond those inside Neptune and Uranus settled a long-running clash between theory and observation.','ScienceDaily','https://sciencedaily.com/news/space_time/uranus/','the high-pressure experiment team')]}
+];
+const SUN={id:'sun',name:'The Sun',fact:.99,fig:.5,sub:'our star · the dot at the centre of this sphere',
+  news:[N('12 Aug 2026','A solar eclipse crossed the sky on 12 August 2026.','Astronomy Now','https://astronomynow.com/tag/europa-clipper/','eclipse watchers everywhere')]};
+const LEVELINFO={
+ dandelion:{name:'Dandelion clock',sub:'explore · collapse to one · expand again',fact:.45,fig:.92,
+   body:'Each seed is a world. Breathe and they go out to explore, then fall back into one dot (it looks like sleep, and it is not), then grow again along new paths. The seeds sit on the golden angle, the sunflower rule (phyllotaxis). Your own threads ride some of the seeds.'},
+ lens:{name:'The eye in the glass',sub:'the macroscope looking back',fact:.3,fig:.95,
+   body:'A lens that magnifies whatever level you are on. In its glass is an eye: the one doing the seeing. Its rim turns like an astrolabe over the sky.'},
+ meta:{name:'Meta bubble',sub:'everything · creation · the cosmos as one',fact:.12,fig:.97,
+   body:'The one bubble. The froth in its corner is the physical part. They reflect and feed each other: the dot, the inside of the sphere and its outside, mirrored without interval.'},
+ web:{name:'Cosmic web',sub:'filaments of galaxies, the largest structure known',fact:.95,fig:.35,
+   body:'Galaxies gather along filaments and walls around vast voids. The pink flashes are the figurative wing: “instantaneous star networks”, an elusiphore, not a measurement.'},
+ galaxy:{name:'Milky Way',sub:'hundreds of billions of stars · the Sun ~26,000 light-years out',fact:.96,fig:.35,
+   body:'Our galaxy, drawn as a barred spiral. The green twinkles are the figurative wing: “trillions of living worlds” is a hope and a wonder, not yet a count. Click the Sun to go home.'}
+};
+
+/* ---------- foam bubble drawing (thin-film shimmer) ---------- */
+function bubble(x,y,r,t,a=1,hueOff=0){
+  if(r<0.5)return;
+  ctx.save();ctx.globalAlpha=a;
+  const g=ctx.createRadialGradient(x-r*.3,y-r*.35,r*.1,x,y,r);
+  g.addColorStop(0,'rgba(255,255,255,0.05)');g.addColorStop(.75,'rgba(150,130,255,0.04)');g.addColorStop(1,'rgba(200,180,255,0.16)');
+  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();
+  const n=r>60?7:3;
+  for(let i=0;i<n;i++){
+    const h=(hueOff+t*18+i*47+(x+y)*.2)%360;
+    ctx.strokeStyle=`hsla(${h},90%,72%,${(r>60?.22:.5)/(1+i*.6)})`;
+    ctx.lineWidth=Math.max(.6,r*(r>60?.012:.05));
+    ctx.beginPath();ctx.arc(x,y,r*(1-i*(r>60?.006:.05)),0,TAU);ctx.stroke();
+  }
+  const ha=r>60?.06:r>20?.16:.5;ctx.fillStyle=`rgba(255,255,255,${ha})`;ctx.beginPath();
+  ctx.ellipse(x-r*.5,y-r*.55,r*(r>20?.11:.18),r*(r>20?.045:.08),-.7,0,TAU);ctx.fill();
+  ctx.restore();
+}
+function addFog(x,y){fog=1;fogX=x;fogY=y;}
+function drawFog(){
+  if(fog<=0.01)return;
+  const R=Math.hypot(W,H)*(1.15-fog);
+  const g=ctx.createRadialGradient(fogX,fogY,0,fogX,fogY,R);
+  g.addColorStop(0,`rgba(235,230,255,${.22*fog})`);g.addColorStop(.6,`rgba(200,190,255,${.10*fog})`);g.addColorStop(1,'rgba(200,190,255,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+}
+
+/* ---------- scenes ---------- */
+const scenes=[];
+const Meta={key:'meta',label:'meta',foam:[],stars:[],
+ layout(){this.cx=W*.47;this.cy=H*.46;this.R=Math.min(W,H)*.38;
+   const fx=this.cx+this.R*.42,fy=this.cy+this.R*.47;this.fx=fx;this.fy=fy;
+   seed=11;this.foam=[];
+   const sc=clamp(this.R/300,.55,1.3);ATLAS.nodes.forEach((n,i)=>{const a=srnd()*TAU,d=Math.sqrt(srnd())*this.R*.2;this.foam.push({x:fx+Math.cos(a)*d,y:fy+Math.sin(a)*d,r:KR[n.kind]*sc,ph:srnd()*TAU,n});});
+   for(let k=0;k<60;k++)for(let i=0;i<this.foam.length;i++)for(let j=i+1;j<this.foam.length;j++){const A=this.foam[i],B=this.foam[j];const dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy)||1,m=A.r+B.r+1;if(d<m){const p=(m-d)/2/d;A.x-=dx*p;A.y-=dy*p;B.x+=dx*p;B.y+=dy*p;}}
+   const kc=store.get('keys',{});Object.keys(kc).slice(-30).forEach(k=>this.addBubble(k,true));this.relax(60);
+   this.stars=[];for(let i=0;i<220;i++)this.stars.push({x:srnd()*W,y:srnd()*H,a:srnd()*.6,s:srnd()*1.2});
+   this.dust=[];for(let i=0;i<180;i++){const a=srnd()*TAU,d=Math.sqrt(srnd())*this.R*.92;this.dust.push({a,d,s:.2+srnd()*.8,h:200+srnd()*120});}
+ },
+ addBubble(k,quiet){if(this.foam.some(b=>b.k===k))return;const a=Math.random()*TAU,d=this.R*.2;this.foam.push({x:this.fx+Math.cos(a)*d,y:this.fy+Math.sin(a)*d,r:4+Math.random()*5,ph:Math.random()*TAU,k,born:quiet?0:1});if(!quiet)this.relax(40);},
+ relax(n){const F=this.foam;for(let k=0;k<n;k++)for(let i=0;i<F.length;i++){const A=F[i];A.x+=(this.fx-A.x)*.004;A.y+=(this.fy-A.y)*.004;for(let j=i+1;j<F.length;j++){const B=F[j];const dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy)||1,m=A.r+B.r+1;if(d<m){const p=(m-d)/2/d;A.x-=dx*p;A.y-=dy*p;B.x+=dx*p;B.y+=dy*p;}}}},
+ draw(t,dt){
+   if(FORM==='dandelion')return Dand.draw(t,dt);
+   for(const s of this.stars){ctx.fillStyle=`rgba(220,210,255,${s.a*(.6+.4*Math.sin(t*.7+s.x))})`;ctx.fillRect(s.x,s.y,s.s,s.s);}
+   const {cx,cy,R}=this;
+   for(const p of this.dust){const a=p.a+t*.012*p.s;const x=cx+Math.cos(a)*p.d,y=cy+Math.sin(a)*p.d*.92;ctx.fillStyle=`hsla(${p.h+t*4},70%,75%,.18)`;ctx.fillRect(x,y,1.3,1.3);}
+   bubble(cx,cy,R,t,1);
+   // the outside reflects the inside: mirrored ghost of the foam across the centre
+   for(const b of this.foam){const mx=2*cx-b.x,my=2*cy-b.y;ctx.strokeStyle=`hsla(${(t*20+b.ph*50)%360},80%,80%,.10)`;ctx.lineWidth=.7;ctx.beginPath();ctx.arc(mx,my,b.r*1.6,0,TAU);ctx.stroke();}
+   // threads: the physical bubbles feed each other
+   const F=this.foam;
+   for(let i=0;i<F.length;i++)for(let j=i+1;j<F.length;j++){const A=F[i],B=F[j],d=Math.hypot(A.x-B.x,A.y-B.y);if(d<A.r+B.r+18){const p=.5+.5*Math.sin(t*2.2+A.ph+B.ph);ctx.strokeStyle=`rgba(170,240,225,${.08+.25*p})`;ctx.lineWidth=.6;ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();}}
+   // thread from foam to the whole: feeding the meta bubble
+   ctx.strokeStyle=`rgba(200,180,255,${.12+.08*Math.sin(t)})`;ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(this.fx,this.fy);ctx.quadraticCurveTo(cx+R*.1,cy+R*.1,cx-R*.2,cy-R*.25);ctx.stroke();
+   if(this.hovN){const id=this.hovN.n.id;for(const l of ATLAS.links)if(l[0]===id||l[1]===id){const o=F.find(b=>b.n&&b.n.id===(l[0]===id?l[1]:l[0]));if(o){ctx.strokeStyle='rgba(255,236,170,.55)';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(this.hovN.x,this.hovN.y);ctx.lineTo(o.x,o.y);ctx.stroke();}}}
+   for(const b of F){const wob=Math.sin(t*1.3+b.ph)*.6;if(b.n){ctx.fillStyle=`hsla(${KHUE[b.n.kind]},70%,60%,${b===this.hovN?.55:.22})`;ctx.beginPath();ctx.arc(b.x+wob,b.y-wob,b.r,0,TAU);ctx.fill();}bubble(b.x+wob,b.y-wob,b.r,t,1,b.n?KHUE[b.n.kind]:b.ph*60);
+     // each small bubble holds a tiny image of the big one
+     if(b.r>4){ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=.5;ctx.beginPath();ctx.arc(b.x+b.r*.25,b.y+b.r*.2,b.r*.28,0,TAU);ctx.stroke();ctx.fillStyle='rgba(180,255,235,.8)';ctx.fillRect(b.x+b.r*.38,b.y+b.r*.33,1.2,1.2);}
+     if(fog>.05){ctx.fillStyle=`rgba(255,255,255,${.35*fog})`;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,TAU);ctx.fill();}
+     if(b.born>0){ctx.strokeStyle=`rgba(255,255,255,${b.born})`;ctx.beginPath();ctx.arc(b.x,b.y,b.r+12*(1-b.born),0,TAU);ctx.stroke();b.born=Math.max(0,b.born-.01);}}
+   if(this.hovN){ctx.font='11px system-ui,sans-serif';ctx.fillStyle='#fff3c8';ctx.fillText(this.hovN.n.label,this.hovN.x+this.hovN.r+3,this.hovN.y-this.hovN.r);}
+   {const org=F.filter(b=>b.n&&(b.n.kind==='organ'||b.n.kind==='root'));ctx.font='9px system-ui,sans-serif';ctx.fillStyle='rgba(200,255,240,.55)';if(this.R>220)for(const b of org)ctx.fillText(b.n.label.split(/[ (]/)[0],b.x-b.r,b.y+b.r+9);}
+   const lab=F.filter(b=>b.k).slice(-8);ctx.font='10px system-ui,sans-serif';ctx.fillStyle='rgba(180,255,235,.75)';for(const b of lab)ctx.fillText(b.k,b.x+b.r+2,b.y+3);
+   if(fog>.05){ctx.strokeStyle=`rgba(255,255,255,${.5*fog})`;ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,R,0,TAU);ctx.stroke();}
+   if(this.hoverFoam){ctx.strokeStyle='rgba(180,255,235,.6)';ctx.setLineDash([3,4]);ctx.beginPath();ctx.arc(this.fx,this.fy,this.R*.22,0,TAU);ctx.stroke();ctx.setLineDash([]);}
+ },
+ nodeAt(x,y){let best=null,bd=1e9;for(const b of this.foam)if(b.n){const d=Math.hypot(x-b.x,y-b.y)-b.r;if(d<4&&d<bd){bd=d;best=b;}}return best;},
+ hit(x,y){if(this.nodeAt(x,y))return 'node';if(Math.hypot(x-this.fx,y-this.fy)<this.R*.3)return 'foam';if(Math.hypot(x-this.cx,y-this.cy)<this.R)return 'meta';return null;},
+ hover(x,y){if(FORM==='dandelion')return Dand.hover(x,y);const h=this.hit(x,y);this.hoverFoam=h==='foam';this.hovN=h==='node'?this.nodeAt(x,y):null;if(this.hovN)return `${this.hovN.n.label} · ${this.hovN.n.kind} of the Knowledge Amp · click to read`;return h==='foam'?'the physical part · click to travel in':h==='meta'?'the meta bubble · everything · click to read it':''},
+ click(x,y){if(FORM==='dandelion')return Dand.click(x,y);const h=this.hit(x,y);if(h==='node')showNode(this.nodeAt(x,y).n);else if(h==='foam')go('web',x,y);else if(h==='meta')showInfo('meta');}
+};
+let FORM='foam', LENS=false, mx=-1, my=-1, lastMove=-99;
+const GOLD=Math.PI*(3-Math.sqrt(5));
+const Dand={st:'rest',T:0,
+ layout(){this.cx=W*.47;this.cy=H*.44;this.R=Math.min(W,H)*.27;this.seeds=[];const n=144;
+   for(let i=0;i<n;i++){const a=i*GOLD,rr=Math.sqrt((i+.5)/n);this.seeds.push({a,rr,len:.78+.22*rr+Math.random()*.06,ph:Math.random()*TAU,vx:0,vy:0,ox:0,oy:0});}
+   this.stars=[];for(let i=0;i<200;i++)this.stars.push({x:Math.random()*W,y:Math.random()*H,a:Math.random()*.5});},
+ blow(x,y){if(this.st!=='rest')return;this.st='blow';this.T=0;const wx=x==null?1:Math.sign(this.cx-x)||1;
+   for(const s of this.seeds){const sp=.4+Math.random()*1.2;s.vx=Math.cos(s.a)*sp*40+wx*rnd(20,70);s.vy=Math.sin(s.a)*sp*40-rnd(10,40);s.ox=0;s.oy=0;}addFog(this.cx,this.cy);},
+ tipOf(s,grow){const L=this.R*s.len*grow;return [this.cx+Math.cos(s.a)*L,this.cy+Math.sin(s.a)*L];},
+ draw(t,dt){
+   this.T+=dt;
+   for(const s of this.stars){ctx.fillStyle=`rgba(220,215,255,${s.a})`;ctx.fillRect(s.x,s.y,1,1);}
+   const {cx,cy,R}=this;
+   bubble(cx,cy,R*1.32,t,.55); // the sphere around the dot
+   let grow=1,coll=0;
+   if(this.st==='rest'&&this.T>11){this.blow();}
+   if(this.st==='blow'&&this.T>6.5){this.st='collapse';this.T=0;}
+   if(this.st==='collapse'){coll=Math.min(1,this.T/2.6);if(this.T>2.8){this.st='grow';this.T=0;}}
+   if(this.st==='grow'){grow=Math.min(1,this.T/3.2);grow=grow*grow*(3-2*grow);if(this.T>3.4){this.st='rest';this.T=0;}}
+   const keys=Object.keys(store.get('keys',{})).slice(-12);
+   ctx.lineWidth=.6;
+   this.seeds.forEach((s,i)=>{
+     let [tx,ty]=this.tipOf(s,grow);const sway=Math.sin(t*.9+s.ph)*2;tx+=sway;
+     if(this.st==='blow'||this.st==='collapse'){
+       if(this.st==='blow'){s.ox+=s.vx*dt;s.oy+=s.vy*dt;s.vy-=6*dt;s.vx*=.995;}
+       const [bx,by]=this.tipOf(s,1);let px=bx+s.ox,py=by+s.oy;px+=(cx-px)*coll;py+=(cy-py)*coll;
+       const al=1-coll*.9;ctx.strokeStyle=`rgba(235,230,255,${.55*al})`;
+       const d=Math.atan2(s.oy+Math.sin(s.a)*R,s.ox+Math.cos(s.a)*R);
+       ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px-Math.cos(d)*9,py-Math.sin(d)*9);ctx.stroke();
+       for(let k=-4;k<=4;k++){const aa=d+k*.22;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+Math.cos(aa)*R*.06*al,py+Math.sin(aa)*R*.06*al);ctx.stroke();}
+       s.px=px;s.py=py;
+       if(keys.length&&i%12===0){const k=keys[(i/12)%keys.length|0];ctx.fillStyle=`rgba(180,255,235,${.8*al})`;ctx.font='10px system-ui,sans-serif';ctx.fillText(k,px+6,py-4);}
+     } else {
+       const [bx,by]=[cx+Math.cos(s.a)*R*.16*s.rr,cy+Math.sin(s.a)*R*.16*s.rr];
+       ctx.strokeStyle='rgba(225,220,250,.28)';ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(tx,ty);ctx.stroke();
+       ctx.strokeStyle=`hsla(${(t*20+i*2.5)%360},70%,85%,.55)`;
+       for(let k=-4;k<=4;k++){const aa=s.a+k*.2;ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx+Math.cos(aa)*R*.07*grow,ty+Math.sin(aa)*R*.07*grow);ctx.stroke();}
+       if(keys.length&&i%12===0&&grow>.9){const k=keys[(i/12)%keys.length|0];ctx.fillStyle='rgba(180,255,235,.7)';ctx.font='10px system-ui,sans-serif';ctx.fillText(k,tx+Math.cos(s.a)*R*.09,ty+Math.sin(s.a)*R*.09);}
+     }
+   });
+   // receptacle: the dot, seeds on the golden angle
+   const glow=this.st==='collapse'?coll:0;
+   const g=ctx.createRadialGradient(cx,cy,0,cx,cy,R*(.18+.25*glow));g.addColorStop(0,`rgba(255,250,230,${.5+.5*glow})`);g.addColorStop(1,'rgba(255,240,200,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R*(.18+.25*glow),0,TAU);ctx.fill();
+   for(const s of this.seeds){const x=cx+Math.cos(s.a)*R*.15*s.rr,y=cy+Math.sin(s.a)*R*.15*s.rr;ctx.fillStyle='rgba(190,170,120,.85)';ctx.fillRect(x-.8,y-.8,1.6,1.6);}
+   if(fog>.05){ctx.fillStyle=`rgba(255,255,255,${.3*fog})`;ctx.beginPath();ctx.arc(cx,cy,R*1.32,0,TAU);ctx.fill();}
+   const lab={rest:'rest · breathe or click to blow',blow:'explore',collapse:'collapse to one',grow:'expand again'}[this.st];
+   ctx.fillStyle='rgba(230,225,255,.7)';ctx.font='12px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(lab,cx,cy+R*1.32+22);ctx.textAlign='left';
+ },
+ hover(x,y){if(Math.hypot(x-this.cx,y-this.cy)<this.R*.2)return 'the dot · click to read the clock';if(this.st==='blow')return 'a seed is a world · click one to travel into the physical';return 'the dandelion clock · click to blow';},
+ click(x,y){if(Math.hypot(x-this.cx,y-this.cy)<this.R*.2)return showInfo('dandelion');
+   if(this.st==='blow'){for(const s of this.seeds)if(s.px&&Math.hypot(x-s.px,y-s.py)<18)return go('web',x,y);}
+   if(this.st==='rest')this.blow(x,y);}
+};
+function drawLens(t){
+  const r=Math.min(W,H)*.14;const live=performance.now()/1000-lastMove<4&&mx>=0;
+  const lx=live?mx:W/2+Math.cos(t*.21)*W*.28,ly=live?my:H*.45+Math.sin(t*.29)*H*.22;
+  ctx.save();ctx.beginPath();ctx.arc(lx,ly,r,0,TAU);ctx.clip();ctx.fillStyle='#07050d';ctx.fillRect(lx-r,ly-r,2*r,2*r);
+  ctx.translate(lx,ly);ctx.scale(2.4,2.4);ctx.translate(-lx,-ly);const sc=BY[cur];sc.draw(t,0);ctx.restore();
+  // the eye in the glass (vesica almond), faint, blinking
+  const bl=(t%7)<.18?.15:1,ew=r*.95,eh=r*.36*bl;
+  ctx.save();ctx.globalAlpha=.32;ctx.strokeStyle='rgba(235,230,255,.9)';ctx.lineWidth=1.2;ctx.beginPath();
+  ctx.moveTo(lx-ew/2,ly);ctx.quadraticCurveTo(lx,ly-eh*1.6,lx+ew/2,ly);ctx.quadraticCurveTo(lx,ly+eh*1.6,lx-ew/2,ly);ctx.stroke();
+  if(bl>.5){for(let i=0;i<4;i++){ctx.strokeStyle=`hsla(${(t*30+i*70)%360},80%,70%,.9)`;ctx.beginPath();ctx.arc(lx,ly,eh*(.85-i*.15),0,TAU);ctx.stroke();}
+    ctx.fillStyle='rgba(5,3,10,.9)';ctx.beginPath();ctx.arc(lx,ly,eh*.3,0,TAU);ctx.fill();ctx.fillStyle='rgba(255,255,255,.9)';ctx.beginPath();ctx.arc(lx-eh*.12,ly-eh*.14,eh*.09,0,TAU);ctx.fill();}
+  ctx.restore();
+  // astrolabe rim
+  ctx.save();ctx.translate(lx,ly);
+  ctx.strokeStyle='rgba(200,185,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,r,0,TAU);ctx.stroke();
+  ctx.lineWidth=1;ctx.strokeStyle='rgba(200,185,255,.35)';ctx.beginPath();ctx.arc(0,0,r+7,0,TAU);ctx.stroke();
+  for(let i=0;i<72;i++){const a=i/72*TAU+t*.05;const l=i%6===0?7:3;ctx.strokeStyle=`hsla(${(i*5+t*20)%360},80%,75%,.7)`;ctx.beginPath();ctx.moveTo(Math.cos(a)*r,Math.sin(a)*r);ctx.lineTo(Math.cos(a)*(r+l),Math.sin(a)*(r+l));ctx.stroke();}
+  ctx.strokeStyle='#4a3d7a';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(Math.cos(.8)*(r+8),Math.sin(.8)*(r+8));ctx.lineTo(Math.cos(.8)*(r*1.75),Math.sin(.8)*(r*1.75));ctx.stroke();
+  ctx.restore();
+}
+const Web={key:'web',label:'cosmic web',
+ layout(){seed=23;this.nodes=[];const C=[];for(let i=0;i<20;i++)C.push({x:W*(.08+.84*srnd()),y:H*(.12+.72*srnd())});
+   for(const c of C)for(let k=0;k<9;k++)this.nodes.push({x:c.x+gauss()*14,y:c.y+gauss()*14,b:1});
+   for(let i=0;i<C.length;i++){const A=C[i];let best=[];for(let j=0;j<C.length;j++)if(i!==j)best.push([Math.hypot(C[j].x-A.x,C[j].y-A.y),j]);best.sort((a,b)=>a[0]-b[0]);
+     for(const [,j] of best.slice(0,2)){const B=C[j];for(let k=0;k<9;k++){const u=srnd();this.nodes.push({x:A.x+(B.x-A.x)*u+gauss()*6,y:A.y+(B.y-A.y)*u+gauss()*6,b:.5});}}}
+   this.edges=[];const n=this.nodes;for(let i=0;i<n.length;i++){const ds=[];for(let j=0;j<n.length;j++)if(i!==j)ds.push([Math.hypot(n[j].x-n[i].x,n[j].y-n[i].y),j]);ds.sort((a,b)=>a[0]-b[0]);for(const [d,j] of ds.slice(0,3))if(d<90&&i<j)this.edges.push([i,j]);}
+   this.home=C[7];this.flashes=[];
+ },
+ draw(t){
+   ctx.lineWidth=.6;
+   for(const [i,j] of this.edges){const A=this.nodes[i],B=this.nodes[j];ctx.strokeStyle='rgba(140,150,255,.22)';ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();}
+   for(const p of this.nodes){const s=p.b*1.6;ctx.fillStyle=`rgba(210,200,255,${.45+.35*p.b})`;ctx.beginPath();ctx.arc(p.x,p.y,s,0,TAU);ctx.fill();if(fog>.05){ctx.fillStyle=`rgba(255,255,255,${.5*fog})`;ctx.beginPath();ctx.arc(p.x,p.y,s+3,0,TAU);ctx.fill();}}
+   if(FIG){if(Math.random()<.08&&this.nodes.length){const a=this.nodes[(Math.random()*this.nodes.length)|0],b=this.nodes[(Math.random()*this.nodes.length)|0];this.flashes.push({a,b,life:1});}
+     for(const f of this.flashes){ctx.strokeStyle=`rgba(240,140,210,${.55*f.life})`;ctx.setLineDash([2,5]);ctx.beginPath();ctx.moveTo(f.a.x,f.a.y);ctx.lineTo(f.b.x,f.b.y);ctx.stroke();f.life-=.03;}ctx.setLineDash([]);this.flashes=this.flashes.filter(f=>f.life>0);}
+   const h=this.home,p=.5+.5*Math.sin(t*2.4);
+   ctx.strokeStyle=`rgba(180,255,235,${.4+.4*p})`;ctx.lineWidth=1;ctx.beginPath();ctx.arc(h.x,h.y,16+p*6,0,TAU);ctx.stroke();
+   ctx.fillStyle='rgba(200,255,240,.9)';ctx.font='12px system-ui,sans-serif';ctx.fillText('Local Group · our galaxy',h.x+24,h.y+4);
+ },
+ hit(x,y){return Math.hypot(x-this.home.x,y-this.home.y)<34?'home':null},
+ hover(x,y){return this.hit(x,y)?'the Milky Way is here · click to travel in':'cosmic web · click anywhere to read it'},
+ click(x,y){if(this.hit(x,y))go('galaxy',x,y);else showInfo('web');}
+};
+const Galaxy={key:'galaxy',label:'galaxy',
+ layout(){seed=31;this.cx=W*.5;this.cy=H*.47;this.R=Math.min(W,H)*.42;this.st=[];
+   for(let i=0;i<2600;i++){const arm=i%4,u=Math.pow(srnd(),.8),ang=arm*TAU/4+u*4.2+gauss()*.22,r=this.R*(.08+.92*u);this.st.push({r,ang,y:gauss()*.02,c:srnd(),life:srnd()<.025});}
+   for(let i=0;i<500;i++){const r=Math.abs(gauss())*this.R*.12;this.st.push({r,ang:srnd()*TAU,c:.95+srnd()*.05,life:false});}
+   this.sunR=this.R*.56;this.sunA=1.15;
+ },
+ pos(s,t){const a=s.ang+t*.02*(1-.5*s.r/this.R);return [this.cx+Math.cos(a)*s.r,this.cy+Math.sin(a)*s.r*.62];},
+ draw(t){
+   for(const s of this.st){const [x,y]=this.pos(s,t);const warm=s.c>.9;ctx.fillStyle=warm?'rgba(255,225,180,.75)':`rgba(${170+s.c*70},${180+s.c*50},255,.55)`;ctx.fillRect(x,y,1.2,1.2);
+     if(FIG&&s.life){const tw=.5+.5*Math.sin(t*3+s.r);ctx.fillStyle=`rgba(120,255,160,${.25+.6*tw})`;ctx.beginPath();ctx.arc(x,y,1.6+tw,0,TAU);ctx.fill();}}
+   const [sx,sy]=this.pos({r:this.sunR,ang:this.sunA},t);this.sx=sx;this.sy=sy;
+   const p=.5+.5*Math.sin(t*2.4);ctx.strokeStyle=`rgba(255,230,150,${.5+.4*p})`;ctx.lineWidth=1;ctx.beginPath();ctx.arc(sx,sy,10+p*5,0,TAU);ctx.stroke();
+   ctx.fillStyle='#ffe9a8';ctx.beginPath();ctx.arc(sx,sy,2.6,0,TAU);ctx.fill();
+   ctx.fillStyle='rgba(255,240,200,.9)';ctx.font='12px system-ui,sans-serif';ctx.fillText('the Sun · home',sx+16,sy+4);
+   if(fog>.05){ctx.fillStyle=`rgba(255,255,255,${.25*fog})`;ctx.beginPath();ctx.ellipse(this.cx,this.cy,this.R,this.R*.62,0,0,TAU);ctx.fill();}
+   if(FIG){ctx.fillStyle='rgba(140,255,170,.75)';ctx.font='11px system-ui,sans-serif';ctx.fillText('green = figurative wing: “trillions of living worlds”',16,H-110);}
+ },
+ hit(x,y){return Math.hypot(x-this.sx,y-this.sy)<26?'sun':null},
+ hover(x,y){return this.hit(x,y)?'our star · click to go home':'the Milky Way · click anywhere to read it'},
+ click(x,y){if(this.hit(x,y))go('solar',x,y);else showInfo('galaxy');}
+};
+const TODAY=(Date.UTC(2026,10,19)-Date.UTC(2000,0,1,12))/864e5;let simDays=TODAY, speed=.25;
+const Solar={key:'solar',label:'Sol',
+ layout(){this.cx=W*.5;this.cy=H*.47;this.S=Math.min(W*.46,H*.42)/5.6;
+   seed=41;this.bg=[];for(let i=0;i<260;i++)this.bg.push({x:srnd()*W,y:srnd()*H,a:srnd()*.5});},
+ pos(p){const L=(p.L0+360/p.P*simDays)*Math.PI/180,r=this.S*(p.a<2?(.5+p.a):(1.2+Math.sqrt(p.a)*.8));return [this.cx+Math.cos(L)*r,this.cy-Math.sin(L)*r*.8,r];},
+ draw(t,dt){
+   simDays+=dt*speed*365.25/20;
+   for(const s of this.bg){ctx.fillStyle=`rgba(220,215,255,${s.a})`;ctx.fillRect(s.x,s.y,1,1);}
+   const {cx,cy}=this;
+   const g=ctx.createRadialGradient(cx,cy,0,cx,cy,34);g.addColorStop(0,'rgba(255,240,180,1)');g.addColorStop(.35,'rgba(255,200,90,.8)');g.addColorStop(1,'rgba(255,160,60,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,34,0,TAU);ctx.fill();
+   this.pp=[];
+   for(const p of PLANETS){const [x,y,r]=this.pos(p);
+     ctx.strokeStyle=this.hov===p.id?'rgba(200,190,255,.55)':'rgba(160,150,220,.16)';ctx.lineWidth=.7;ctx.beginPath();ctx.ellipse(cx,cy,r,r*.8,0,0,TAU);ctx.stroke();
+     if(p.ring){ctx.strokeStyle='rgba(240,225,170,.7)';ctx.lineWidth=1.4;ctx.beginPath();ctx.ellipse(x,y,p.r*2,p.r*.7,-.3,0,TAU);ctx.stroke();}
+     ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(x,y,p.r,0,TAU);ctx.fill();
+     bubble(x,y,p.r+3,t,.55,p.L0);
+     if(fog>.05){ctx.fillStyle=`rgba(255,255,255,${.5*fog})`;ctx.beginPath();ctx.arc(x,y,p.r+4,0,TAU);ctx.fill();}
+     if(p.id==='earth'){const m=t*1.6;ctx.fillStyle='#ddd';ctx.beginPath();ctx.arc(x+Math.cos(m)*12,y+Math.sin(m)*10,1.6,0,TAU);ctx.fill();
+       const q=t*.9;ctx.fillStyle='rgba(180,255,235,.9)';ctx.fillRect(x+Math.cos(q)*19+Math.cos(2*q)*4,y+Math.sin(q)*12,1.4,1.4);}
+     ctx.fillStyle=this.hov===p.id?'#fff':'rgba(220,215,245,.75)';ctx.font='12px system-ui,sans-serif';ctx.fillText(p.name,x+p.r+5,y-p.r-2);
+     this.pp.push({p,x,y,r:p.r+8});}
+   const d=new Date(Date.UTC(2000,0,1,12)+simDays*864e5);document.getElementById('date').textContent=d.toISOString().slice(0,10);
+ },
+ hitP(x,y){for(const q of this.pp||[])if(Math.hypot(x-q.x,y-q.y)<Math.max(14,q.r))return q.p;if(Math.hypot(x-this.cx,y-this.cy)<30)return SUN;return null},
+ hover(x,y){const p=this.hitP(x,y);this.hov=p&&p.id;return p?`${p.name} · click for its news`:'our solar system, placed for today'},
+ click(x,y){const p=this.hitP(x,y);if(p)showPlanet(p);}
+};
+scenes.push(Meta,Web,Galaxy,Solar);
+const BY={meta:Meta,web:Web,galaxy:Galaxy,solar:Solar};
+const ORDER=['meta','web','galaxy','solar'];
+let cur='meta', trans=null;
+
+/* ---------- travel ---------- */
+function go(key,x=W/2,y=H/2){if(key===cur||trans)return;const dir=ORDER.indexOf(key)>ORDER.indexOf(cur)?1:-1;trans={from:cur,to:key,x,y,t:0,dir};cur=key;hideCard();crumbs();
+  document.getElementById('speed').style.display=key==='solar'?'flex':'none';visit(key);}
+function crumbs(){const el=document.getElementById('crumbs');el.innerHTML='';ORDER.slice(0,ORDER.indexOf(cur)+1).forEach((k,i,a)=>{const s=document.createElement(i===a.length-1?'b':'span');s.textContent=BY[k].label;if(i<a.length-1)s.onclick=()=>go(k);el.appendChild(s);if(i<a.length-1)el.appendChild(document.createTextNode('  ›  '));});}
+function visit(k){const v=store.get('visits',{});v[k]=(v[k]||0)+1;store.set('visits',v);}
+
+/* ---------- cards ---------- */
+const card=document.getElementById('card');
+function wings(f,g){return `<div class="wings"><span>factual</span><div class="tr"><div class="f" style="width:${f*100}%"></div></div><span>${f.toFixed(2)}</span><span>figurative</span><div class="tr"><div class="g" style="width:${g*100}%"></div></div><span>${g.toFixed(2)}</span></div>`;}
+let lastPlace={name:'Meta bubble',f:.12,g:.97,route:'meta'};
+function route(){return ORDER.slice(0,ORDER.indexOf(cur)+1).map(k=>BY[k].label).join(' › ');}
+function showInfo(k){const L=LEVELINFO[k];lastPlace={name:L.name,f:L.fact,g:L.fig,route:route()};
+  card.innerHTML=`<button class="x" aria-label="close">×</button><h2>${L.name}</h2><div class="sub">${L.sub}</div>${wings(L.fact,L.fig)}<div>${L.body}</div><div class="row"><button data-a="ticket">ticket</button></div>`;openCard();}
+const esc=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function showNode(n){const [f,g]=KWING[n.kind];lastPlace={name:n.label,f,g,route:route()+' › '+n.kind};
+  const near=ATLAS.links.filter(l=>l[0]===n.id||l[1]===n.id).map(l=>{const o=ATLAS.nodes.find(m=>m.id===(l[0]===n.id?l[1]:l[0]));return o?`<i data-node="${o.id}">${esc(o.label)}</i>`:''}).filter(Boolean).slice(0,10).join(' · ');
+  card.innerHTML=`<button class="x" aria-label="close">×</button><h2>${esc(n.label)}</h2><div class="sub">${n.kind} · ${n.status||''} · a bubble in the Knowledge Amp froth</div>${wings(f,g)}<div>${esc(n.gist)}</div>${n.quote?`<p style="color:#d9cfff;font-style:italic">“${esc(n.quote)}”</p>`:''}${n.src?`<div class="credit">paid in thanks to: D (Darin) · ${esc(n.src)} · KA atlas</div>`:'<div class="credit">paid in thanks to: D (Darin) · KA atlas</div>'}${near?`<div class="sub" style="margin-top:10px">touches: ${near}</div>`:''}<div class="row"><button data-a="thanks">send thanks</button><button data-a="travel">travel into the physical</button><button data-a="ticket">ticket</button></div>`;
+  card.dataset.credit='D (Darin)';openCard();card.querySelectorAll('[data-node]').forEach(i=>{i.style.cursor='pointer';i.style.color='#cdbfff';i.onclick=()=>showNode(ATLAS.nodes.find(m=>m.id===i.dataset.node));});}
+function showPlanet(p){lastPlace={name:p.name,f:p.fact,g:p.fig,route:route()};
+  const items=p.news.map(n=>`<li><div class="d">${n.d}</div>${n.t}<div class="credit">paid in thanks to: ${n.credit}</div><a href="${n.url}" target="_blank" rel="noopener">${n.src} ↗</a></li>`).join('');
+  card.innerHTML=`<button class="x" aria-label="close">×</button><h2>${p.name}</h2><div class="sub">${p.sub} · news gathered ${GATHERED}</div>${wings(p.fact,p.fig)}<ul class="news">${items}</ul><div class="row"><button data-a="thanks">send thanks</button><button data-a="ticket">ticket</button></div>`;openCard();card.dataset.credit=p.news.map(n=>n.credit).join('; ');}
+function openCard(){card.style.display='block';card.querySelector('.x').onclick=hideCard;card.querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const a=b.dataset.a;if(ACT[a])ACT[a](b);else if(a==='ticket')ticket();else thanks();});}
+const ACT={travel:()=>{hideCard();go('web')}};
+function hideCard(){card.style.display='none';}
+function thanks(){const n=store.get('thanks',0)+1;store.set('thanks',n);toast(`thanks sent to ${card.dataset.credit||'everyone here'} · credit is the first currency (${n} given, kept on this device)`);addFog(W*.8,H*.3);}
+let toastT=0;function toast(s){const el=document.getElementById('toast');el.textContent=s;el.style.opacity=1;clearTimeout(toastT);toastT=setTimeout(()=>el.style.opacity=0,4200);}
+
+/* ---------- ticket ---------- */
+const tk=document.getElementById('tk'),tc=tk.getContext('2d');
+function ticket(){
+  const papers=['#efe3c4','#d9ecd8','#f2d4cf','#d6e1f2','#efe0f0','#f4ecb0'];const paper=papers[(Math.random()*papers.length)|0];
+  tc.clearRect(0,0,900,420);tc.save();tc.beginPath();tc.moveTo(0,0);tc.lineTo(860,0);tc.lineTo(900,38);tc.lineTo(900,420);tc.lineTo(0,420);tc.closePath();tc.clip();
+  tc.fillStyle=paper;tc.fillRect(0,0,900,420);
+  for(let i=0;i<2600;i++){tc.fillStyle=`rgba(80,60,40,${Math.random()*.05})`;tc.fillRect(Math.random()*900,Math.random()*420,1.5,1.5);}
+  tc.strokeStyle='rgba(60,40,30,.55)';tc.lineWidth=2;tc.strokeRect(18,18,864,384);tc.setLineDash([6,6]);tc.beginPath();tc.moveTo(680,18);tc.lineTo(680,402);tc.stroke();tc.setLineDash([]);
+  for(let i=0;i<12;i++){if(Math.random()<.5){tc.fillStyle='#2a2018';tc.fillRect(700+((i%4)*44),60+Math.floor(i/4)*44,22,30);}}
+  tc.fillStyle='#2a2018';tc.font='600 15px ui-monospace,Menlo,monospace';tc.fillText('MACROSCOPE · JINGLIAN PASS · ADMIT ONE BREATH',40,58);
+  tc.font='500 38px Georgia,serif';tc.fillText(lastPlace.name,40,118);
+  const path=lastPlace.route||route();
+  tc.font='15px ui-monospace,Menlo,monospace';tc.fillText('route  '+path,40,158);
+  tc.fillText('when   '+new Date().toISOString().replace('T',' ').slice(0,19)+' UTC',40,184);
+  tc.fillText(`wings  factual ${lastPlace.f.toFixed(2)} · figurative ${lastPlace.g.toFixed(2)}`,40,210);
+  tc.fillText('cycle  bubble → stick → glyph → echo → mirror → one',40,236);
+  tc.fillStyle='#b3261e';tc.font='600 26px ui-monospace,Menlo,monospace';tc.fillText('Nº '+String(Math.floor(Math.random()*1e8)).padStart(8,'0'),40,300);
+  tc.save();tc.translate(520,330);tc.rotate(-.18);tc.strokeStyle='rgba(120,40,140,.7)';tc.lineWidth=3;tc.beginPath();tc.arc(0,0,58,0,TAU);tc.stroke();tc.beginPath();tc.arc(0,0,46,0,TAU);tc.stroke();
+  tc.fillStyle='rgba(120,40,140,.75)';tc.font='600 11px ui-monospace,Menlo,monospace';tc.textAlign='center';tc.fillText('VALIDATED BY',0,-8);tc.fillText('LUMINOCT { OPUS }',0,8);tc.fillText('circa 1954',0,24);tc.restore();
+  tc.fillStyle='#2a2018';tc.font='12px ui-monospace,Menlo,monospace';tc.fillText('paid in thanks · credit is the first currency',40,380);
+  tc.restore();
+  document.getElementById('tkimg').src=tk.toDataURL('image/png');document.getElementById('ticketbox').style.display='flex';addFog(W/2,H/2);
+}
+document.getElementById('tkclose').onclick=()=>document.getElementById('ticketbox').style.display='none';
+
+/* ---------- sentence bubble ---------- */
+const STOP=new Set('a an the and or but if of to in on at by for with from as is are was were be been am i you we they he she it this that these those my your our their me us them do does did not no so too very just what who where when why how can will would should could there here about into over under than then also'.split(' '));
+const HOLO='place thing method being light hand face flower person sun tree mother world space foot sky father mind moon eye animal dream food time love play star song word friend separation number idea reflection category birth life point line circle soul organism plant bird fish'.split(' ');
+const VERBS='touch hear know feel hold see learn find'.split(' ');
+const an=w=>(/^[aeiou]/.test(w)?'an ':'a ')+w;
+const POINTERS={mercury:'solar',venus:'solar',earth:'solar',moon:'solar',mars:'solar',jupiter:'solar',saturn:'solar',uranus:'solar',neptune:'solar',sun:'solar',planet:'solar',planets:'solar',galaxy:'galaxy',milky:'galaxy',stars:'galaxy',star:'galaxy',web:'web',cosmos:'web',universe:'web',galaxies:'web',everything:'meta',creation:'meta',bubble:'meta',one:'meta'};
+const pick=a=>a[(Math.random()*a.length)|0];
+const AX={past:'#f2b45a',future:'#8fa8ff',threat:'#ff8a7a',benefit:'#79e0c4',mirror:'#e59ad0'};
+let foamS=[], phase=null;
+function words(s){return (s.toLowerCase().match(/[a-z’']+/g)||[]).map(w=>w.replace(/[’']/g,''));}
+function keyOf(ws){const c=ws.filter(w=>!STOP.has(w)&&w.length>2);return c.sort((a,b)=>b.length-a.length)[0]||ws[0]||'this';}
+function variants(s,k){const h=pick(HOLO),h2=pick(HOLO.filter(x=>x!==h)),v=pick(VERBS);const ws=s.trim().split(/\s+/);
+  return [
+   ['past',`long before this, ${k} was already ${h}`],
+   ['future',`soon, ${k} will ${v} the ${h2}`],
+   ['threat',`unless ${k} is held gently, it breaks`],
+   ['benefit',`because of ${k}, someone is fed`],
+   ['mirror',ws.slice().reverse().join(' ')],
+   ['future',`what is ${k} looking at, when it looks at you?`],
+   ['benefit',`every ${k} is ${an(h)}; every ${h} is a mirror; so every ${k} is a mirror`],
+   ['past',`${k} : ${h} | you : ?`],
+   ['threat',`what if ${k} were never said?`]
+  ];}
+function reply(s,k){
+  const hist=store.get('hist',[]);const ws=new Set(words(s).filter(w=>!STOP.has(w)&&w.length>2));
+  let link=null;for(let i=hist.length-1;i>=0;i--){const shared=words(hist[i]).filter(w=>ws.has(w));if(shared.length&&hist[i]!==s){link={old:hist[i],w:shared[0]};break;}}
+  hist.push(s);store.set('hist',hist.slice(-60));
+  const kc=store.get('keys',{});kc[k]=(kc[k]||0)+1;store.set('keys',kc);
+  if(link)return `earlier: “${link.old.slice(0,48)}”. both touch “${link.w}”. so they meet there, and so do you`;
+  const h=pick(HOLO);
+  return pick([`all seeing is a bubble collapsing; “${k}” is a seeing; so “${k}” is a bubble collapsing`,
+               `as ${k} is to ${h}, your sentence is to the one who reads it`,
+               `${k} went out, became one stroke, and came back as you`]);
+}
+function bloom(s){
+  const k=keyOf(words(s));const ox=W/2,oy=H-80;
+  foamS=variants(s,k).map(([ax,tx],i)=>{const a=-Math.PI*(.12+.76*(i/8))+rnd(-.05,.05);const d=Math.min(W,H)*rnd(.26,.42);
+    return {ax,tx,x:ox,y:oy,tx0:ox+Math.cos(a)*d*1.35,ty0:oy+Math.sin(a)*d*1.3,r:rnd(50,68),ph:rnd(0,TAU)};});
+  const isNew=!(k in store.get('keys',{}));
+  phase={s,k,t:0,ox,oy,glyph:s,reply:reply(s,k)};
+  if(isNew&&Meta.foam.length){Meta.addBubble(k);phase.grew=k;}
+  if(FORM==='dandelion'&&cur==='meta')setTimeout(()=>Dand.blow(W/2,H),4800);
+  const dest=words(s).map(w=>POINTERS[w]).find(Boolean);
+  phase.dest=dest;
+  {const lw=new Set(words(s).filter(w=>w.length>4&&!STOP.has(w)));const hit=ATLAS.nodes.find(n=>words(n.label).some(w=>lw.has(w)));if(hit&&!dest)phase.node=hit;}
+  threads();
+}
+function drawSentence(dt,t){
+  if(!phase)return;phase.t+=dt;const T=phase.t;
+  const cx=W/2,cy=H*.44;
+  if(T<4.2){ // bubble space
+    const e=Math.min(1,T/1.4),col=T>3.2?Math.min(1,(T-3.2)/1):0;
+    for(const b of foamS){const ex=b.tx0+Math.sin(t*.8+b.ph)*8,ey=b.ty0+Math.cos(t*.7+b.ph)*6;
+      b.x=phase.ox+(ex-phase.ox)*e;b.y=phase.oy+(ey-phase.oy)*e;
+      const x=b.x+(cx-b.x)*col,y=b.y+(cy-b.y)*col,r=b.r*(1-col*.9);
+      ctx.save();ctx.globalAlpha=1-col*.6;ctx.fillStyle=AX[b.ax]+'22';ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.restore();
+      bubble(x,y,r,t,1-col*.5,b.ph*50);
+      if(col<.4){ctx.fillStyle=AX[b.ax];ctx.font='11px system-ui,sans-serif';ctx.textAlign='center';wrap(b.tx,x,y-4,r*1.9,13,1-col*2.5);ctx.textAlign='left';
+        ctx.fillStyle='rgba(255,255,255,.45)';ctx.font='9px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText(b.ax,x,y+r-8);ctx.textAlign='left';}}
+    if(T<1.6){ctx.fillStyle='rgba(230,225,255,.7)';ctx.font='12px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText('bubble space · every sentence it could have been',W/2,H-118);ctx.textAlign='left';}
+  } else if(T<4.9){ // stick
+    const u=(T-4.2)/.7;ctx.strokeStyle=`rgba(255,255,255,${1-u*.3})`;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx,cy-120*Math.sin(u*Math.PI));ctx.lineTo(cx,cy+120*Math.sin(u*Math.PI));ctx.stroke();
+    ctx.fillStyle='rgba(230,225,255,.7)';ctx.font='12px system-ui,sans-serif';ctx.textAlign='center';ctx.fillText('stick',cx+22,cy);ctx.textAlign='left';
+  } else if(T<8){ // glyph
+    const u=Math.min(1,(T-4.9)/.6),out=T>7.2?(T-7.2)/.8:0;
+    ctx.save();ctx.globalAlpha=u*(1-out);ctx.textAlign='center';ctx.font=`500 ${Math.min(40,Math.max(20,W/(phase.glyph.length*.7)))}px Georgia,serif`;
+    const gr=ctx.createLinearGradient(cx-300,0,cx+300,0);for(let i=0;i<=6;i++)gr.addColorStop(i/6,`hsl(${(t*40+i*55)%360},85%,78%)`);ctx.fillStyle=gr;
+    wrap(phase.glyph,cx,cy,Math.min(W*.8,760),46,1);ctx.restore();
+    if(T>5.6&&!phase.fogged){phase.fogged=1;addFog(cx,cy);}
+  } else if(T<14){ // echo
+    const u=(T-8)/6;const x=cx+Math.sin(u*3)*40,y=cy-u*H*.12,r=70+u*30;
+    ctx.save();ctx.globalAlpha=u<.12?u/.12:1-Math.max(0,(u-.8)/.2);
+    bubble(x,y,r,t,1,200);ctx.fillStyle='#efe9ff';ctx.font='13px system-ui,sans-serif';ctx.textAlign='center';wrap(phase.reply,x,y-10,r*1.75,16,1);
+    ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='10px system-ui,sans-serif';ctx.fillText('echo',x,y+r-12);ctx.restore();
+    if(phase.dest&&!phase.went&&T>9.5){phase.went=1;go(phase.dest,cx,cy);}
+    if(phase.node&&!phase.went&&T>9.5){phase.went=1;if(cur!=='meta')go('meta');setTimeout(()=>showNode(phase&&phase.node||ATLAS.nodes[0]),cur==='meta'?0:1400);}
+  } else phase=null;
+}
+function wrap(s,x,y,maxW,lh,a){ctx.save();ctx.globalAlpha*=clamp(a,0,1);const ws=s.split(' ');const lines=[];let L='';for(const w of ws){const tt=L?L+' '+w:w;if(ctx.measureText(tt).width>maxW&&L){lines.push(L);L=w;}else L=tt;}lines.push(L);
+  const y0=y-(lines.length-1)*lh/2;lines.slice(0,6).forEach((l,i)=>ctx.fillText(l,x,y0+i*lh));ctx.restore();}
+function threads(){const kc=store.get('keys',{});const top=Object.entries(kc).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const el=document.getElementById('threads');const grown=Object.keys(kc).length;el.innerHTML=top.length?`the froth has grown ${grown} bubble${grown>1?'s':''} from your words · threads you return to: `+top.map(([k])=>`<i data-k="${k}">${k}</i>`).join(' · '):'your words stay on this device; the toy learns which threads you return to';
+  el.querySelectorAll('i').forEach(i=>i.onclick=()=>{document.getElementById('q').value=i.dataset.k;document.getElementById('q').focus();});}
+const qi=document.getElementById('q'),err=document.getElementById('err');
+document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();const s=qi.value.trim();if(!s){err.textContent='breathe a word first';return;}if(phase&&phase.t<8){err.textContent='still echoing · one breath at a time';return;}err.textContent='';hideCard();bloom(s);qi.value='';});
+qi.addEventListener('input',()=>{err.textContent='';});
+
+/* ---------- input ---------- */
+const hint=document.getElementById('hint');
+cv.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;lastMove=performance.now()/1000;if(trans)return;const s=BY[cur].hover(e.clientX,e.clientY);hint.textContent=s;hint.style.opacity=s?1:0;cv.style.cursor=/click to (travel|go)/.test(s)||/news/.test(s)?'pointer':'default';});
+cv.addEventListener('click',e=>{if(trans)return;BY[cur].click(e.clientX,e.clientY);});
+cv.addEventListener('wheel',e=>{if(e.deltaY>40&&!trans){const i=ORDER.indexOf(cur);if(i>0)go(ORDER[i-1]);}},{passive:true});
+addEventListener('keydown',e=>{if(e.key==='Escape'){if(card.style.display==='block')hideCard();else{const i=ORDER.indexOf(cur);if(i>0)go(ORDER[i-1]);}}});
+document.getElementById('figbtn').onclick=e=>{FIG=!FIG;e.target.textContent=FIG?'on':'off';toast(FIG?'figurative wing on: elusiphores shimmer in pink and green':'figurative wing off: only what has been measured');};
+document.querySelectorAll('#speed [data-s]').forEach(b=>b.onclick=()=>{if(b.dataset.s==='today'){simDays=TODAY;speed=0;}else speed=+b.dataset.s;});
+addEventListener('resize',resize);
+
+/* ---------- loop ---------- */
+let last=performance.now(),t0=last;
+function frame(now){const dt=Math.min(.05,(now-last)/1000);last=now;const t=(now-t0)/1000;
+  ctx.fillStyle='#07050d';ctx.fillRect(0,0,W,H);
+  if(trans){trans.t+=dt/1.3;const u=clamp(trans.t,0,1),e=u*u*(3-2*u);const A=BY[trans.from],B=BY[trans.to],d=trans.dir;
+    ctx.save();ctx.globalAlpha=1-e;ctx.translate(trans.x,trans.y);const sa=d>0?1+e*7:1-e*.8;ctx.scale(sa,sa);ctx.translate(-trans.x,-trans.y);A.draw(t,0);ctx.restore();
+    ctx.save();ctx.globalAlpha=e;ctx.translate(W/2,H/2);const sb=d>0?.25+.75*e:1+(1-e)*4;ctx.scale(sb,sb);ctx.translate(-W/2,-H/2);B.draw(t,dt);ctx.restore();
+    if(u>=1)trans=null;}
+  else BY[cur].draw(t,dt);
+  if(LENS&&!trans)drawLens(t);
+  drawFog();fog=Math.max(0,fog-dt*.55);
+  drawSentence(dt,t);
+  requestAnimationFrame(frame);}
+resize();Dand.layout();crumbs();threads();visit('meta');
+document.querySelectorAll('[data-form]').forEach(b=>b.onclick=()=>{FORM=b.dataset.form;document.querySelectorAll('[data-form]').forEach(x=>x.classList.toggle('on',x===b));if(cur!=='meta')go('meta');toast(FORM==='dandelion'?'dandelion clock: explore, collapse to one, expand again':'foam cosmos: the physical froth in the corner of everything');});
+document.getElementById('lensbtn').onclick=e=>{LENS=!LENS;e.target.classList.toggle('on',LENS);if(LENS)showInfo('lens');};
+requestAnimationFrame(frame);
+window.__macro={showNode:id=>showNode(ATLAS.nodes.find(n=>n.id===id)),hoverNode:i=>{const b=Meta.foam.filter(b=>b.n)[i];Meta.hover(b.x,b.y);return [b.x,b.y]},setForm:f=>document.querySelector(`[data-form=${f}]`).click(),lens:()=>document.getElementById('lensbtn').click(),blow:()=>Dand.blow(),go,bloom,showPlanet:id=>showPlanet(PLANETS.find(p=>p.id===id)),ticket,get cur(){return cur}};
+})();
+</script>
+</body>
+</html>

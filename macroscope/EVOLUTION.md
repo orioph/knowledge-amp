@@ -51,3 +51,24 @@ Build these in a fresh chat, one per version, checking frames each time:
 3. v0.05: a Diagramatica form; the macroscope points at `orioph/diagramatica`, with families as bubbles and methods as froth.
 4. v0.06 (the forgotten one, invented): Organelle's Earth mirror becomes the Earth card (Earth from space on this date in past years, plus a living-beings half).
 5. v0.07 (the other forgotten one, invented): the Sentence Bubble speaks. Wraywrai's voice reads each echo aloud, gently, and a mic-in breath blows the dandelion (Jinglia's illoscopia, kin).
+
+### 2026-11-19 · v0.03 → v0.07 (approved queue, built lean in one chat)
+- **v0.03:** the KA atlas fills the froth. All 70 nodes are bubbles, tinted by kind (root, organ, principle, flow, word, now). Hover lights a node's links; click opens its card (gist, quote, source, touches…). Typing an atlas word in the Sentence Bubble points to that node.
+- **v0.04:** every planet card (and the Sun's) opens a Seashell child-shell: a log-time spiral of that world's lineage, from its forming to this year's news.
+- **v0.05:** a third form, **diagramatica**: the 15 families of `orioph/diagramatica` as bubbles, the 166 methods as froth on the golden angle. Click a family to list its methods, or a method to read its lineage.
+- **v0.06:** the Earth card is a mirror in two halves: Earth from a million miles on 19 November, 2015–2025 (NASA DSCOVR EPIC links), and where life's carbon sits (Bar-On, Phillips & Milo, PNAS 2018).
+- **v0.07:** the Sentence Bubble speaks. Each echo is read aloud gently ("voice on/off"; a soft device voice stands in for Wraywrai's). "Breathe in (mic)" lets a real breath blow the dandelion. It works with the mic on, off, or switched mid-visit, and stops when the page closes.
+- **Diagram consult (Diagramatica, first real use):** the job was to point a gaze at its own toolbox.
+  - Picks: phyllotaxis (methods as froth), a radial wheel (families), and the seashell spiral (log-time), with the Sentence Bubble as the interaction method.
+  - Metaphysical: the dot within the sphere (Diagramatica's own centre bubble).
+  - No-diagram option: the lineage list under each shell.
+  - Inversion: the toolbox looks at the macroscope. Proposed below.
+- **Synergy:** the KA atlas and Diagramatica now live inside the Macroscope as data. One gaze holds D's ontology, his diagram dictionary and the sky.
+- **Perspective:** log-time makes yesterday's news and a planet's birth fit in one shell, so each chamber is a humility.
+- **Frames:** 19–27.
+- **Known small things:**
+  - On a phone, the left family labels clip a little.
+  - The atlas froth is dense at default size; hover finds the right bubble.
+- **Next (proposed):**
+  - (a) The inversion: a Diagramatica method card offers "draw this level with me", which re-draws the current level in that method.
+  - (b) Atlas lineage (`atlas.json` → lineage) as the Knowledge Amp root's own seashell.
