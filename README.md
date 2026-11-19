@@ -20,7 +20,7 @@ other skills are toys and organs of it.
 | `atlas/build_data.py` | Rebuilds `atlas.json` from `records/ka/dict-ka.json` in orioph/jinglia. The organ-to-present links and the chat abstracts are written in it. |
 | `atlas/template.html` | The toy's page; `atlas/index.html` = template + atlas. |
 | `timeline/` | **Timeline layer v0.3 (draft)**: one event format for every feature, built on the Seashell genome (`EVENT-FORMAT.md`; v0.1 and v0.2 kept). v0.3 adds `source_kind`, `precision_basis`, `where.basis` and the `telling` block. `gaps.py` reports a lane's gaps and next entries; latest report `gaps-seashell-2026-11-19.md`: 232 entries, all sourced (120 primary, 112 secondary), 109 researched fingerprints, 115 places, 182 tellings. Earlier reports kept. |
-| `barrier/index.html` | **One-Way Barrier 0.01**, the first organ prototype (the server's barrier, layers, seven chambers). Toy: https://claude.ai/artifact/N3gpDgZetcDJ1RckLffNDT. Each version is also kept as `barrier/vX.html`; `barrier/frames/` holds the checked screenshots. |
+| `barrier/index.html` | **One-Way Barrier 0.02**, the first organ prototype (the server's barrier with its syllogism and query learning, layers with two-way consent, seven chambers). Toy: https://claude.ai/artifact/N3gpDgZetcDJ1RckLffNDT. Each version is also kept as `barrier/vX.html`; `barrier/frames/` holds the checked screenshots. |
 | `analogia/` | **Analogia 0.1**: the analogy gesture (A : B \| C : ?, and chains) with its process clarify, represent, question, await, then evolve. Master copy is `rhetoric/analogia_dict.json` in orioph/jinglia; toys `cocoon/` (https://claude.ai/artifact/DWckGQbynR78uCCjGQtqZ2) and `bees-and-x/` (https://claude.ai/artifact/24Za4AjBAhEUZUpF2Zi6ek). |
 | `macroscope/` | **Macroscope 0.02** (forms: foam, dandelion clock; overlay: the eye in the glass; the froth grows from your words; `EVOLUTION.md` is the log every run reads and adds to): Foam Cosmos (meta bubble → physical froth → cosmic web → Milky Way → today's solar system, planet news gathered 2026-11-19 with credits and factual/figurative wings, tickets) + the Sentence Bubble input (bubble → stick → glyph → echo → mirror → one; query-learning syllogisms kept per viewer). Toy: https://claude.ai/artifact/GFTg448oJy7GKcSFzhA8wq. `v0.01.html`, `v0.02.html` kept; `frames/` holds the checked screenshots. |
 
@@ -34,7 +34,7 @@ other skills are toys and organs of it.
 ## Status counts (proposed; D to judge)
 
 Of 52 ideas: 8 built, 15 partly built, 11 seeded, 18 idea only.
-Unbuilt organs include the Server / One-Way Barrier. Social organs (Pods, Trance,
+The Server / One-Way Barrier now has a prototype (`barrier/`). Social organs (Pods, Trance,
 superGroups, Passforge, Data dividends) are seeds at most.
 
 ## Requests
@@ -58,8 +58,8 @@ Where things stand: repo, Project (account memory on), atlas toy and the e2 back
 
 Start with:
 1. D checks the map's organ-to-present links (Map view in the toy) and says which are wrong.
-2. "Make req's": D to say which was meant: a REQUESTS.md log like Jinglia's, or the requirements for the next build.
-3. Pick the first unbuilt organ to prototype: the Server / One-Way Barrier, or the social side (Pods, Trance, Passforge, superGroups).
+2. Done: requests live in GitHub Issues.
+3. Done: the One-Way Barrier was first (`barrier/`); the social side is issue #3.
 
 Don't redo: ~/Desktop/KA and organelle.org are already digested (orioph/jinglia `records/ka/`, `records/reforge/digests/`). The KA Display Center toy already covers the browser organ (orioph/jinglia `toys/ka-display-center/`).
 
@@ -67,3 +67,4 @@ Don't redo: ~/Desktop/KA and organelle.org are already digested (orioph/jinglia 
 
 - The request log is GitHub Issues: #1 One-Way Barrier, #2 check the map's links (for D), #3 social organs.
 - First organ prototype: One-Way Barrier 0.01 in `barrier/`, built from IA.docx paras 43-59 and 110-116.
+- 0.02 (2026-11-19): the send's syllogism, query learning on the input (answers stay in the viewer's browser), two-way consent on layers, the pulse drawn on the stack, chambers linked to the authenticator, Meeting Membrane / SVA, Ka panel and Hrielith.

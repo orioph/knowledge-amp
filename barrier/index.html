@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>One-Way Barrier 0.01</title>
+<title>One-Way Barrier 0.02</title>
 <style>
 :root{--bg:#07080c;--ink:#e9e6df;--dim:#8d8a84;--line:#24262e;--built:#5fe0b8;--partial:#f2b84b;--seed:#b48cff;--unbuilt:#5b5e68;--fp:#e0645f;--wall:#5fe0b8}
 *{box-sizing:border-box}
@@ -72,7 +72,7 @@ button.go{color:var(--bg);background:var(--wall);border-color:var(--wall)}
 </head>
 <body>
 <header>
-  <h1>One-Way Barrier <small>Knowledge Amp organ · prototype 0.01 · 2026-11-17</small></h1>
+  <h1>One-Way Barrier <small>Knowledge Amp organ · prototype 0.02 · 2026-11-19</small></h1>
   <nav>
     <button data-v="barrier" class="on">Barrier</button>
     <button data-v="layers">Layers</button>
@@ -98,6 +98,13 @@ button.go{color:var(--bg);background:var(--wall);border-color:var(--wall)}
    <div class="cards">
      <div class="card you"><h3>What you sent, and keep</h3><div id="youRows" class="k" style="text-transform:none">Nothing sent yet.</div></div>
      <div class="card net"><h3>What the internet saw</h3><div id="netRows" class="k" style="text-transform:none">Nothing yet.</div></div>
+   </div>
+   <div id="syl" class="card" style="min-height:0;margin-top:12px;display:none"></div>
+   <div id="ql" class="card" style="min-height:0;margin-top:12px;display:none">
+     <div class="k">Query learning · where does this fit for you?</div>
+     <div id="qlq" style="margin:6px 0"></div>
+     <div style="display:flex;gap:6px"><input id="qla" style="flex:1;background:#0e0f14;border:1px solid var(--line);color:var(--ink);font:14px Georgia,serif;padding:7px 10px;border-radius:8px" placeholder="your answer stays on your side"><button id="qlb">keep</button></div>
+     <div id="qlk" class="mono" style="font-size:11px;color:var(--dim);margin-top:8px"></div>
    </div>
    <div class="meter">
      <div><span class="k">The internet knows about you</span><b id="mNet" style="color:var(--fp)">0</b><span class="k" style="text-transform:none">linkable facts</span></div>
@@ -167,6 +174,7 @@ function stack(){
   // the wall
   el('rect',{x:20,y:272,width:480,height:12,rx:6,fill:'#5fe0b8',opacity:.85,id:'wall'},S);
   t(260,302,'ONE-WAY BARRIER · the internet sees "no one"','#5fe0b8',11);
+  t(500,140,'pulse: out to explore','#4a4c55',9,'end'); t(500,264,'collapse to no one','#4a4c55',9,'end'); t(500,318,'return, enriched, to you','#4a4c55',9,'end');
   // input platform
   el('rect',{x:40,y:326,width:440,height:70,rx:16,fill:'#0c0d12',stroke:'#2a2e3a'},S);
   t(260,348,'you · the input platform','#e9e6df',14,'middle','Iowan Old Style,Georgia,serif');
@@ -224,7 +232,20 @@ async function send(barrier){
   nYou+=1; $('#mYou').textContent=nYou; $('#iarCount').textContent='artifact: '+nYou+' entr'+(nYou===1?'y':'ies');
   $('#iar').setAttribute('stroke-opacity',1); await sleep(300); $('#iar').setAttribute('stroke-opacity',.6);
   p.setAttribute('opacity',0); wall.setAttribute('opacity',.85); busy=false;
+  syllogism(barrier); learn();
 }
+function syllogism(b){
+  const q=$('#q').value.trim()||'(nothing)';
+  $('#syl').style.display='block';
+  $('#syl').innerHTML='<div class="k">The syllogism of this send</div><p style="margin:6px 0 0">'+(b?
+   'All that leaves through the wall leaves as no one.<br>“'+q+'” left through the wall.<br><b>So the internet met no one, and you kept the meeting.</b>':
+   'All that leaves without a wall leaves as you.<br>“'+q+'” left without a wall.<br><b style="color:var(--fp)">So the internet met you, and kept the meeting.</b>')+'</p>';
+}
+const QS=['Who else is in this, for you?','Where does this belong in your world line?','How does this fit what you already know?','What would make this worth sharing, and with whom?'];
+let qi=0, kept=[]; try{kept=JSON.parse(localStorage.getItem('owb-kept')||'[]')}catch(e){}
+function showKept(){$('#qlk').innerHTML=kept.length?'learned so far ('+kept.length+'):<br>'+kept.slice(-4).map(k=>'· '+k.q.replace(/[<>]/g,'')+' → '+k.a.replace(/[<>]/g,'')).join('<br>'):'Each answer re-informs the next question. Nothing here crosses the wall.'}
+function learn(){$('#ql').style.display='block';$('#qlq').textContent=QS[qi%QS.length];showKept()}
+$('#qlb').onclick=()=>{const a=$('#qla').value.trim(); if(!a)return; kept.push({q:$('#q').value.trim(),a}); try{localStorage.setItem('owb-kept',JSON.stringify(kept))}catch(e){} $('#qla').value=''; qi++; learn()};
 $('#send').onclick=()=>send(true);
 $('#nobar').onclick=()=>send(false);
 $('#reset').onclick=()=>{nNet=nYou=0;$('#mNet').textContent=0;$('#mYou').textContent=0;$('#iarCount').textContent='artifact: 0 entries';$('#youRows').textContent='Nothing sent yet.';$('#netRows').textContent='Nothing yet.'};
@@ -260,20 +281,20 @@ function ledger(){
   const rate={anon:1,semi:3,open:8};
   $('#ledger').innerHTML='<span class="k">Ledger (toy numbers)</span>'+sold.map(([n,s])=>
     `<div class="row"><span>${n} · ${s.shade}</span><span>buyer sees: ${s.shade==='anon'?'patterns, no name':s.shade==='semi'?'patterns + one detail (time or place)':'patterns + your name'} · ${rate[s.shade]} dividend/use</span></div>`).join('')+
-    '<p style="margin:8px 0 0;color:var(--dim)">The more you open a layer, the more it pays and the more it costs you. You can close it again at any time.</p>';
+    '<p style="margin:8px 0 0;color:var(--dim)">Two-way consent: any piece with other people in it is shared only as far as each of them allows. The more you open a layer, the more it pays and the more it costs you. You can close it again at any time.</p>';
 }
 function draw(){rings();layRows();ledger()}
 draw();
 
 /* ---------- chambers ---------- */
 const CH=[
- ['One-way barrier','Acting as an analytics barrier between users and the extended internet … the return of electronic privacy.','This toy (Barrier view). Real-world pieces exist (below).','toy'],
+ ['One-way barrier','Acting as an analytics barrier between users and the extended internet … the return of electronic privacy.','This toy (Barrier view). Its mind is the authenticator (Vigil, SUM, Cerberus, Syrinx), still to be elaborated. For conversations: the Meeting Membrane / Signal Verity Angel sketch. Real-world pieces exist (below).','toy'],
  ['Compositing the Intelligence Artifact','Composing the IA artifact for individual users … pre-anonymized prior to submission.','Visit + fingerprint (self-inspection kept in your memory); Ka skill (one verified archive).','partial'],
  ['Identity profiles','Composing, on-the-fly, unique ‘possible identities’ … blended into a specific user or group-constellation.','Searching as someone else (built). Para-users are still an idea.','partial'],
  ['Search by your own protocols','Processing search requests according to the protocols chosen by the user … resemble dreaming.','KA Display Center 0.02 (petals, bridges, etymology).','partial'],
- ['Disanonymization','Anonymity will be the basis from which users may sometimes depart to varying degrees.','This toy (Layers view). Income Agents is the money side, still a seed.','toy'],
+ ['Disanonymization','Anonymity will be the basis from which users may sometimes depart to varying degrees.','This toy (Layers view), now with two-way consent. The Ka panel carries the same consent. Income Agents is the money side, still a seed.','toy'],
  ['Vetting Sentinel','Detailed analytic data related to verity/pedigree/origin … as an available layer.','Strange Temporal Seashell, chosen as its model.','partial'],
- ['Social networking hub','The central repository and negotiation matrix from social networking.','Nothing yet. The social organs are next in the queue (issue #3).','unbuilt'],
+ ['Social networking hub','The central repository and negotiation matrix from social networking.','Seeds: the Meeting Membrane, Hrielith\'s private chamber, the Ka panel. The social organs are queued (issue #3).','seed'],
 ];
 $('#chambers').innerHTML='<div class="k" style="margin-bottom:6px">What the server does, in D\'s own words (IA.docx), and what exists now</div>'+
  CH.map(([h,q,now,st],i)=>`<div class="ch"><div class="n">${i+1}</div><div><h3>${h}</h3><blockquote>${q}</blockquote><div class="now">Now: ${now}</div></div><div><span class="pill st-${st}">${st==='toy'?'this toy':st}</span></div></div>`).join('');
