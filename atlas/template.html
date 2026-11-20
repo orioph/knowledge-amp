@@ -30,6 +30,9 @@ main{position:relative;height:calc(100% - 54px)}
 #panel .k{font:11px ui-monospace,Menlo,monospace;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
 #panel blockquote{margin:10px 0;padding-left:10px;border-left:2px solid var(--line);color:#c9c4b8;font-style:italic}
 #panel ul{padding-left:16px;margin:6px 0}
+.pass{margin:6px 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#0c0d12}
+.pd{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}.pd span{font:10px ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:3px 6px;cursor:pointer}
+.pd span.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.pr{color:#d8d3c8}.pm{font:11px ui-monospace,Menlo,monospace;color:var(--dim);margin-top:6px;cursor:pointer}.pm b{color:var(--built);font-weight:400}
 #panel .x{position:absolute;right:12px;top:10px;cursor:pointer;color:var(--dim)}
 .legend{position:absolute;left:18px;bottom:14px;font:11px ui-monospace,Menlo,monospace;color:var(--dim);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
@@ -56,7 +59,7 @@ main{position:relative;height:calc(100% - 54px)}
 </head>
 <body>
 <header>
- <h1>Knowledge Amp<small>start · prototype map · 2026-11-17</small></h1>
+ <h1>Knowledge Amp<small>start · prototype map · 2026-11-17 · passages 2026-11-20</small></h1>
  <nav><button data-v="map" class="on">Map</button><button data-v="lineage">Lineage</button><button data-v="examples">Examples</button></nav>
 </header>
 <main>
@@ -69,7 +72,7 @@ main{position:relative;height:calc(100% - 54px)}
    <span><i class="dot" style="background:var(--partial)"></i>partly built</span>
    <span><i class="dot" style="background:var(--seed)"></i>seed (planned)</span>
    <span><i class="dot" style="border:1.5px solid var(--unbuilt)"></i>idea only</span>
-   <span>left: the writings, 2002–2026 · right: what exists now · lines: what carries what (proposed)</span>
+   <span>left: the writings, 2002–2026 · right: what exists now · lines: what carries what (proposed) · open a node to pass through each link's six positions</span>
   </div>
   <div id="panel"></div>
  </section>
@@ -89,6 +92,9 @@ main{position:relative;height:calc(100% - 54px)}
 </main>
 <script>
 const D = __DATA__;
+const PASS = __PASSAGES__;
+const passFor=(a,b)=>PASS.passages.find(p=>(p.s===a&&p.t===b)||(p.s===b&&p.t===a));
+
 const C = {built:'#5fe0b8',partial:'#f2b84b',seed:'#b48cff',unbuilt:'#5b5e68',core:'#ffffff',idea:'#5b5e68'};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
@@ -170,9 +176,16 @@ function show(n){
  if(n.src)h+=`<div class="k">from ${n.src}</div>`;
  if(n.date)h+=`<div class="k">${n.date}</div>`;
  const emb=nb.filter(x=>x.kind!=='chat'),ch=nb.filter(x=>x.kind==='chat');
- if(emb.length)h+=`<p class="k" style="margin-top:12px">${n.kind==='now'?'Carries these ideas':'Carried today by'}</p><ul>${emb.map(x=>`<li>${x.label}</li>`).join('')}</ul>`;
+ if(emb.length)h+=`<p class="k" style="margin-top:12px">${n.kind==='now'?'Carries these ideas':'Carried today by'}</p><ul>${emb.map(x=>{const p=passFor(n.label,x.label);return `<li>${x.label}${p?`<div class="pass" data-i="${PASS.passages.indexOf(p)}" data-pos="0"></div>`:''}</li>`}).join('')}</ul>`;
  if(ch.length)h+=`<p class="k">Chats that fed it</p><ul>${ch.map(x=>`<li>${x.date} · ${x.title}<br><span style="color:#9c978c">${x.gist}</span></li>`).join('')}</ul>`;
  panel.innerHTML=h;panel.style.display='block';
+ panel.querySelectorAll('.pass').forEach(drawPass);
+}
+function drawPass(d){
+ const p=PASS.passages[+d.dataset.i],i=+d.dataset.pos,pos=PASS.positions[i];
+ d.innerHTML=`<div class="pd">${PASS.positions.map((q,j)=>`<span class="${j===i?'on':''}" data-j="${j}">${q}</span>`).join('')}</div><div class="pr">${p[pos]}</div><div class="pm">↻ ${PASS.move[pos]} <b>pass →</b></div>`;
+ d.querySelectorAll('.pd span').forEach(sp=>sp.onclick=e=>{e.stopPropagation();d.dataset.pos=sp.dataset.j;drawPass(d)});
+ d.querySelector('.pm').onclick=e=>{e.stopPropagation();d.dataset.pos=(i+1)%6;drawPass(d)};
 }
 svg.onclick=()=>{panel.style.display='none'};
 // pan / zoom

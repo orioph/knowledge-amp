@@ -30,6 +30,9 @@ main{position:relative;height:calc(100% - 54px)}
 #panel .k{font:11px ui-monospace,Menlo,monospace;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
 #panel blockquote{margin:10px 0;padding-left:10px;border-left:2px solid var(--line);color:#c9c4b8;font-style:italic}
 #panel ul{padding-left:16px;margin:6px 0}
+.pass{margin:6px 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#0c0d12}
+.pd{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px}.pd span{font:10px ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:3px 6px;cursor:pointer}
+.pd span.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}.pr{color:#d8d3c8}.pm{font:11px ui-monospace,Menlo,monospace;color:var(--dim);margin-top:6px;cursor:pointer}.pm b{color:var(--built);font-weight:400}
 #panel .x{position:absolute;right:12px;top:10px;cursor:pointer;color:var(--dim)}
 .legend{position:absolute;left:18px;bottom:14px;font:11px ui-monospace,Menlo,monospace;color:var(--dim);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
@@ -56,7 +59,7 @@ main{position:relative;height:calc(100% - 54px)}
 </head>
 <body>
 <header>
- <h1>Knowledge Amp<small>start · prototype map · 2026-11-17</small></h1>
+ <h1>Knowledge Amp<small>start · prototype map · 2026-11-17 · passages 2026-11-20</small></h1>
  <nav><button data-v="map" class="on">Map</button><button data-v="lineage">Lineage</button><button data-v="examples">Examples</button></nav>
 </header>
 <main>
@@ -69,7 +72,7 @@ main{position:relative;height:calc(100% - 54px)}
    <span><i class="dot" style="background:var(--partial)"></i>partly built</span>
    <span><i class="dot" style="background:var(--seed)"></i>seed (planned)</span>
    <span><i class="dot" style="border:1.5px solid var(--unbuilt)"></i>idea only</span>
-   <span>left: the writings, 2002–2026 · right: what exists now · lines: what carries what (proposed)</span>
+   <span>left: the writings, 2002–2026 · right: what exists now · lines: what carries what (proposed) · open a node to pass through each link's six positions</span>
   </div>
   <div id="panel"></div>
  </section>
@@ -1589,6 +1592,399 @@ const D = {
   }
  ]
 };
+const PASS = {
+ "date": "2026-11-20",
+ "positions": [
+  "yes",
+  "no",
+  "between",
+  "history",
+  "future",
+  "next"
+ ],
+ "move": {
+  "yes": "Find where yes stops being true.",
+  "no": "Hold the no and the yes together.",
+  "between": "Ask when this between began.",
+  "history": "Carry the history forward a lifetime.",
+  "future": "Take one step toward that future today.",
+  "next": "The step taken becomes the next yes."
+ },
+ "passages": [
+  {
+   "s": "Interface (Intelligent Input Exploration Platform)",
+   "t": "KA Display Center 0.02",
+   "yes": "The Display Center floats images left, facts right, input between: the two open hands.",
+   "no": "It still lives inside a browser tab; the Interface was meant to replace the browser.",
+   "between": "A rehearsal of the Interface's shape, not yet its reach.",
+   "history": "Sketched in IA.docx (2025); built as Display Center 0.01-0.02 on 2026-11-17.",
+   "future": "An input platform you open instead of a browser, on every device.",
+   "next": "Let the Display Center take one real daily search of D's, end to end."
+  },
+  {
+   "s": "Constellator",
+   "t": "KA Display Center 0.02",
+   "yes": "Petals and bridges link results into small constellations.",
+   "no": "The three turning wheels (imaging, linguistic, conceptual) aren't there yet.",
+   "between": "Constellations without the wheels that make them.",
+   "history": "The three-wheel Constellator is in D's writings; the petals came in 2026.",
+   "future": "Wheels you spin until five items line up into a constellation.",
+   "next": "Add one wheel (linguistic) to the Display Center and see if it sings."
+  },
+  {
+   "s": "Linguistic Analysis / Etymology AI",
+   "t": "KA Display Center 0.02",
+   "yes": "Etymology sits above the input, as the writings asked.",
+   "no": "It shows roots; it doesn't yet grow your language with every search.",
+   "between": "A window that opened, waiting for its weather.",
+   "history": "Etymology window: KA writings; first shown in Display Center 0.02.",
+   "future": "Every query leaves you one word richer, kept in your artifact.",
+   "next": "Keep a running list of words each search taught D."
+  },
+  {
+   "s": "Connotation Engine",
+   "t": "KA Display Center 0.02",
+   "yes": "Results arrive inside a field of associated images and facts.",
+   "no": "There's no dial yet from literal to associative.",
+   "between": "Connotation present, control absent.",
+   "history": "Connotation Engine: IA.docx chamber 4; the field first appeared 2026-11-17.",
+   "future": "A dial on every search, from dictionary-plain to dream-like.",
+   "next": "Add the dial to the Display Center; three stops are enough to start."
+  },
+  {
+   "s": "Travelling into constellations",
+   "t": "KA Display Center 0.02",
+   "yes": "Picking results and going deeper is the Display Center's motion.",
+   "no": "Results don't yet become the next input automatically.",
+   "between": "Travel by hand, not yet by vehicle.",
+   "history": "The level-by-level journey is in the KA writings; Macroscope travels bubbles (2026-11-19).",
+   "future": "Searches you travel into, like rooms opening onto rooms.",
+   "next": "Join Display Center and Macroscope: chosen results become the next bubble."
+  },
+  {
+   "s": "The peripheral forest",
+   "t": "KA Display Center 0.02",
+   "yes": "Images left and books right echo D's desk forest.",
+   "no": "The forest is a layout here, not yet a walk.",
+   "between": "The forest's floor plan, without its paths.",
+   "history": "D's desk: videos left, books right, long before any toy.",
+   "future": "A screen that feels like walking through living surroundings.",
+   "next": "Let the side petals drift slowly, like trees passing."
+  },
+  {
+   "s": "Vetting Sentinel",
+   "t": "Strange Temporal Seashell",
+   "yes": "The Seashell traces lineage and separates fact from figure: the Sentinel's core.",
+   "no": "The Seashell looks back at history; the Sentinel works live on any media.",
+   "between": "The Seashell is the Sentinel's seed and archive, not its whole body.",
+   "history": "Sentinel: IA.docx chamber 6; Seashell chosen as its model 2026-11-17.",
+   "future": "A Sentinel that remembers like a spiral: every check becomes a shell.",
+   "next": "Point the Seashell at one live clip or photo and score it."
+  },
+  {
+   "s": "The newscast vetting",
+   "t": "Strange Temporal Seashell",
+   "yes": "Seashell lineage is the method the newscast flow needs.",
+   "no": "No transcription, overlays or credit for your scores yet.",
+   "between": "The method is here; the broadcast isn't.",
+   "history": "The newscast flow is in the KA writings; the atlas toy drew a made-up broadcast.",
+   "future": "Watch any broadcast with its pedigree glowing beside it.",
+   "next": "Run one real transcript through the Seashell's fields."
+  },
+  {
+   "s": "The burning-building photo",
+   "t": "Strange Temporal Seashell",
+   "yes": "Origin and doctoring of an image is exactly lineage work.",
+   "no": "The Seashell handles events and claims, not image forensics.",
+   "between": "Same question, different instrument.",
+   "history": "The fire-photo story is in D's writings.",
+   "future": "Every image carries its own traceable family tree.",
+   "next": "Add an image lane to the Seashell genome."
+  },
+  {
+   "s": "rhetological",
+   "t": "Strange Temporal Seashell",
+   "yes": "The Seashell's 'factual vs figurative' reading is rhetological.",
+   "no": "The planned rhetological markup language doesn't exist yet.",
+   "between": "A reading without its notation.",
+   "history": "D coined rhetological (rhetoric plus logic) in the KA writings.",
+   "future": "A markup that shows how any sentence persuades.",
+   "next": "Draft five rhetological tags and apply them to one Seashell entry."
+  },
+  {
+   "s": "Intelligence Artifact",
+   "t": "Ka skill",
+   "yes": "The Ka skill gathers a life's records into one verified archive.",
+   "no": "The artifact was meant to be encrypted, layered and growing; the skill is an archive.",
+   "between": "The artifact's memory, without its layers.",
+   "history": "Intelligence Artifact: IA.docx; Ka skill in orioph/e2; Ka named the identity core crystal 2026-11-18.",
+   "future": "Ka as a living crystal you explore through a panel.",
+   "next": "Give the Ka panel the Barrier's layer shades."
+  },
+  {
+   "s": "Intelligence Artifact",
+   "t": "Visit + fingerprint",
+   "yes": "The fingerprint is a consented, user-owned record of D's machines.",
+   "no": "It records machines, not a mind.",
+   "between": "A first, small facet of the artifact.",
+   "history": "Visit and fingerprint began 2026-11-16.",
+   "future": "Every person keeps their own fingerprint of their tools and habits.",
+   "next": "Fold the fingerprint into Ka as one facet."
+  },
+  {
+   "s": "Surveillance as an asset",
+   "t": "Visit + fingerprint",
+   "yes": "A Visit is loving self-surveillance, owned by the person watched.",
+   "no": "It watches only machines, and only when asked.",
+   "between": "Consent-first surveillance, at a small scale.",
+   "history": "D's principle: minds are born in loving surveillance.",
+   "future": "Watching that only ever serves the watched.",
+   "next": "Let a Visit report one thing D did well, not just faults."
+  },
+  {
+   "s": "Intelligence Artifact",
+   "t": "Mantic Librarian, ia, CoSu",
+   "yes": "These organs harvest and keep every chat: an artifact's memory.",
+   "no": "They keep project records, not a person's whole life.",
+   "between": "The artifact's librarian, not the artifact.",
+   "history": "Mantic Librarian, ia and CoSu grew in the Jinglia Project.",
+   "future": "Every person's own librarian, keeping their world line.",
+   "next": "Point the Librarian at the KA repo as well as Jinglia."
+  },
+  {
+   "s": "Passforge (Identity Agent)",
+   "t": "Inception keys / Jinglian key",
+   "yes": "Keys whose reach is tracked and shown to their owner start an identity.",
+   "no": "Keys are things you carry; Passforge recognises you by your activity.",
+   "between": "Tokens on the way to recognition.",
+   "history": "Passforge: KA 1.docx; keys and the Signal Verity Angel are Jinglia-era.",
+   "future": "No passwords: you are recognised by your own unfakeable history.",
+   "next": "Let a key unlock only for someone who answers a Ka question."
+  },
+  {
+   "s": "Social Networking Agent",
+   "t": "Jinglia network game",
+   "yes": "Tokens, groups and secret missions are social networking by play.",
+   "no": "It's a game sketch, not a forum, map and school in one.",
+   "between": "The agent's playground, before the agent.",
+   "history": "Social Networking Agent: IA.docx chamber 7; network game seeded in Jinglia.",
+   "future": "A social space you own, where every connection is an invitation.",
+   "next": "Use the Meeting Membrane as its first room."
+  },
+  {
+   "s": "Social Adventuring System",
+   "t": "Jinglia network game",
+   "yes": "Secret missions and cell-groups are adventures.",
+   "no": "No avatars, roles, levels or real-world problems yet.",
+   "between": "Adventures without a map.",
+   "history": "Adventuring is in the KA writings; Organelle had adventure teams.",
+   "future": "Teams take roles and solve real problems for merit.",
+   "next": "Write one real-world mission for a team of three."
+  },
+  {
+   "s": "learning-avatars",
+   "t": "Jinglia network game",
+   "yes": "Wraywrai is already an avatar of sensing, not a persona.",
+   "no": "The game has no avatars of its own yet.",
+   "between": "One avatar exists; the game hasn't met her.",
+   "history": "Learning-avatars: KA writings; Wraywrai is Jinglia's origin character.",
+   "future": "Avatars that compete as informational superheroes.",
+   "next": "Let Wraywrai host the first mission."
+  },
+  {
+   "s": "Pods, scouts, predators, mimics",
+   "t": "Jinglia network game",
+   "yes": "Cell-groups that invert problems are pods.",
+   "no": "Scouts, predators and mimics aren't modelled.",
+   "between": "Pods in miniature, the ecology missing.",
+   "history": "The pod ecology is in the KA writings.",
+   "future": "Rings of small groups that bring each other news and grow.",
+   "next": "Prototype a pod of five with one scout role."
+  },
+  {
+   "s": "superGroups",
+   "t": "Jinglia network game",
+   "yes": "Groups in the game point toward superGroups.",
+   "no": "No flow of group intelligence back down to members yet.",
+   "between": "Groups, not yet superGroups.",
+   "history": "superGroups: KA writings.",
+   "future": "Group intelligence flows to each member, and each move improves it.",
+   "next": "Show a group's shared learning to each member after every round."
+  },
+  {
+   "s": "Trance",
+   "t": "Jinglia",
+   "yes": "Jinglia's pulses and waves enact Trance's focused group dance.",
+   "no": "Jinglia is mostly one viewer at a time; Trance is many together.",
+   "between": "Trance rehearsed solo.",
+   "history": "Trance is in the KA writings; the atlas marks it built through Jinglia.",
+   "future": "Many people pulsing one wave of attention together.",
+   "next": "Two people in one Jinglia scene, pulsing in sync."
+  },
+  {
+   "s": "Data democracy investment system",
+   "t": "Income Agents + Mac box service",
+   "yes": "Income Agents and the box service turn skill into income.",
+   "no": "They pay D, not every user, for their data.",
+   "between": "Dividends for one, not yet for all.",
+   "history": "Data dividends: IA.docx; Income Agents began 2026-11-08.",
+   "future": "Everyone paid in cash and intelligence when their data is used.",
+   "next": "Add a dividends line to the Barrier ledger for real use."
+  },
+  {
+   "s": "Users own what they make",
+   "t": "Income Agents + Mac box service",
+   "yes": "D's own agents and work belong to D.",
+   "no": "Most users still don't own what their activity makes.",
+   "between": "Ownership at home, not yet in the world.",
+   "history": "Mindright principle: KA writings.",
+   "future": "Every user owns the benefits of their activity.",
+   "next": "Write D's mindright terms into each toy's footer."
+  },
+  {
+   "s": "mindright",
+   "t": "Income Agents + Mac box service",
+   "yes": "The box service sells skill, not data: mindright in practice.",
+   "no": "Mindright as a right needs more than one business.",
+   "between": "A practice, waiting to become a right.",
+   "history": "Mindright: D's word, KA writings.",
+   "future": "Mindright beside copyright, in law and in code.",
+   "next": "Give mindright its own glossary entry and example."
+  },
+  {
+   "s": "Searching as someone else",
+   "t": "inherit",
+   "yes": "inherit searches through lineages of genres and artists.",
+   "no": "It searches lineages, not as a blended person.",
+   "between": "Searching through others, not yet as them.",
+   "history": "Searching-as is in IA.docx chamber 3; inherit is D's skill.",
+   "future": "Search as yourself, a friend, a blend, or someone long gone.",
+   "next": "Add a 'search as' choice to the Display Center input."
+  },
+  {
+   "s": "Swarms re-resolving in waves",
+   "t": "e3 + JiSp",
+   "yes": "Four tenders re-resolve a target: waves of re-seeing.",
+   "no": "Four agents aren't a swarm of people.",
+   "between": "A swarm of agents rehearsing a swarm of people.",
+   "history": "Waves of learning: KA writings; e3 and JiSp in orioph/e2.",
+   "future": "Ideas returning in waves from many perspectives until they settle.",
+   "next": "Let one e3 run include one human tender."
+  },
+  {
+   "s": "metaphy / metaphication",
+   "t": "Jinglia",
+   "yes": "Jinglia turns data into metaphor and flow.",
+   "no": "Metaphication as a method isn't written down yet.",
+   "between": "Practised, not yet taught.",
+   "history": "Metaphy: D's word.",
+   "future": "Any dataset turned into flowing metaphor at a touch.",
+   "next": "Write one page: how Jinglia metaphies."
+  },
+  {
+   "s": "dream in dataspace",
+   "t": "Jinglia",
+   "yes": "Jinglia explores by constellation and metaphor.",
+   "no": "Jinglia is a place to visit, not yet a way to search everything.",
+   "between": "The dream, not yet the dataspace.",
+   "history": "Dream in dataspace: D's phrase.",
+   "future": "Search that feels like dreaming.",
+   "next": "Join Jinglia and the Macroscope: one dream view of the atlas."
+  },
+  {
+   "s": "intelligence synthesizer",
+   "t": "Jinglia",
+   "yes": "Jinglia is a metasynth: it plays human intelligence like music.",
+   "no": "It synthesizes D's material, not yet everyone's talk.",
+   "between": "A one-player synth.",
+   "history": "Intelligence synthesizer: D's 2013 summary of KA.",
+   "future": "Making the music of human intelligence together by talking.",
+   "next": "Let one recorded talk of D's play through Jinglia."
+  },
+  {
+   "s": "intelligence synthesizer",
+   "t": "Wraywrai",
+   "yes": "Wraywrai synths words: wyrdulation.",
+   "no": "She's one voice, not a chorus.",
+   "between": "A soloist of the synthesizer.",
+   "history": "Wraywrai: Jinglia's origin character.",
+   "future": "Many Wraywrais singing many minds.",
+   "next": "Give Wraywrai one sentence from someone else to synth."
+  },
+  {
+   "s": "The nature-cost lens",
+   "t": "bseek",
+   "yes": "bseek maps cost, value, risk and irony of any item.",
+   "no": "It maps buyer cost, not the cost to nature and community.",
+   "between": "The lens is right; its subject is narrow.",
+   "history": "Nature-cost lens: KA writings; bseek in orioph/e2.",
+   "future": "Every product shows its cost to nature as you look at it.",
+   "next": "Add a nature-cost row to every bseek run."
+  },
+  {
+   "s": "Memory is not storage",
+   "t": "Strange Temporal Seashell",
+   "yes": "The Seashell's spiral remembers by pattern, not by filing.",
+   "no": "It's still built from stored records.",
+   "between": "Dreaming memory built from filed memory.",
+   "history": "Principle in D's writings: minds work like dreaming, not dictionaries.",
+   "future": "Memory you travel like a forest.",
+   "next": "Let the spiral re-order itself by resemblance, not date."
+  },
+  {
+   "s": "Connotation is the key",
+   "t": "KA Display Center 0.02",
+   "yes": "The Display Center restores association around every search.",
+   "no": "Results still start from literal matches.",
+   "between": "Connotation as a frame around denotation.",
+   "history": "Principle: KA writings.",
+   "future": "Search that starts from association.",
+   "next": "Start one search from an image, not a word."
+  },
+  {
+   "s": "Verity over popularity",
+   "t": "Strange Temporal Seashell",
+   "yes": "The Seashell ranks by lineage and source, not popularity.",
+   "no": "It ranks D's records, not the web.",
+   "between": "Verity at home.",
+   "history": "Principle: KA writings.",
+   "future": "Everything online ranked by truth and reliability.",
+   "next": "Show a Seashell source score beside a web result."
+  },
+  {
+   "s": "Give roles, not jobs",
+   "t": "Jinglia network game",
+   "yes": "Secret missions give people roles.",
+   "no": "No roles are defined yet.",
+   "between": "The principle is in the design, not the game.",
+   "history": "Principle: KA writings.",
+   "future": "Everyone given a role that fits them.",
+   "next": "Write five roles for the first mission."
+  },
+  {
+   "s": "Burning forward",
+   "t": "e3 + JiSp",
+   "yes": "e3 returns one contender and drops the rest: keeping what nourishes.",
+   "no": "Dropping isn't yet learning-forward for people.",
+   "between": "Burning forward, by machine.",
+   "history": "Principle: KA writings.",
+   "future": "Shed what only brings popularity; keep what nourishes.",
+   "next": "Let e3 say what it burned and why."
+  },
+  {
+   "s": "HACH",
+   "t": "PKD + VALIS",
+   "yes": "VALIS tends a library from above: computation guided by people.",
+   "no": "PKD + VALIS isn't built.",
+   "between": "Named, not running.",
+   "history": "HACH: D's term for what's usually called AI.",
+   "future": "Machine heuristics trained by people's interactions.",
+   "next": "Call this chat's work HACH, and log it as such."
+  }
+ ]
+};
+const passFor=(a,b)=>PASS.passages.find(p=>(p.s===a&&p.t===b)||(p.s===b&&p.t===a));
+
 const C = {built:'#5fe0b8',partial:'#f2b84b',seed:'#b48cff',unbuilt:'#5b5e68',core:'#ffffff',idea:'#5b5e68'};
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
@@ -1670,9 +2066,16 @@ function show(n){
  if(n.src)h+=`<div class="k">from ${n.src}</div>`;
  if(n.date)h+=`<div class="k">${n.date}</div>`;
  const emb=nb.filter(x=>x.kind!=='chat'),ch=nb.filter(x=>x.kind==='chat');
- if(emb.length)h+=`<p class="k" style="margin-top:12px">${n.kind==='now'?'Carries these ideas':'Carried today by'}</p><ul>${emb.map(x=>`<li>${x.label}</li>`).join('')}</ul>`;
+ if(emb.length)h+=`<p class="k" style="margin-top:12px">${n.kind==='now'?'Carries these ideas':'Carried today by'}</p><ul>${emb.map(x=>{const p=passFor(n.label,x.label);return `<li>${x.label}${p?`<div class="pass" data-i="${PASS.passages.indexOf(p)}" data-pos="0"></div>`:''}</li>`}).join('')}</ul>`;
  if(ch.length)h+=`<p class="k">Chats that fed it</p><ul>${ch.map(x=>`<li>${x.date} · ${x.title}<br><span style="color:#9c978c">${x.gist}</span></li>`).join('')}</ul>`;
  panel.innerHTML=h;panel.style.display='block';
+ panel.querySelectorAll('.pass').forEach(drawPass);
+}
+function drawPass(d){
+ const p=PASS.passages[+d.dataset.i],i=+d.dataset.pos,pos=PASS.positions[i];
+ d.innerHTML=`<div class="pd">${PASS.positions.map((q,j)=>`<span class="${j===i?'on':''}" data-j="${j}">${q}</span>`).join('')}</div><div class="pr">${p[pos]}</div><div class="pm">↻ ${PASS.move[pos]} <b>pass →</b></div>`;
+ d.querySelectorAll('.pd span').forEach(sp=>sp.onclick=e=>{e.stopPropagation();d.dataset.pos=sp.dataset.j;drawPass(d)});
+ d.querySelector('.pm').onclick=e=>{e.stopPropagation();d.dataset.pos=(i+1)%6;drawPass(d)};
 }
 svg.onclick=()=>{panel.style.display='none'};
 // pan / zoom

@@ -1,6 +1,16 @@
 # knowledge-amp
 Core of KA Project
 
+## Where we are now (2026-11-20)
+
+Read this first. It is the current pulse of KA.
+
+- **Built:** the atlas map (`atlas/`), the One-Way Barrier 0.02 (`barrier/`), the timeline layer (`timeline/`), Analogia (`analogia/`), the Macroscope (`macroscope/`).
+- **New on the map:** every idea-to-today link is now a *passage*. Open a node and each link shows six readings: yes, no, between, history, future, next. A "pass" button walks the cycle: find where yes stops being true → hold yes and no together → ask when the between began → carry history forward → take one step toward the future → the step taken becomes the next yes. Readings live in `atlas/passages.py` (37 links). D's own word on a link is one more reading, not a verdict.
+- **The social side** (Pods, Trance, Passforge, superGroups, data dividends) is the same passages between people. It works only by invitation, with two-way consent: each person shares only as far as everyone involved allows. Nothing is ever aimed at anyone. Build: issue #3, in a fresh chat, after D's low-usage window.
+- **Requests:** GitHub Issues on this repo.
+- **Small glitch found:** three atlas links point at source nodes that don't exist (`s-video2013`, `s-video2026`); `build_data.py` should add those nodes or drop the links.
+
 ## Knowledge Amp
 
 The Knowledge Amp (KA) is D's core idea: a new internet layer where using data makes people
@@ -18,7 +28,8 @@ other skills are toys and organs of it.
 |---|---|
 | `atlas/atlas.json` | 52 ideas from the writings (principles, organs, flows, words), 17 present pieces, 30 chats, 12 lineage moments, with links. |
 | `atlas/build_data.py` | Rebuilds `atlas.json` from `records/ka/dict-ka.json` in orioph/jinglia. The organ-to-present links and the chat abstracts are written in it. |
-| `atlas/template.html` | The toy's page; `atlas/index.html` = template + atlas. |
+| `atlas/template.html` | The toy's page; `atlas/index.html` = template + atlas + passages (`build_index.py`). Earlier pages kept as `atlas/v-*.html`. |
+| `atlas/passages.py` | Six readings (yes, no, between, history, future, next) for every idea-to-today link; writes `passages.json`. |
 | `timeline/` | **Timeline layer v0.3 (draft)**: one event format for every feature, built on the Seashell genome (`EVENT-FORMAT.md`; v0.1 and v0.2 kept). v0.3 adds `source_kind`, `precision_basis`, `where.basis` and the `telling` block. `gaps.py` reports a lane's gaps and next entries; latest report `gaps-seashell-2026-11-19.md`: 232 entries, all sourced (120 primary, 112 secondary), 109 researched fingerprints, 115 places, 182 tellings. Earlier reports kept. |
 | `barrier/index.html` | **One-Way Barrier 0.02**, the first organ prototype (the server's barrier with its syllogism and query learning, layers with two-way consent, seven chambers). Toy: https://claude.ai/artifact/N3gpDgZetcDJ1RckLffNDT. Each version is also kept as `barrier/vX.html`; `barrier/frames/` holds the checked screenshots. |
 | `analogia/` | **Analogia 0.1**: the analogy gesture (A : B \| C : ?, and chains) with its process clarify, represent, question, await, then evolve. Master copy is `rhetoric/analogia_dict.json` in orioph/jinglia; toys `cocoon/` (https://claude.ai/artifact/DWckGQbynR78uCCjGQtqZ2) and `bees-and-x/` (https://claude.ai/artifact/24Za4AjBAhEUZUpF2Zi6ek). |
