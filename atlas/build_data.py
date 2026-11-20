@@ -100,6 +100,11 @@ for e in ka['entries']:
         nodes.append(dict(id=e['id'], label=e['name'], kind=e['kind'], gist=e.get('gist',''),
                           quote=e.get('quote',''), src=e.get('src',{}).get('path',''), status="idea"))
         links.append(dict(s="ka", t=e['id'], k="has"))
+# sources that present pieces embody (the 2013 and 2026 videos) become nodes too (fix 2026-11-20)
+for sid in dict.fromkeys(s for s,t in embody if E.get(s,{}).get('kind')=='source'):
+    e=E[sid]
+    nodes.append(dict(id=sid, label=(e.get('aka') or [e['name']])[0], title=e['name'], kind="source", gist=e.get('gist',''), src=e.get('src',{}).get('path',''), url=e.get('url',''), status="source"))
+    links.append(dict(s="ka", t=sid, k="has"))
 for n in now:
     nodes.append(dict(id=n[0], label=n[1], kind="now", sub=n[2], gist=n[3], status=n[4]))
 for s,t in embody:

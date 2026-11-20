@@ -476,6 +476,26 @@
    "status": "built"
   },
   {
+   "id": "s-video2013",
+   "label": "the 2013 video",
+   "title": "Sketching The Knowledge Amp: A Mutual Intelligence Synthesis Engine (2013)",
+   "kind": "source",
+   "gist": "D's 2013 video (29:55, one take, talking to camera at home; no slides). He had been working on KA for about six months. Twelve chapters: introduction, surveillance, lies, the browser, our minds, our browser, personal intelligence amplifier, personal intelligence assistant, social networking, vetting sentinel, heroic identities, outro. Transcript is YouTube's automatic captions, so names and some words are misheard.",
+   "src": "Sketching The Knowledge Amp_ A Mutual Intelligence Synthesis Engine.mp4",
+   "url": "https://www.youtube.com/watch?v=VympKPRucq8",
+   "status": "source"
+  },
+  {
+   "id": "s-video2026",
+   "label": "ka.mov",
+   "title": "The Knowledge Amp, told again (2026)",
+   "kind": "source",
+   "gist": "D's 40-minute talk to camera at home on 2026-11-16 (ka.mov, in ~/Desktop/pitch images): the origin story, the 2002 contact, nature's intelligence and the shell as a map of time, then a walk through his pitch-image gallery, including the full KA diagram, organ by organ. Transcript is Claude's (Whisper small.en), rough.",
+   "src": "ka.mov",
+   "url": "",
+   "status": "source"
+  },
+  {
    "id": "n-jinglia",
    "label": "Jinglia",
    "kind": "now",
@@ -871,6 +891,16 @@
   {
    "s": "ka",
    "t": "w-synth",
+   "k": "has"
+  },
+  {
+   "s": "ka",
+   "t": "s-video2013",
+   "k": "has"
+  },
+  {
+   "s": "ka",
+   "t": "s-video2026",
    "k": "has"
   },
   {

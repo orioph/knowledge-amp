@@ -569,6 +569,26 @@ const D = {
    "status": "built"
   },
   {
+   "id": "s-video2013",
+   "label": "the 2013 video",
+   "title": "Sketching The Knowledge Amp: A Mutual Intelligence Synthesis Engine (2013)",
+   "kind": "source",
+   "gist": "D's 2013 video (29:55, one take, talking to camera at home; no slides). He had been working on KA for about six months. Twelve chapters: introduction, surveillance, lies, the browser, our minds, our browser, personal intelligence amplifier, personal intelligence assistant, social networking, vetting sentinel, heroic identities, outro. Transcript is YouTube's automatic captions, so names and some words are misheard.",
+   "src": "Sketching The Knowledge Amp_ A Mutual Intelligence Synthesis Engine.mp4",
+   "url": "https://www.youtube.com/watch?v=VympKPRucq8",
+   "status": "source"
+  },
+  {
+   "id": "s-video2026",
+   "label": "ka.mov",
+   "title": "The Knowledge Amp, told again (2026)",
+   "kind": "source",
+   "gist": "D's 40-minute talk to camera at home on 2026-11-16 (ka.mov, in ~/Desktop/pitch images): the origin story, the 2002 contact, nature's intelligence and the shell as a map of time, then a walk through his pitch-image gallery, including the full KA diagram, organ by organ. Transcript is Claude's (Whisper small.en), rough.",
+   "src": "ka.mov",
+   "url": "",
+   "status": "source"
+  },
+  {
    "id": "n-jinglia",
    "label": "Jinglia",
    "kind": "now",
@@ -964,6 +984,16 @@ const D = {
   {
    "s": "ka",
    "t": "w-synth",
+   "k": "has"
+  },
+  {
+   "s": "ka",
+   "t": "s-video2013",
+   "k": "has"
+  },
+  {
+   "s": "ka",
+   "t": "s-video2026",
    "k": "has"
   },
   {
@@ -2009,6 +2039,8 @@ let gi=0,prev=null;const slots=ideas.length+3*2;ideas.forEach((n,i)=>{if(prev&&p
 const groupLab={};ideas.forEach(n=>{if(!groupLab[n.kind])groupLab[n.kind]=n});
 nows.forEach((n,i)=>{const a=-Math.PI*0.36+(Math.PI*0.72)*(i/(nows.length-1));n.x=cx+R2*Math.cos(a);n.y=cy+R2*1.05*Math.sin(a);n.a=a});
 const ka=byId.ka;ka.x=cx;ka.y=cy;
+// sources (the 2013 and 2026 videos) sit just below the root, where the writings and today meet
+D.nodes.filter(n=>n.kind==='source').forEach((n,i,a)=>{n.x=cx+(i-(a.length-1)/2)*260;n.y=cy+170;n.a=Math.PI/2});
 // chats orbit their node
 D.chats.forEach((c,i)=>{const t=byId[c.node];const sib=D.chats.filter(x=>x.node===c.node);const j=sib.indexOf(c);
  if(t.kind==='now'){const a=t.a+(j-(sib.length-1)/2)*0.05;const r=R2+60+(j%2)*16;c.x=cx+r*Math.cos(a);c.y=cy+r*1.05*Math.sin(a)}else{c.x=t.x+40+j*14;c.y=t.y-12-j*6}byId[c.id]=Object.assign(c,{kind:'chat',label:c.title,status:'chat'})});
