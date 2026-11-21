@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Social Passages 0.01</title>
+<style>
+:root{--bg:#07080c;--ink:#e9e6df;--dim:#8d8a84;--line:#24262e;--built:#5fe0b8;--partial:#f2b84b;--seed:#b48cff;--fp:#e0645f}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
+header{display:flex;align-items:baseline;gap:16px;padding:14px 22px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+h1{font-size:19px;font-weight:600;margin:0}
+h1 small{font-weight:400;color:var(--dim);font-size:13px;margin-left:8px}
+nav{margin-left:auto;display:flex;gap:4px;flex-wrap:wrap}
+button{font:12px/1 ui-monospace,Menlo,monospace;letter-spacing:.06em;text-transform:uppercase;background:none;color:var(--dim);border:1px solid var(--line);padding:7px 11px;border-radius:999px;cursor:pointer}
+button:hover{color:var(--ink);border-color:#3a3d48}
+button.on{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+button.go{color:var(--bg);background:var(--built);border-color:var(--built)}
+.view{display:none;padding:18px 22px 40px;max-width:1240px;margin:0 auto}
+.view.on{display:block}
+.k{font:11px ui-monospace,Menlo,monospace;color:var(--dim);text-transform:uppercase;letter-spacing:.1em}
+.grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+svg.stage{width:100%;height:auto;display:block;background:radial-gradient(ellipse at 50% 45%,#10121a,#07080c 70%);border:1px solid var(--line);border-radius:14px}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#0c0d12;margin-bottom:12px}
+.card h3{margin:0 0 8px;font-size:15px}
+.lay{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center;padding:6px 0;border-bottom:1px dashed #1c1e25}
+.lvl{display:flex;gap:3px;flex-wrap:wrap}
+.lvl button{padding:5px 7px;font-size:10px}
+.row{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed #1c1e25;padding:4px 0;font:12px ui-monospace,Menlo,monospace}
+.row span:first-child{color:var(--dim)}
+.l0{color:#4a4c55}.l1{color:var(--seed)}.l2{color:var(--partial)}.l3{color:var(--built)}
+.reading{display:grid;grid-template-columns:80px 1fr;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.reading.cur{background:#11131a}
+.reading b{font:11px ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+.reading.cur b{color:var(--built)}
+input[type=text]{width:100%;background:#0e0f14;border:1px solid var(--line);color:var(--ink);font:15px Georgia,serif;padding:10px 12px;border-radius:10px}
+.syl{font-size:13px;border-left:2px solid var(--built);padding:4px 0 4px 10px;margin:8px 0;color:#d8d3c8}
+.syl i{color:var(--dim)}
+.note{color:var(--dim);font-size:13px}
+.pill{display:inline-block;font:10px ui-monospace,Menlo,monospace;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:999px;border:1px solid var(--line);margin:2px}
+.glyph{font:600 22px ui-monospace,Menlo,monospace;letter-spacing:.2em;color:var(--built)}
+.ctl{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+</style>
+</head>
+<body>
+<header>
+<h1>Social Passages <small>0.01 · KA issue #3 · the same passages, between people</small></h1>
+<nav>
+<button data-v="pod" class="on">Pod</button>
+<button data-v="forge">Passforge</button>
+<button data-v="super">superGroup</button>
+<button data-v="div">Dividends</button>
+<button data-v="about">Rules</button>
+</nav>
+</header>
+
+<!-- POD -->
+<section class="view on" id="v-pod">
+<div class="grid">
+<div>
+<svg class="stage" id="ring" viewBox="0 0 600 520"></svg>
+<div class="ctl">
+<button class="go" id="invite">Send an invitation</button>
+<span class="note" id="invnote">Nobody is added. A code goes out; the other side chooses.</span>
+</div>
+<div class="card">
+<h3>Ask the pod</h3>
+<input type="text" id="q" placeholder="e.g. can the pod hear my voice? · may outsiders see where we meet?">
+<div id="ans"></div>
+<div id="teach"></div>
+<div class="k" id="learned" style="margin-top:8px"></div>
+</div>
+</div>
+<div>
+<div class="card" id="me"></div>
+<div class="card" id="shared"></div>
+<div class="card" id="passage"><h3>Passage</h3><p class="note">Click a line between two people in the ring. Each link has six readings, like the atlas.</p></div>
+</div>
+</div>
+</section>
+
+<!-- PASSFORGE -->
+<section class="view" id="v-forge">
+<div class="grid">
+<div class="card">
+<h3>Passforge: recognition without a password</h3>
+<p class="note">Each side forges half. Neither half alone opens anything; together they make one glyph that only this pair shares. Nothing is stored on a server: the glyph is re-made from both halves each time.</p>
+<div class="lay"><span class="k">your half</span><input type="text" id="h1" value="a gull over the cistern"></div>
+<div class="lay"><span class="k">with</span><select id="fwho" style="background:#0e0f14;color:var(--ink);border:1px solid var(--line);padding:8px;border-radius:8px"></select></div>
+<div class="lay"><span class="k">their half</span><input type="text" id="h2" value=""></div>
+<div class="ctl"><button class="go" id="forge">Forge</button><button id="reforge">They change their half</button></div>
+<div id="fout"></div>
+</div>
+<div><svg class="stage" id="fsvg" viewBox="0 0 400 400"></svg></div>
+</div>
+</section>
+
+<!-- SUPERGROUP -->
+<section class="view" id="v-super">
+<div class="grid">
+<div><svg class="stage" id="ssvg" viewBox="0 0 600 420"></svg></div>
+<div>
+<div class="card">
+<h3>superGroup: pods meeting pods</h3>
+<p class="note">Your pod and a second pod (Lantern) both invite. The superGroup shares each layer only as far as its most careful member allows. Joining never widens anyone's line.</p>
+<div class="ctl"><button class="go" id="join">Both pods accept</button><button id="part">Part again</button></div>
+</div>
+<div class="card" id="sout"></div>
+</div>
+</div>
+</section>
+
+<!-- DIVIDENDS -->
+<section class="view" id="v-div">
+<div class="grid">
+<div class="card">
+<h3>Data dividends</h3>
+<p class="note">When the pod's shared data is used (a study, a query, a model), it can only use what passes the pod's line. The value flows back to the people whose openness made it usable.</p>
+<div class="ctl">
+<button class="go" data-use="words">A study reads our words</button>
+<button class="go" data-use="voice">A choir model hears our voice</button>
+<button class="go" data-use="place">A map asks where we meet</button>
+</div>
+<div id="dlog"></div>
+</div>
+<div class="card"><h3>Ledger</h3><div id="ledger"></div></div>
+</div>
+</section>
+
+<!-- RULES -->
+<section class="view" id="v-about">
+<div class="card" style="max-width:760px">
+<h3>The rules this toy keeps</h3>
+<p><b>Invitation only.</b> There is no search for people and no way to add anyone. A code goes out; the other side accepts or doesn't.</p>
+<p><b>Two-way consent.</b> Each person sets how far each layer of them may pass. The pod sees a layer only as far as <i>everyone in it</i> allows: the shared line is the lowest line.</p>
+<p><b>Nothing is aimed at anyone.</b> No profiles of outsiders, no targeting, no ranking of people. Pods, Passforge, superGroups and dividends all run on what members chose to open.</p>
+<p><b>Same passages.</b> A link between two people reads like an atlas link: yes, no, between, history, future, next. The pass cycle ends when the step taken becomes the next yes.</p>
+<p class="note">Organs in this toy: Pods, Passforge, superGroups, Data dividends. Trance is already built elsewhere and is not redrawn here. Reused: Ka panel's two-way consent, the One-Way Barrier's layer shades and ledger, the Meeting Membrane's codes.</p>
+<p class="note">Everything you set here stays in this browser only.</p>
+</div>
+</section>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const LAYERS=['words','voice','place','lineage','face'];
+const LV=['closed','shape','alias','whole'];
+const LVD=['nothing passes','only its shape (that it exists)','under an alias','as it is'];
+const store={get(k,d){try{return JSON.parse(localStorage.getItem('ksp-'+k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem('ksp-'+k,JSON.stringify(v))}catch(e){}}};
+const NAMES=['Wren','Ostra','Kell','Mira','Tamsin','Ivo'];
+let people=[{id:'you',name:'You',lv:store.get('me',{words:3,voice:2,place:1,lineage:2,face:1}),state:'in',since:'today'}];
+const seeds={Wren:{words:3,voice:3,place:2,lineage:1,face:2},Ostra:{words:2,voice:1,place:0,lineage:3,face:1},Kell:{words:3,voice:2,place:1,lineage:2,face:0},Mira:{words:1,voice:3,place:2,lineage:2,face:2},Tamsin:{words:2,voice:2,place:1,lineage:1,face:1},Ivo:{words:3,voice:0,place:1,lineage:2,face:2}};
+let sel=null,cyc=0;
+function pod(){return people.filter(p=>p.state==='in')}
+function shared(group){const o={};LAYERS.forEach(l=>{let m=3,who=[];group.forEach(p=>{if(p.lv[l]<m){m=p.lv[l];who=[p.name]}else if(p.lv[l]===m)who.push(p.name)});o[l]={m,who}});return o}
+function code(){return Math.random().toString(36).slice(2,6).toUpperCase()+'-'+Math.random().toString(36).slice(2,6).toUpperCase()}
+
+/* ring */
+function drawRing(){
+ const g=people,N=g.length,cx=300,cy=255,R=175;let s='';
+ const pos={};g.forEach((p,i)=>{const a=-Math.PI/2+i*2*Math.PI/N;pos[p.id]=[cx+R*Math.cos(a),cy+R*Math.sin(a)]});
+ const sh=shared(pod());const mem=LAYERS.reduce((a,l)=>a+sh[l].m,0);
+ s+=`<circle cx="${cx}" cy="${cy}" r="${60+mem*6}" fill="#5fe0b8" opacity=".06" stroke="#5fe0b8" stroke-opacity=".35" stroke-dasharray="3 5"/>`;
+ s+=`<text x="${cx}" y="${cy-4}" text-anchor="middle" fill="#8d8a84" font-size="11" font-family="ui-monospace,Menlo">THE POD'S LINE</text><text x="${cx}" y="${cy+14}" text-anchor="middle" fill="#e9e6df" font-size="13">${LAYERS.filter(l=>sh[l].m>0).length} of 5 layers pass</text>`;
+ const ins=pod();
+ for(let i=0;i<ins.length;i++)for(let j=i+1;j<ins.length;j++){const a=ins[i],b=ins[j],[x1,y1]=pos[a.id],[x2,y2]=pos[b.id];const w=LAYERS.reduce((t,l)=>t+Math.min(a.lv[l],b.lv[l]),0);const on=sel&&sel.join()==[a.id,b.id].join();
+  s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${on?'#5fe0b8':'#3a3d48'}" stroke-width="${1+w/2.5}" opacity="${on?1:.7}"/><line data-l="${a.id}|${b.id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="transparent" stroke-width="16" style="cursor:pointer"/>`}
+ g.forEach(p=>{const[x,y]=pos[p.id];const pend=p.state!=='in';
+  s+=`<g ${pend?`data-acc="${p.id}" style="cursor:pointer"`:''}><circle cx="${x}" cy="${y}" r="26" fill="#0c0d12" stroke="${p.id==='you'?'#5fe0b8':pend?'#b48cff':'#8d8a84'}" stroke-dasharray="${pend?'4 4':''}" stroke-width="1.5"/>`;
+  if(!pend)LAYERS.forEach((l,k)=>{const a0=-Math.PI/2+k*2*Math.PI/5;s+=`<circle cx="${x+18*Math.cos(a0)}" cy="${y+18*Math.sin(a0)}" r="${1.5+p.lv[l]*1.3}" fill="${['#4a4c55','#b48cff','#f2b84b','#5fe0b8'][p.lv[l]]}"/>`});
+  s+=`<text x="${x}" y="${y+44}" text-anchor="middle" fill="#e9e6df" font-size="13">${p.name}</text>`;
+  if(pend)s+=`<text x="${x}" y="${y+4}" text-anchor="middle" fill="#b48cff" font-size="9" font-family="ui-monospace,Menlo">${p.code}</text><text x="${x}" y="${y+58}" text-anchor="middle" fill="#8d8a84" font-size="10">invited · click = they accept</text>`;
+  s+='</g>'});
+ $('#ring').innerHTML=s;
+ $$('#ring [data-l]').forEach(e=>e.onclick=()=>{sel=e.dataset.l.split('|');cyc=0;drawAll()});
+ $$('#ring [data-acc]').forEach(e=>e.onclick=()=>{const p=people.find(q=>q.id===e.dataset.acc);p.state='in';p.since=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});drawAll()});
+}
+function drawMe(){
+ const me=people[0];let s='<h3>Your lines</h3><p class="note">How far each layer of you may pass. Only you set these.</p>';
+ LAYERS.forEach(l=>{s+=`<div class="lay"><span>${l}</span><div class="lvl">${LV.map((n,i)=>`<button data-me="${l}|${i}" class="${me.lv[l]===i?'on':''}" title="${LVD[i]}">${n}</button>`).join('')}</div></div>`});
+ $('#me').innerHTML=s;$$('[data-me]').forEach(b=>b.onclick=()=>{const[l,i]=b.dataset.me.split('|');me.lv[l]=+i;store.set('me',me.lv);drawAll()});
+}
+function drawShared(){
+ const g=pod(),sh=shared(g);let s=`<h3>What the pod sees</h3><p class="note">${g.length} in the pod. Each layer passes only as far as everyone allows.</p>`;
+ LAYERS.forEach(l=>{const{m,who}=sh[l];s+=`<div class="row"><span>${l}</span><span class="l${m}">${LV[m]}${g.length>1&&m<3?` · held by ${who.join(', ')}`:''}</span></div>`});
+ $('#shared').innerHTML=s;
+}
+/* passage: six readings */
+function drawPassage(){
+ if(!sel)return;const[a,b]=sel.map(id=>people.find(p=>p.id===id));if(!a||!b)return;
+ const both=LAYERS.filter(l=>a.lv[l]>=2&&b.lv[l]>=2),none=LAYERS.filter(l=>Math.min(a.lv[l],b.lv[l])===0),diff=LAYERS.filter(l=>a.lv[l]!==b.lv[l]);
+ const gap=diff.sort((x,y)=>Math.abs(a.lv[y]-b.lv[y])-Math.abs(a.lv[x]-b.lv[x]))[0];
+ const lower=gap?(a.lv[gap]<b.lv[gap]?a:b):null,upper=gap?(lower===a?b:a):null;
+ const V=(p,v)=>p.id==='you'?'you '+v:p.name+' '+v+'s',Nm=p=>p.id==='you'?'you':p.name;
+ const R=[
+ ['yes',both.length?`${a.name} and ${b.name} both open ${both.join(', ')} to each other.`:`Nothing yet passes both ways at alias or more.`],
+ ['no',none.length?`${none.join(', ')} stays closed between them: one side keeps it, and that is honoured.`:`No layer is fully closed between them.`],
+ ['between',gap?`On ${gap}, ${V(upper,'open')} to "${LV[upper.lv[gap]]}" while ${V(lower,'hold')} at "${LV[lower.lv[gap]]}". The link carries "${LV[lower.lv[gap]]}": both lines held at once.`:`Their lines match on every layer.`],
+ ['history',`The passage began when ${b.id==='you'?a.name:b.name} accepted the invitation (${b.since==='today'?a.since:b.since}). Every opening since is a choice, not a default.`],
+ ['future',gap?`If ${V(lower,'choose')}, ${gap} could open one step to "${LV[Math.min(3,lower.lv[gap]+1)]}". Only ${Nm(lower)} can take that step.`:`The next opening is a new layer neither has named yet.`],
+ ['next',gap?`When ${V(lower,'take')} it, "${gap} at ${LV[Math.min(3,lower.lv[gap]+1)]}" becomes the next yes, and the cycle starts again.`:`The step taken becomes the next yes.`]];
+ $('#passage').innerHTML=`<h3>Passage · ${a.name} ↔ ${b.name}</h3>`+R.map((r,i)=>`<div class="reading ${i===cyc?'cur':''}"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')+`<div class="ctl"><button class="go" id="pass">pass →</button></div>`;
+ $('#pass').onclick=()=>{cyc=(cyc+1)%6;drawPassage()};
+}
+/* ask: query learning syllogism */
+let taught=store.get('taught',{});
+const BASE={words:['word','words','text','writing','say','said','name'],voice:['voice','hear','sing','song','sound','speak'],place:['place','where','meet','location','home','address'],lineage:['lineage','family','history','past','ancestors','story'],face:['face','see me','photo','picture','look']};
+function layerOf(q){q=q.toLowerCase();for(const[w,l]of Object.entries(taught))if(q.includes(w))return[l,w,true];for(const l of LAYERS)for(const w of BASE[l])if(q.includes(w))return[l,w,false];return null}
+function ask(){
+ const q=$('#q').value.trim();if(!q){$('#ans').innerHTML='';$('#teach').innerHTML='';return}
+ const hit=layerOf(q),out=/outsid|stranger|anyone|public|world/i.test(q);
+ if(!hit){const w=(q.toLowerCase().match(/[a-z]{4,}/g)||[]).pop()||q;
+  $('#ans').innerHTML=`<div class="syl"><i>I don't yet know which layer "${w}" belongs to. Teach me once; I'll keep it in this browser.</i></div>`;
+  $('#teach').innerHTML='<div class="ctl">'+LAYERS.map(l=>`<button data-t="${w}|${l}">${w} → ${l}</button>`).join('')+'</div>';
+  $$('[data-t]').forEach(b=>b.onclick=()=>{const[w,l]=b.dataset.t.split('|');taught[w]=l;store.set('taught',taught);ask()});return}
+ $('#teach').innerHTML='';const[l,w,learned]=hit,g=pod(),{m,who}=shared(g)[l];
+ const s=out?`<div class="syl">Outside the pod there is no line at all, so nothing is offered.<br><i>Nothing is aimed outward; outsiders see only what a member carries out, at that member's own line.</i></div>`
+ :`<div class="syl">Whatever everyone in the pod allows may pass.<br>${g.length>1?`${who.join(', ')} allow${who.length>1?'':'s'} ${l} only as "${LV[m]}".`:`You are the only one in the pod, and you allow ${l} as "${LV[m]}".`}<br><b>So ${l} passes ${LVD[m]}.</b></div>`;
+ $('#ans').innerHTML=s+`<span class="k">read "${w}" as ${l}${learned?' (you taught me)':''}</span>`;
+}
+function drawLearned(){const t=Object.entries(taught);$('#learned').textContent=t.length?'learned: '+t.map(([w,l])=>w+'→'+l).join(' · '):''}
+$('#q').oninput=()=>{ask();drawLearned()};
+
+$('#invite').onclick=()=>{const used=people.map(p=>p.name);const n=NAMES.find(x=>!used.includes(x));if(!n){$('#invnote').textContent='The ring is full for this demo.';return}
+ const c=code();people.push({id:n,name:n,lv:{...seeds[n]},state:'invited',code:c.slice(0,4),since:''});$('#invnote').textContent=`Code ${c} sent. ${n} sees it only if you hand it to them.`;drawAll()};
+
+/* PASSFORGE */
+function h(s){let x=2166136261;for(const c of s){x^=c.charCodeAt(0);x=Math.imul(x,16777619)}return x>>>0}
+const GL='ᚠᚢᚦᚨᚱᚲᚷᚹᚺᚾᛁᛃᛇᛈᛉᛊᛏᛒᛖᛗᛚᛜᛞᛟ';
+const halves={Wren:'salt on the mandolin',Ostra:'a door that hums',Kell:'three bells, one late',Mira:'the cedar remembers',Tamsin:'moth in the lamp',Ivo:'river under the floor'};
+function fillWho(){const s=$('#fwho'),cur=s.value;s.innerHTML=pod().filter(p=>p.id!=='you').map(p=>`<option>${p.name}</option>`).join('')||'<option value="">(invite someone first)</option>';if(cur)s.value=cur;$('#h2').value=halves[s.value]||''}
+$('#fwho').onchange=()=>{$('#h2').value=halves[$('#fwho').value]||''};
+function forge(){
+ const a=$('#h1').value.trim(),b=$('#h2').value.trim(),who=$('#fwho').value;
+ if(!who||!a||!b){$('#fout').innerHTML='<p class="note">Both halves are needed. Neither side can forge alone.</p>';drawF(null);return}
+ const x=h([a,b].sort().join('|')),g=[0,5,10,15].map(k=>GL[(x>>>k)%GL.length]).join('');
+ $('#fout').innerHTML=`<p>Your glyph with ${who}: <span class="glyph">${g}</span></p><div class="syl">A glyph opens only when both halves meet.<br>Here both halves met.<br><b>So you and ${who} recognise each other, and no password exists to steal.</b></div>`;drawF(x,g);
+}
+function drawF(x,g){let s='<circle cx="200" cy="200" r="150" fill="none" stroke="#24262e"/>';
+ if(x!==null){for(let i=0;i<12;i++){const a=(x>>>(i*2)&255)/255*Math.PI*2,r=60+((x>>>i)&63);s+=`<line x1="200" y1="200" x2="${200+r*Math.cos(a)}" y2="${200+r*Math.sin(a)}" stroke="${i%2?'#5fe0b8':'#b48cff'}" stroke-width="1.5" opacity=".8"/>`}
+ s+=`<text x="200" y="210" text-anchor="middle" font-size="34" fill="#e9e6df" font-family="ui-monospace,Menlo">${g}</text>`}
+ else s+='<text x="200" y="205" text-anchor="middle" fill="#8d8a84" font-size="13">two halves, one glyph</text>';
+ $('#fsvg').innerHTML=s}
+$('#forge').onclick=forge;$('#reforge').onclick=()=>{$('#h2').value=$('#h2').value+' (changed)';forge()};
+
+/* SUPERGROUP */
+const lantern=[{name:'Lark',lv:{words:3,voice:2,place:0,lineage:2,face:1}},{name:'Ondine',lv:{words:2,voice:3,place:2,lineage:1,face:2}},{name:'Brisk',lv:{words:3,voice:2,place:1,lineage:3,face:0}}];
+let joined=false;
+function drawSuper(){
+ const A=pod(),B=lantern,shA=shared(A),shB=shared(B),shS=shared([...A,...B]);let s='';
+ const cA=joined?[215,210]:[160,210],cB=joined?[385,210]:[440,210];
+ [[cA,A,'Your pod'],[cB,B,'Lantern']].forEach(([c,g,n])=>{s+=`<circle cx="${c[0]}" cy="${c[1]}" r="120" fill="#5fe0b8" opacity=".05" stroke="#8d8a84" stroke-opacity=".5"/><text x="${c[0]}" y="${c[1]-130}" text-anchor="middle" fill="#8d8a84" font-size="12">${n} · ${g.length}</text>`;
+  g.forEach((p,i)=>{const a=i*2*Math.PI/g.length;s+=`<circle cx="${c[0]+48*Math.cos(a)}" cy="${c[1]+48*Math.sin(a)}" r="9" fill="#0c0d12" stroke="#e9e6df"/><text x="${c[0]+48*Math.cos(a)}" y="${c[1]+48*Math.sin(a)+24}" text-anchor="middle" fill="#e9e6df" font-size="10">${p.name}</text>`})});
+ if(joined)s+=`<text x="300" y="400" text-anchor="middle" fill="#5fe0b8" font-size="13">the overlap is the superGroup: only what both pods let pass</text>`;
+ $('#ssvg').innerHTML=s;
+ let t=`<h3>${joined?'superGroup line':'Two pods, apart'}</h3>`;
+ LAYERS.forEach(l=>{t+=`<div class="row"><span>${l}</span><span><span class="l${shA[l].m}">${LV[shA[l].m]}</span> · <span class="l${shB[l].m}">${LV[shB[l].m]}</span>${joined?` → <b class="l${shS[l].m}">${LV[shS[l].m]}</b>`:''}</span></div>`});
+ if(joined){const drop=LAYERS.filter(l=>shS[l].m<shA[l].m);t+=`<div class="syl">The superGroup carries each layer only as far as all ${A.length+B.length} allow.<br>${drop.length?`On ${drop.join(', ')}, Lantern's line is lower than yours.`:`Nothing of yours narrows.`}<br><b>So your pod keeps its own line inside; only the overlap is shared.</b></div>`}
+ $('#sout').innerHTML=t}
+$('#join').onclick=()=>{joined=true;drawSuper()};$('#part').onclick=()=>{joined=false;drawSuper()};
+
+/* DIVIDENDS */
+let ledger=store.get('ledger',{});
+$$('[data-use]').forEach(b=>b.onclick=()=>{
+ const l=b.dataset.use,g=pod(),{m}=shared(g)[l];
+ if(m===0){$('#dlog').innerHTML=`<div class="syl">Use reaches only what passes the pod's line.<br>${l} is closed.<br><b>So nothing is read and nothing is owed.</b></div>`;return}
+ const pot=m*10;g.forEach(p=>{ledger[p.name]=(ledger[p.name]||0)+pot/g.length});store.set('ledger',ledger);
+ $('#dlog').innerHTML=`<div class="syl">Use reaches only what passes the pod's line.<br>${l} passes ${LVD[m]} (${pot} units of value).<br><b>So ${pot} units return, split across the ${g.length} whose openness made it possible.</b></div><p class="note">Split is even: the usable line is shared by all, so no one's wider line is sold past the others'.</p>`;drawLedger()});
+function drawLedger(){const e=Object.entries(ledger);$('#ledger').innerHTML=e.length?e.map(([n,v])=>`<div class="row"><span>${n}</span><span>${v.toFixed(1)}</span></div>`).join('')+`<div class="ctl"><button id="clr">clear</button></div>`:'<p class="note">No use yet.</p>';const c=$('#clr');if(c)c.onclick=()=>{ledger={};store.set('ledger',ledger);drawLedger()}}
+
+function drawAll(){drawRing();drawMe();drawShared();drawPassage();fillWho();drawSuper();drawLearned()}
+$$('nav button').forEach(b=>b.onclick=()=>{$$('nav button').forEach(x=>x.classList.toggle('on',x===b));$$('.view').forEach(v=>v.classList.toggle('on',v.id==='v-'+b.dataset.v))});
+// start with two who already accepted, one pending
+['Wren','Kell'].forEach(n=>people.push({id:n,name:n,lv:{...seeds[n]},state:'in',since:'Nov 20'}));
+people.push({id:'Ostra',name:'Ostra',lv:{...seeds.Ostra},state:'invited',code:'K4QZ',since:''});
+sel=['you','Wren'];drawAll();drawF(null);drawLedger();
+</script>
+</body>
+</html>

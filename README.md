@@ -10,7 +10,8 @@ Read this first. It is the current pulse of KA.
 - **The social side** (Pods, Trance, Passforge, superGroups, data dividends) is the same passages between people. It works only by invitation, with two-way consent: each person shares only as far as everyone involved allows. Nothing is ever aimed at anyone. Build: issue #3, in a fresh chat, after D's low-usage window.
 - **Requests:** GitHub Issues on this repo.
 - **Fixed (2026-11-20):** the atlas source nodes `s-video2013` and `s-video2026` are now real nodes in `build_data.py`; no dangling links.
-- **Next:** issue #3 (the social side above). Later: issue #4, a webcam mirror sphere in Wraywrai styles.
+- **Built (2026-11-20, evening):** Social Passages 0.01 (`social/`), first prototype of issue #3: Pod ring with invitation codes, per-person layer lines and the pod's shared line (lowest line wins), six-reading passages between people, Ask-the-pod with query-learning syllogisms, Passforge (two halves → one glyph, no password), superGroup (pods meeting pods), Data dividends ledger. Frames in `social/frames/`.
+- **Next:** D plays Social Passages 0.01 and judges it (issue #3). Later: issue #4, a webcam mirror sphere in Wraywrai styles.
 - **Fresh chat:** "read README, continue #3" is the whole handoff.
 
 ## Knowledge Amp
@@ -35,6 +36,7 @@ other skills are toys and organs of it.
 | `timeline/` | **Timeline layer v0.3 (draft)**: one event format for every feature, built on the Seashell genome (`EVENT-FORMAT.md`; v0.1 and v0.2 kept). v0.3 adds `source_kind`, `precision_basis`, `where.basis` and the `telling` block. `gaps.py` reports a lane's gaps and next entries; latest report `gaps-seashell-2026-11-19.md`: 232 entries, all sourced (120 primary, 112 secondary), 109 researched fingerprints, 115 places, 182 tellings. Earlier reports kept. |
 | `barrier/index.html` | **One-Way Barrier 0.02**, the first organ prototype (the server's barrier with its syllogism and query learning, layers with two-way consent, seven chambers). Toy: https://claude.ai/artifact/N3gpDgZetcDJ1RckLffNDT. Each version is also kept as `barrier/vX.html`; `barrier/frames/` holds the checked screenshots. |
 | `analogia/` | **Analogia 0.1**: the analogy gesture (A : B \| C : ?, and chains) with its process clarify, represent, question, await, then evolve. Master copy is `rhetoric/analogia_dict.json` in orioph/jinglia; toys `cocoon/` (https://claude.ai/artifact/DWckGQbynR78uCCjGQtqZ2) and `bees-and-x/` (https://claude.ai/artifact/24Za4AjBAhEUZUpF2Zi6ek). |
+| `social/` | **Social Passages 0.01** (issue #3): Pods, Passforge, superGroup, Data dividends; invitation only, two-way consent, everything stays in the viewer's browser. `v0.01.html` kept; `frames/` holds the checked screenshots. |
 | `macroscope/` | **Macroscope 0.02** (forms: foam, dandelion clock; overlay: the eye in the glass; the froth grows from your words; `EVOLUTION.md` is the log every run reads and adds to): Foam Cosmos (meta bubble → physical froth → cosmic web → Milky Way → today's solar system, planet news gathered 2026-11-19 with credits and factual/figurative wings, tickets) + the Sentence Bubble input (bubble → stick → glyph → echo → mirror → one; query-learning syllogisms kept per viewer). Toy: https://claude.ai/artifact/GFTg448oJy7GKcSFzhA8wq. `v0.01.html`, `v0.02.html` kept; `frames/` holds the checked screenshots. |
 
 ## Sources used (nothing re-digested)
