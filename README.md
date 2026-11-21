@@ -9,7 +9,9 @@ Read this first. It is the current pulse of KA.
 - **New on the map:** every idea-to-today link is now a *passage*. Open a node and each link shows six readings: yes, no, between, history, future, next. A "pass" button walks the cycle: find where yes stops being true → hold yes and no together → ask when the between began → carry history forward → take one step toward the future → the step taken becomes the next yes. Readings live in `atlas/passages.py` (37 links). D's own word on a link is one more reading, not a verdict.
 - **The social side** (Pods, Trance, Passforge, superGroups, data dividends) is the same passages between people. It works only by invitation, with two-way consent: each person shares only as far as everyone involved allows. Nothing is ever aimed at anyone. Build: issue #3, in a fresh chat, after D's low-usage window.
 - **Requests:** GitHub Issues on this repo.
-- **Small glitch found:** three atlas links point at source nodes that don't exist (`s-video2013`, `s-video2026`); `build_data.py` should add those nodes or drop the links.
+- **Fixed (2026-11-20):** the atlas source nodes `s-video2013` and `s-video2026` are now real nodes in `build_data.py`; no dangling links.
+- **Next:** issue #3 (the social side above). Later: issue #4, a webcam mirror sphere in Wraywrai styles.
+- **Fresh chat:** "read README, continue #3" is the whole handoff.
 
 ## Knowledge Amp
 
